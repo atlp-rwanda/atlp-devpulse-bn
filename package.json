@@ -1,0 +1,24 @@
+{
+  "name": "atlp-devpulse-bn",
+  "version": "1.0.0",
+  "description": "backend for phase II of pulse",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atlp-rwanda/atlp-devpulse-bn.git"
+  },
+  "keywords": [
+    "ts",
+    "graphql",
+    "edtech"
+  ],
+  "author": "ceelogre",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/atlp-rwanda/atlp-devpulse-bn/issues"
+  },
+  "homepage": "https://github.com/atlp-rwanda/atlp-devpulse-bn#readme"
+}
