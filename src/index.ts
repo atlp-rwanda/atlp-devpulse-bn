@@ -1,23 +1,14 @@
-import { ApolloServer, gql } from "apollo-server"
+import { ApolloServer } from "apollo-server"
 import { connect } from "./database/db.config"
-
+import { resolvers } from "./resolvers/userResolver";
+import { typeDefs } from "./typeDefs";
 const PORT = process.env.PORT || 4001
-
-const typeDefs = gql`
-  type Query {
-    hello: String
-  }
-`
-
-const resolvers = {
-  Query: {
-    hello: () => "Yooo this is your GraphQL server! Do what you want with it",
-  },
-}
-
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  csrfPrevention: true, // highly recommended
+  cache: "bounded",
+  introspection: true
 })
 
 connect().then(() => {
