@@ -1,4 +1,4 @@
-import mongoose, { model,Schema } from "mongoose";
+import { model,Schema } from "mongoose";
 const traineeSchema = new Schema({
     email: {
         type: String,
@@ -14,5 +14,4 @@ const traineeSchema = new Schema({
         required:true,
     },
 })
-const Trainee = model("Trainee", traineeSchema);
-export default Trainee;
+export const TraineeApplicant = model("Trainee", traineeSchema);
