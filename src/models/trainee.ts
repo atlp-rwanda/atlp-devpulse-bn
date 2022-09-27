@@ -14,6 +14,5 @@ const traineeSchema = new Schema({
         required:true,
     },
 })
-
 const Trainee = model("Trainee", traineeSchema);
 export default Trainee;
