@@ -24,14 +24,8 @@ const loadTraineeResolver: any = {
         auth: client,
       });
 
-      //get metadata of the spreadsheet
-      const spreadsheetId = _args.spreadsheetId;
-      const metadData = await googleSheets.spreadsheets.get({
-        auth,
-        spreadsheetId,
-      });
-
       //read rows from spreadsheet
+      const spreadsheetId = _args.spreadsheetId;
       const rows = await googleSheets.spreadsheets.values.get({
         auth,
         spreadsheetId,
