@@ -42,7 +42,11 @@ const Schema = gql`
   }
 
   type Query {
-    loadTrainees: [[String!]!]!
+    getTrainees: [Trainee]
+  }
+
+  type Mutation {
+    loadTrainees(spreadsheetId: ID!): String!
   }
 `;
 export default Schema;

@@ -3,7 +3,13 @@ import { google } from "googleapis";
 
 const loadTraineeResolver: any = {
   Query: {
-    async loadTrainees() {
+    async getTrainees() {
+      const trainees = await Trainee.find({});
+      return trainees;
+    },
+  },
+  Mutation: {
+    async loadTrainees(_parent: any, _args: any) {
       const auth = new google.auth.GoogleAuth({
         keyFile: "credentials.json",
         scopes: "https://www.googleapis.com/auth/spreadsheets",
@@ -19,7 +25,7 @@ const loadTraineeResolver: any = {
       });
 
       //get metadata of the spreadsheet
-      const spreadsheetId = "1hXUavm_K5BQAOGTx9W4Z84Ttb2_ONfvk_EQZlyOnUPM";
+      const spreadsheetId = _args.spreadsheetId;
       const metadData = await googleSheets.spreadsheets.get({
         auth,
         spreadsheetId,
@@ -58,7 +64,7 @@ const loadTraineeResolver: any = {
         }
       }
 
-      return rows.data.values;
+      return "Trainees loaded to db successfully";
     },
   },
 };
