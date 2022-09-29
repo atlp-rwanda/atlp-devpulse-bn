@@ -46,7 +46,7 @@ const Schema = gql`
   }
 
   type Mutation {
-    loadTrainees(spreadsheetId: ID!): String!
+    loadTrainees(spreadsheetId: String!): String!
   }
 `;
 export default Schema;
