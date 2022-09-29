@@ -75,8 +75,7 @@ const traineeAttributeSchema = new Schema({
     trainee: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Trainee",
-        required: true
-        
+        required: true   
     }
 })
 

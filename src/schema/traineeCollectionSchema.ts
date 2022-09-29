@@ -1,26 +1,11 @@
 import { gql } from 'apollo-server'
-export const typeDefs = gql`
+export const typeDefsCollection = gql`
 type Query {
 	allTraineesCollection(input: pagination): [traineeCollection]
-    allTrainees(input:pagination):[traineeApplicant]
 }
 type Mutation {
-	createTraineeApplicant(input: traineeApplicantInput ): traineeApplicant
-	createTraineeCollection(input: traineeCollectionInput): traineeCollectionCreated 
+	createTraineeCollection(input: traineeCollectionInput): traineeCollectionCreated
 }
-	type traineeApplicant {
-		firstName: String!
-        lastName: String!
-		email: String!
-		_id: ID
-	}
-
-	input traineeApplicantInput {
-		firstName: String!
-        lastName: String!
-		email: String!
-	}
-
 	input pagination {
 		page: Int!
 		itemsPerPage: Int
@@ -28,7 +13,7 @@ type Mutation {
 	}
 
 	input traineeCollectionInput {
-		 gender: String!
+		gender: String!
 		birth_date: String!
         Address: String!
         phone: String!
@@ -92,4 +77,3 @@ type Mutation {
 		trainee: String!
 	}
 `
-

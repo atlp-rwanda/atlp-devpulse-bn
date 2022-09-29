@@ -15,3 +15,4 @@ const traineeSchema = new Schema({
     },
 })
 export const TraineeApplicant = model("Trainee", traineeSchema);
+// trainees
