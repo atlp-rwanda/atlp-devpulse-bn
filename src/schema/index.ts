@@ -4,45 +4,34 @@ const Schema = gql`
     id: ID!
     firstName: String!
     lastName: String!
-    gender: String!
     email: String!
-    age: Int!
-    fieldOfStudy: String!
-    highOrCurrentEducation: String!
-    province: String!
-    district: String!
-    cohort: String!
-    employmentStatus: String!
-    isStudent: Boolean!
-    hackerrankScore: Int!
-    englishScore: Int!
-    interview: Int!
-    decision: String!
-    pastAndela: String!
   }
 
-  input createTrainee {
-    firstName: String!
-    lastName: String!
+  type traineeAttribute {
     gender: String!
-    email: String!
-    age: Int!
-    fieldOfStudy: String!
-    highOrCurrentEducation: String!
+    birth_date: String!
+    Address: String!
+    phone: String!
+    field_of_study: String!
+    education_level: String!
     province: String!
     district: String!
+    sector: String!
     cohort: String!
-    employmentStatus: String!
+    isEmployed: String!
     isStudent: Boolean!
-    hackerrankScore: Int!
-    englishScore: Int!
+    Hackerrank_score: Int!
+    english_score: Int!
     interview: Int!
-    decision: String!
-    pastAndela: String!
+    interview_decision: String!
+    past_andela_programs: String!
+    haveLaptop: String!
+    trainee_id: String!
   }
 
   type Query {
     getTrainees: [Trainee]
+    getTraineesAttribute: [traineeAttribute]
   }
 
   type Mutation {
@@ -50,5 +39,3 @@ const Schema = gql`
   }
 `;
 export default Schema;
-// loadTraineeResolver: any
-// (sheetId: ID!): [Trainee!]!

@@ -1,4 +1,5 @@
 import Trainee from "../models/trainee";
+import { traineEAttributes } from "../models/traineeAttribute";
 import { google } from "googleapis";
 
 const loadTraineeResolver: any = {
@@ -7,7 +8,12 @@ const loadTraineeResolver: any = {
       const trainees = await Trainee.find({});
       return trainees;
     },
+    async getTraineesAttribute() {
+      const traineesAttribute = await traineEAttributes.find({});
+      return traineesAttribute;
+    },
   },
+
   Mutation: {
     async loadTrainees(_parent: any, _args: any) {
       try {
@@ -32,34 +38,48 @@ const loadTraineeResolver: any = {
           spreadsheetId,
           range: "Sheet1",
         });
+
         //loop through rows and add them to our db
         if (rows.data.values !== undefined && rows.data.values !== null) {
           for (let i = 1; i < rows.data?.values?.length; i++) {
             const trainee = new Trainee({
               firstName: rows.data.values[i][1],
               lastName: rows.data.values[i][2],
-              gender: rows.data.values[i][3],
               email: rows.data.values[i][4],
-              age: rows.data.values[i][5],
-              phoneNumber: rows.data.values[i][6],
-              fieldOfStudy: rows.data.values[i][7],
-              highOrCurrentEducation: rows.data.values[i][8],
+            });
+
+            await trainee.save();
+
+            const traineeAttributes = new traineEAttributes({
+              gender: rows.data.values[i][3],
+              birth_date: rows.data.values[i][5],
+              phone: rows.data.values[i][6],
+              field_of_study: rows.data.values[i][7],
+              education_level: rows.data.values[i][8],
               province: rows.data.values[i][9],
               district: rows.data.values[i][10],
               cohort: rows.data.values[i][11],
-              employmentStatus: rows.data.values[i][12],
-              isStudent: rows.data.values[i][13],
-              hackerrankScore: rows.data.values[i][14],
-              englishScore: rows.data.values[i][15],
+              isEmployed:
+                rows.data.values[i][12].toLowerCase() == "yes" ? true : false,
+              isStudent:
+                rows.data.values[i][13].toLowerCase() == "yes" ? true : false,
+              Hackerrank_score: rows.data.values[i][14],
+              english_score: rows.data.values[i][15],
               interview: rows.data.values[i][16],
-              decision: rows.data.values[i][17],
-              pastAndela: rows.data.values[i][18],
+              interview_decision: rows.data.values[i][17],
+              past_andela_programs: rows.data.values[i][18],
+              Address: rows.data.values[i][19],
+              sector: rows.data.values[i][20],
+              haveLaptop:
+                rows.data.values[i][21].toLowerCase() == "yes" ? true : false,
+              trainee_id: trainee._id,
             });
-            await trainee.save();
+
+            await traineeAttributes.save();
           }
         }
 
-        return "Trainees loaded to db successfully";
+        return "Trainees data loaded to db successfully";
       } catch (error) {
         return error;
       }
