@@ -1,26 +1,25 @@
-import { ApolloServer, gql } from "apollo-server"
-import { connect } from "./database/db.config"
+import { ApolloServer, gql } from "apollo-server";
+import { connect } from "./database/db.config";
+import loadTraineeResolver from "./resolvers/traineeResolvers";
+import { mergeResolvers } from "@graphql-tools/merge";
+import typeDefs from "./schema/index";
 
-const PORT = process.env.PORT || 4001
+const PORT = process.env.PORT || 4001;
 
-const typeDefs = gql`
-  type Query {
-    hello: String
-  }
-`
+// const typeDefs = gql`
+//   type Query {
+//     hello: String
+//   }
+// `;
 
-const resolvers = {
-  Query: {
-    hello: () => "Yooo this is your GraphQL server! Do what you want with it",
-  },
-}
+const resolvers = mergeResolvers([loadTraineeResolver]);
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-})
+});
 
 connect().then(() => {
-  console.log("Database connected!")
-  server.listen(PORT).then(({ url }) => console.info(`App on ${url}`))
-})
+  console.log("Database connected!");
+  server.listen(PORT).then(({ url }) => console.info(`App on ${url}`));
+});
