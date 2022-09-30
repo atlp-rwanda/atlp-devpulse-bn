@@ -12,8 +12,7 @@ const traineeSchema = new Schema({
     lastName: {
         type: String,
         required:true,
-    },
-    
+    }, 
 })
 export const TraineeApplicant = model("Trainee", traineeSchema);
 // trainees
