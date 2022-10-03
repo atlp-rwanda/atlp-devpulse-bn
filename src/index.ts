@@ -5,10 +5,8 @@ import { typeDefsTrainee } from "./schema/traineeApplicantSchema";
 import { typeDefsAttribute } from "./schema/traineeAttributeSchema";
 import { traineeApplicantResolver } from "./resolvers/traineeApplicantResolver";
 import { traineeAttributeResolver } from "./resolvers/traineeAttributeResolver";
-
-
-
-
+import deleteTraineTypeDefs from '../src/schema/deleteTraineTypeDefs'
+import traineeResolvers from "./resolvers/DelTranee"
 import applicationCycleResolver from "./resolvers/applicationCycleResolver"
 import applicationCycleTypeDefs from './schema/applicationCycleTypeDefs'
 import  {usersResolvers}  from "./resolvers/userResolver";
@@ -17,8 +15,8 @@ import { updateUserTypeDefs } from "./schema/updateUserTypeDefs";
 
 const PORT = process.env.PORT || 4001;
 
-const resolvers = mergeResolvers([applicationCycleResolver, usersResolvers,traineeAttributeResolver, traineeApplicantResolver])
-const typeDefs= mergeTypeDefs([applicationCycleTypeDefs, typeDefsAttribute, typeDefsTrainee, updateUserTypeDefs])
+const resolvers = mergeResolvers([applicationCycleResolver, usersResolvers,traineeAttributeResolver, traineeApplicantResolver,traineeResolvers])
+const typeDefs= mergeTypeDefs([applicationCycleTypeDefs, typeDefsAttribute, typeDefsTrainee, updateUserTypeDefs, deleteTraineTypeDefs])
 
 const server = new ApolloServer({
   typeDefs,

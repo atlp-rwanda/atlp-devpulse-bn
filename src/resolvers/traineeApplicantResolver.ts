@@ -1,4 +1,4 @@
-import { TraineeApplicant } from "../models/traineeApplicant";
+import TraineeApplicant  from "../models/traineeApplicant";
 
 export const traineeApplicantResolver: any = {
     Query: {
