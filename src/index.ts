@@ -1,20 +1,22 @@
-import { ApolloServer, gql } from "apollo-server"
+import { ApolloServer } from "apollo-server";
 import { mergeResolvers, mergeTypeDefs } from '@graphql-tools/merge'
-import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core'
 import { connect } from "./database/db.config"
-import applicationCycleResolver from "./resolvers/applicationCycleResolver"
-import applicationCycleTypeDefs from './schema/applicationCycleTypeDefs'
+import { typeDefsTrainee } from "./schema/traineeApplicantSchema";
+import { typeDefsAttribute } from "./schema/traineeAttributeSchema";
+import { traineeApplicantResolver } from "./resolvers/traineeApplicantResolver";
+import { traineeAttributeResolver } from "./resolvers/traineeAttributeResolver";
 
-const PORT = process.env.PORT || 4001;
+const resolvers = mergeResolvers([traineeAttributeResolver, traineeApplicantResolver]);
+const typeDefs = mergeTypeDefs([typeDefsAttribute, typeDefsTrainee])
 
-const resolvers = mergeResolvers([applicationCycleResolver])
-const typeDefs= mergeTypeDefs([applicationCycleTypeDefs])
+
+const PORT = process.env.PORT || 4001
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   introspection: true,
   csrfPrevention: true,
-  plugins: [ApolloServerPluginLandingPageLocalDefault],
   cache: 'bounded',
 })
 

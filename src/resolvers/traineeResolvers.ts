@@ -1,6 +1,7 @@
-import Trainee from "../models/trainee";
+import {TraineeApplicant as Trainee} from "../models/traineeApplicant";
 import { traineEAttributes } from "../models/traineeAttribute";
 import { google } from "googleapis";
+Trainee
 
 const loadTraineeResolver: any = {
   Query: {
