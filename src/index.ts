@@ -16,7 +16,7 @@ import { updateUserTypeDefs } from "./schema/updateUserTypeDefs";
 const PORT = process.env.PORT || 4001;
 
 const resolvers = mergeResolvers([applicationCycleResolver, usersResolvers,traineeAttributeResolver, traineeApplicantResolver,traineeResolvers])
-const typeDefs= mergeTypeDefs([applicationCycleTypeDefs, typeDefsAttribute, typeDefsTrainee, updateUserTypeDefs, deleteTraineTypeDefs])
+const typeDefs= mergeTypeDefs([applicationCycleTypeDefs, typeDefsAttribute, typeDefsTrainee, updateUserTypeDefs, deleteTraineTypeDefs ])
 
 const server = new ApolloServer({
   typeDefs,

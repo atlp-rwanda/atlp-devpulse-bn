@@ -4,19 +4,25 @@ type Query {
     allTrainees(input:pagination):[traineeApplicant]
 }
 type Mutation {
-	createTraineeApplicant(input: traineeApplicantInput ): traineeApplicant
+	createNewTraineeApplicant(input: newTraineeApplicantInput ): traineeApplicant
     updateTraineeApplicant(input: traineeApplicantInputUpdate): traineeApplicant
+	deleteTraineeApplicant(email: String!) : Boolean
 }
 	type traineeApplicant {
-		firstName: String!
-        lastName: String!
+		lastName: String!
+        firstName: String!
+		_id: ID!
 		email: String!
-		_id: ID
 	}
 
-	input traineeApplicantInput {
-		firstName: String!
-        lastName: String!
+	input newTraineeApplicantInput {
+		lastName: String!
+        firstName: String!
+		email: String!
+	}
+
+
+	input traineeApplicantEmail {
 		email: String!
 	}
 

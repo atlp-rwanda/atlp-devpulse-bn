@@ -1,4 +1,5 @@
 import TraineeApplicant  from "../models/traineeApplicant";
+import { traineEAttributes } from "../models/traineeAttribute";
 
 export const traineeApplicantResolver: any = {
     Query: {
@@ -44,11 +45,30 @@ export const traineeApplicantResolver: any = {
             }, { new: true });
             return updated
         },
-
-        async createTraineeApplicant(parent: any, args: any, context: any) {
-            const { input } = args;
-            const trainee = await TraineeApplicant.create(input)
-            return trainee;
+        async deleteTraineeApplicant(parent: any, args: any, context: any) {
+            const emailInput = args.email;
+            const oneTraineeApplicant = await TraineeApplicant.findOne({ email: emailInput }).exec();
+            const idToDelete = oneTraineeApplicant?._id;
+            const trainee = await TraineeApplicant.deleteOne({ email: emailInput });
+            console.log(trainee)
+            if (trainee.deletedCount) {
+                const upDate = await traineEAttributes.updateOne({ trainee_id: idToDelete }, { trainee_id: null });
+                console.log(upDate);
+                if(upDate) {
+                    return true
+                }
+                else {
+                    return false
+                }
+            }
+            else {
+                return false
+            };
         },
-    }
-}
+        async createNewTraineeApplicant(parent: any, args: any, context: any) {
+            const newTrainee  = args.input;
+            const traineeToCreate = await TraineeApplicant.create(newTrainee)
+            return traineeToCreate;
+        }
+    },
+};
