@@ -26,8 +26,13 @@ export const typeDefsTrainee = gql`
   }
 
   input traineeApplicantInputUpdate {
+<<<<<<< HEAD
     firstname: String
     lastname: String
+=======
+    firstName: String
+    lastName: String
+>>>>>>> 22495f9 (Update and getTraineedetails)
   }
 
   input pagination {
