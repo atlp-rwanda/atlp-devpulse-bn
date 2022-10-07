@@ -1,6 +1,6 @@
 import mongoose, { model,Schema } from "mongoose";
 const TraineeApplicant = mongoose.model(
-    "traineeSchema",
+    "Trainee",
     new Schema({
         email: {
             type: String,

@@ -68,12 +68,12 @@ const traineeAttributeSchema = new Schema({
   },
   Hackerrank_score: {
     type: String,
-    required: true,
+    // required: true,
     default: "-",
   },
   english_score: {
     type: String,
-    required: true,
+    // required: true,
     default: "-",
   },
   interview: {
@@ -81,7 +81,7 @@ const traineeAttributeSchema = new Schema({
   },
   interview_decision: {
     type: String,
-    required: true,
+    // required: true,
     default: "-",
   },
   past_andela_programs: {
