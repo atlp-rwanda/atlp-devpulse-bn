@@ -19,21 +19,21 @@ input one {id: ID!}
 	input traineeAttributeInput {
 		gender: String!
 		birth_date: String!
-        Address: String!
-        phone: String!
-        field_of_study: String!
-        education_level: String!
-        province: String!
-        district: String!
-        sector: String!
-        cohort: String!
-        isEmployed: Boolean!
-        haveLaptop: Boolean!
-        isStudent: Boolean!
-        Hackerrank_score: String!
-        english_score: String!
-        interview_decision: String!
-        past_andela_programs: String!
+        # Address: String!
+        # phone: String!
+        # field_of_study: String!
+        # education_level: String!
+        # province: String!
+        # district: String!
+        # sector: String!
+        # cohort: String!
+        # isEmployed: Boolean!
+        # haveLaptop: Boolean!
+        # isStudent: Boolean!
+        # Hackerrank_score: String!
+        # english_score: String!
+        # interview_decision: String!
+        # past_andela_programs: String!
         trainee_id: String!
 	}
 	input traineeUpdateAttributeInput {
@@ -59,21 +59,21 @@ input one {id: ID!}
 	type traineeAttribute {
         gender: String!
 		birth_date: String!
-        Address: String!
-        phone: String!
-        field_of_study: String!
-        education_level: String!
-        province: String!
-        district: String!
-        sector: String!
-        cohort: String!
-        isEmployed: Boolean!
-        haveLaptop: Boolean!
-        isStudent: Boolean!
-        Hackerrank_score: String!
-        english_score: String!
-        interview_decision: String!
-        past_andela_programs: String!
+        # Address: String!
+        # phone: String!
+        # field_of_study: String!
+        # education_level: String!
+        # province: String!
+        # district: String!
+        # sector: String!
+        # cohort: String!
+        # isEmployed: Boolean!
+        # haveLaptop: Boolean!
+        # isStudent: Boolean!
+        # Hackerrank_score: String!
+        # english_score: String!
+        # interview_decision: String!
+        # past_andela_programs: String!
         _id:ID
 		trainee_id: traineeApplicant!
 	}
@@ -81,21 +81,21 @@ input one {id: ID!}
     	type traineeAttributeCreated {
         gender: String!
 		birth_date: String!
-        Address: String!
-        phone: String!
-        field_of_study: String!
-        education_level: String!
-        province: String!
-        district: String!
-        sector: String!
-        cohort: String!
-        isEmployed: Boolean!
-        haveLaptop: Boolean!
-        isStudent: Boolean!
-        Hackerrank_score: String!
-        english_score: String!
-        interview_decision: String!
-        past_andela_programs: String!
+        # Address: String!
+        # phone: String!
+        # field_of_study: String!
+        # education_level: String!
+        # province: String!
+        # district: String!
+        # sector: String!
+        # cohort: String!
+        # isEmployed: Boolean!
+        # haveLaptop: Boolean!
+        # isStudent: Boolean!
+        # Hackerrank_score: String!
+        # english_score: String!
+        # interview_decision: String!
+        # past_andela_programs: String!
         _id:ID
 		trainee_id: String!
 	}
