@@ -2,6 +2,7 @@ import { traineEAttributes } from "../models/traineeAttribute";
 import TraineeApplicant from "../models/traineeApplicant";
 
 export const traineeAttributeResolver: any = {
+<<<<<<< HEAD
   Query: {
     async allTraineesDetails(_: any, { input }: any) {
       // define page
@@ -23,6 +24,46 @@ export const traineeAttributeResolver: any = {
           items = itemsPerPage;
         } else {
           items = 3;
+=======
+    Query: {
+        async allTraineesDetails(_: any, { input }: any) {
+            // define page
+            const { page, itemsPerPage, All } = input
+            let pages;
+            let items;
+            if (page) {
+                pages = page;
+            }
+            else {
+                pages = 1
+            }
+            if (All) {
+                // count total items inside the Attributes
+                const totalItems = await traineEAttributes.countDocuments({});
+                items = totalItems;
+                // console.log('items', items)
+            }
+            else {
+                if (itemsPerPage) {
+                    items = itemsPerPage;
+                }
+                else {
+                    items = 3
+                }
+            }
+            // define items per page
+            const itemsToSkip = (pages - 1) * items;
+            // console.log("items to skip", itemsToSkip)
+            const allTraineeAttribute = await traineEAttributes.find({}).populate("trainee_id").skip(itemsToSkip).limit(items);
+            // console.log("attributes", allTraineeAttribute)
+            return allTraineeAttribute;
+        },
+
+        async getOneTraineeAllDetails(_: any, { input }: any) {
+            const { id } = input;
+            const oneTraineeAttribute = await traineEAttributes.findOne({ trainee_id: id }).populate("trainee_id").exec();
+            return oneTraineeAttribute;
+>>>>>>> 5cbafa6 (Update details)
         }
       }
       // define items per page
