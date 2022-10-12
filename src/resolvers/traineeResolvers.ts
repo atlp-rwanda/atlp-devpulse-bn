@@ -1,12 +1,13 @@
-import {TraineeApplicant as Trainee} from "../models/traineeApplicant";
+import TraineeApplicant from "../models/traineeApplicant";
 import { traineEAttributes } from "../models/traineeAttribute";
 import { google } from "googleapis";
-Trainee
+
+
 
 const loadTraineeResolver: any = {
   Query: {
     async getTrainees() {
-      const trainees = await Trainee.find({});
+      const trainees = await TraineeApplicant.find({});
       return trainees;
     },
     async getTraineesAttribute() {
@@ -43,7 +44,7 @@ const loadTraineeResolver: any = {
         //loop through rows and add them to our db
         if (rows.data.values !== undefined && rows.data.values !== null) {
           for (let i = 1; i < rows.data?.values?.length; i++) {
-            const trainee = new Trainee({
+            const trainee = new TraineeApplicant({
               firstName: rows.data.values[i][1],
               lastName: rows.data.values[i][2],
               email: rows.data.values[i][4],

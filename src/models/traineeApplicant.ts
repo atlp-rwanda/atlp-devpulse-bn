@@ -7,11 +7,11 @@ const TraineeApplicant = mongoose.model(
             required: true,
             unique: true,
         },
-        firstname: {
+        firstName: {
             type: String,
             required: true,
         },
-        lastname: {
+        lastName: {
             type: String,
             required:true,
         },
