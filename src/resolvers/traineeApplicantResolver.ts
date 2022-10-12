@@ -67,7 +67,21 @@ export const traineeApplicantResolver: any = {
         },
         async createNewTraineeApplicant(parent: any, args: any, context: any) {
             const newTrainee  = args.input;
-            const traineeToCreate = await TraineeApplicant.create(newTrainee)
+            const emailTest = args.input.email
+            const validateEmail = (email: any) => {
+                return String(email)
+                    .toLowerCase()
+                    .match(
+                    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                    );
+                };
+            if (validateEmail(emailTest) == null) 
+                throw new Error("This email is not valid please provide a valid email");
+            
+            const traineeToCreate = await TraineeApplicant.create(newTrainee);
+            const trainee_id = traineeToCreate._id;
+
+            const newTraineeAttribute = await traineEAttributes.create({ trainee_id: trainee_id });
             return traineeToCreate;
         }
     },
