@@ -1,5 +1,4 @@
 import { traineEAttributes } from "../models/traineeAttribute";
-
 import TraineeApplicant from "../models/traineeApplicant";
 
 export const traineeAttributeResolver: any = {
@@ -46,6 +45,7 @@ export const traineeAttributeResolver: any = {
         .findOne({ trainee_id: id })
         .populate("trainee_id")
         .exec();
+      // console.log(oneTraineeAttribute)
       return oneTraineeAttribute;
     },
   },
