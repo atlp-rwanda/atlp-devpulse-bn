@@ -1,0 +1,123 @@
+{
+  "data": {
+    "allTrainees": [
+      {
+        "Address": "gisozi",
+        "_id": "6338bdccf3023fd1d5dbb829",
+        "isEmployed": false,
+        "trainee_id": null
+      },
+      {
+        "Address": "remera",
+        "_id": "6338be74f3023fd1d5dbb82d",
+        "isEmployed": false,
+        "trainee_id": null
+      },
+      {
+        "Address": "kibungo",
+        "_id": "6338bf22f3023fd1d5dbb833",
+        "isEmployed": false,
+        "trainee_id": null
+      },
+      {
+        "Address": "kibungo",
+        "_id": "6338bf23f3023fd1d5dbb835",
+        "isEmployed": false,
+        "trainee_id": null
+      },
+      {
+        "Address": "kibuye",
+        "_id": "6338c37e65c8fab93b10d726",
+        "isEmployed": false,
+        "trainee_id": null
+      }
+    ],
+
+    "AllAttributes": [
+      {
+        "_id": "6349b3bf7b99fd9addaa790d",
+        "gender": "woman and man",
+        "birth_date": "1666735200000",
+        "Address": "Nyakabanda",
+        "phone": "078453267",
+        "field_of_study": "IT Engineering",
+        "education_level": "Bachelor",
+        "province": "Northenn",
+        "district": "Nyagatare",
+        "sector": "Rwakayanza",
+        "cohort": "29",
+        "isEmployed": false,
+        "haveLaptop": true,
+        "isStudent": false,
+        "Hackerrank_score": "98",
+        "english_score": "80",
+        "interview_decision": "Propably yes and yes",
+        "past_andela_programs": "localised bootcamp men",
+        "trainee_id": "6349ad65e3cf66ff8f4c50ac"
+      },
+      {
+        "_id": "6349b13f0dac383133e26773",
+        "gender": "Female",
+        "birth_date": "1666476000000",
+        "Address": "Remera",
+        "phone": "0782522627",
+        "field_of_study": "Mechanical Engineering",
+        "education_level": "Secondary School",
+        "province": "Kigai City",
+        "district": "Gasabo",
+        "sector": "Remera",
+        "cohort": "30",
+        "isEmployed": true,
+        "haveLaptop": true,
+        "isStudent": false,
+        "Hackerrank_score": "45",
+        "english_score": "89",
+        "interview_decision": "passed",
+        "past_andela_programs": "deleoper in rwanda",
+        "trainee_id": "6349ad65e3cf66ff8f4c50ab"
+      },
+      {
+        "_id": "6349b20832420c511f72b2c5",
+        "gender": "male",
+        "birth_date": "1666216800000",
+        "Address": "Niboye",
+        "phone": "089909933",
+        "field_of_study": "Electrical Engineering",
+        "education_level": "Secondary School",
+        "province": "Kigai City",
+        "district": "Kicukiro",
+        "sector": "Nyagatare",
+        "cohort": "20",
+        "isEmployed": false,
+        "haveLaptop": true,
+        "isStudent": true,
+        "Hackerrank_score": "90",
+        "english_score": "70",
+        "interview_decision": "not passed",
+        "past_andela_programs": "localised bootcamp",
+        "trainee_id": "6349ad65e3cf66ff8f4c50ae"
+      },
+      {
+        "_id": "6349b2e6d0035962c2cc860c",
+        "gender": "male",
+        "birth_date": "1666216800000",
+        "Address": "Kumunini",
+        "phone": "089909933",
+        "field_of_study": "Civil Engineering",
+        "education_level": "Bachelor",
+        "province": "Western",
+        "district": "Rubavu",
+        "sector": "Mbugangari",
+        "cohort": "25",
+        "isEmployed": true,
+        "haveLaptop": false,
+        "isStudent": true,
+        "Hackerrank_score": "85",
+        "english_score": "23",
+        "interview_decision": "passed yet and yet",
+        "past_andela_programs": "localised bootcamp men and women",
+        "trainee_id": "6349ad65e3cf66ff8f4c50ad"
+      }
+    ]
+  }
+}
