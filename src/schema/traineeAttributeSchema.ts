@@ -1,10 +1,10 @@
 import { gql } from 'apollo-server'
-export const typeDefsCollection = gql`
+export const typeDefsAttribute = gql`
 type Query {
-	allTraineesCollection(input: pagination): [traineeCollection]
+	allTraineesAttribute(input: pagination): [traineeAttribute]
 }
 type Mutation {
-	createTraineeCollection(input: traineeCollectionInput): traineeCollectionCreated
+	createTraineeAttribute(input: traineeAttributeInput): traineeAttributeCreated
 }
 	input pagination {
 		page: Int!
@@ -12,7 +12,7 @@ type Mutation {
 		All: Boolean
 	}
 
-	input traineeCollectionInput {
+	input traineeAttributeInput {
 		gender: String!
 		birth_date: String!
         Address: String!
@@ -23,17 +23,17 @@ type Mutation {
         district: String!
         sector: String!
         cohort: String!
-        isEmployeed: Boolean!
+        isEmployed: Boolean!
         haveLaptop: Boolean!
         isStudent: Boolean!
         Hackerrank_score: String!
         english_score: String!
         interview_decision: String!
         past_andela_programs: String!
-        trainee: String!
+        trainee_id: String!
 	}
 
-	type traineeCollection {
+	type traineeAttribute {
         gender: String!
 		birth_date: String!
         Address: String!
@@ -44,7 +44,7 @@ type Mutation {
         district: String!
         sector: String!
         cohort: String!
-        isEmployeed: Boolean!
+        isEmployed: Boolean!
         haveLaptop: Boolean!
         isStudent: Boolean!
         Hackerrank_score: String!
@@ -52,10 +52,10 @@ type Mutation {
         interview_decision: String!
         past_andela_programs: String!
         _id:ID
-		trainee: traineeApplicant!
+		trainee_id: traineeApplicant
 	}
 
-    	type traineeCollectionCreated {
+    	type traineeAttributeCreated {
         gender: String!
 		birth_date: String!
         Address: String!
@@ -66,7 +66,7 @@ type Mutation {
         district: String!
         sector: String!
         cohort: String!
-        isEmployeed: Boolean!
+        isEmployed: Boolean!
         haveLaptop: Boolean!
         isStudent: Boolean!
         Hackerrank_score: String!
@@ -74,6 +74,6 @@ type Mutation {
         interview_decision: String!
         past_andela_programs: String!
         _id:ID
-		trainee: String!
+		trainee_id: String!
 	}
 `

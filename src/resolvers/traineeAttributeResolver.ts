@@ -1,13 +1,12 @@
-import { traineeAttributes } from "../models/traineeCollection";
+import { traineEAttributes }  from "../models/traineeAttribute";
 
-export const traineeCollectionResolver: any = {
+export const traineeAttributeResolver: any = {
     Query: {
-        async allTraineesCollection(_: any, { input }: any) {
+        async allTraineesAttribute(_: any, { input }: any) {
             // define page
             const { page, itemsPerPage, All } = input
             let pages;
             let items;
-
             if (page) {
                 pages = page;
             }
@@ -15,8 +14,8 @@ export const traineeCollectionResolver: any = {
                 pages = 1
             }
             if (All) {
-                // count total items inside the collections
-                const totalItems = await traineeAttributes.countDocuments({});
+                // count total items inside the Attributes
+                const totalItems = await traineEAttributes.countDocuments({});
                 items = totalItems;
             }
             else {
@@ -29,15 +28,15 @@ export const traineeCollectionResolver: any = {
             }
             // define items per page
             const itemsToSkip = (pages - 1) * items;
-            const allTraineeCollection = await traineeAttributes.find({}).populate("trainee").skip(itemsToSkip).limit(items);
-            return allTraineeCollection;
+            const allTraineeAttribute = await traineEAttributes.find({}).populate("trainee_id").skip(itemsToSkip).limit(items);
+            return allTraineeAttribute;
         },
     },
 
     Mutation: {
-        async createTraineeCollection(_: any, { input }: any) {
-            const traineeCollection = await traineeAttributes.create(input);
-            return traineeCollection;
+        async createTraineeAttribute(_: any, { input }: any) {
+            const traineeAttribute = await traineEAttributes.create(input);
+            return traineeAttribute;
         },
     }
 }
