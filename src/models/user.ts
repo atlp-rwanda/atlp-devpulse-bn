@@ -3,7 +3,11 @@ const userSchema = new Schema({
   createdAt: String,
   firstName: String,
   lastName: String,
-  email: String
+   email: {
+    type: String,
+    required: true,
+    unique: true,
+},
 //   gender: String,
 //   address: String,
 //   age: Number,

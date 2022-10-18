@@ -1,17 +1,17 @@
 import mongoose, { model,Schema } from "mongoose";
 const TraineeApplicant = mongoose.model(
-    "traineeSchema",
+    "Trainee",
     new Schema({
         email: {
             type: String,
             required: true,
             unique: true,
         },
-        firstName: {
+        firstname: {
             type: String,
             required: true,
         },
-        lastName: {
+        lastname: {
             type: String,
             required:true,
         },

@@ -86,6 +86,8 @@ const traineeAttributeSchema = new Schema({
   },
   past_andela_programs: {
     type: String,
+    default: "none"
+
   },
   trainee_id: {
     type: mongoose.Schema.Types.ObjectId,
