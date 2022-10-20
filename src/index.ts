@@ -21,8 +21,10 @@ import recyclebinempty from "./schema/recyclebin";
 
 const PORT = process.env.PORT || 4001;
 
+
 const resolvers = mergeResolvers([applicationCycleResolver, usersResolvers,traineeAttributeResolver, traineeApplicantResolver, traineeResolvers, filterTraineeResolver,recyclebinresolver])
 const typeDefs= mergeTypeDefs([applicationCycleTypeDefs, typeDefsAttribute, typeDefsTrainee, updateUserTypeDefs, deleteTraineTypeDefs, filterTraineetypeDefs, recyclebinempty ])
+
 
 const server = new ApolloServer({
   typeDefs,
