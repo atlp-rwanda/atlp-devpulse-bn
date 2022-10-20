@@ -2,8 +2,6 @@ import TraineeApplicant from "../models/traineeApplicant";
 import { traineEAttributes } from "../models/traineeAttribute";
 import { google } from "googleapis";
 
-
-
 const loadTraineeResolver: any = {
   Query: {
     async getTrainees() {
@@ -60,7 +58,7 @@ const loadTraineeResolver: any = {
               education_level: rows.data.values[i][8],
               province: rows.data.values[i][9],
               district: rows.data.values[i][10],
-              cohort: rows.data.values[i][11],
+              cycle: rows.data.values[i][11],
               isEmployed:
                 rows.data.values[i][12].toLowerCase() == "yes" ? true : false,
               isStudent:
