@@ -14,6 +14,11 @@ input softdeleteTrainee{
     delete_at:Boolean
     
 }
+input softRecover{
+    id:ID!
+    delete_at:Boolean
+    
+}
 input deleteTrainee{
     id:ID!
 }
@@ -26,6 +31,7 @@ type Query{
 type Mutation {
     deleteTrainee(id:ID!):Trainee!
     softdeleteTrainee(input: softdeleteTrainee ):Trainee!
+    softRecover(input: softRecover ):Trainee!
 }
 `
 export default Schema
