@@ -4,8 +4,8 @@ const Schema = gql`
 type Trainee{
     id:ID!
     email:String!
-    firstname:String!
-    lastname:String!
+    firstName:String!
+    lastName:String!
     delete_at:Boolean
 }
 

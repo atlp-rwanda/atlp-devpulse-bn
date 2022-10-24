@@ -48,8 +48,8 @@ export const traineeApplicantResolver: any = {
       const updated = await TraineeApplicant.findByIdAndUpdate(
         ID,
         {
-          firstname: updateInput.firstname,
-          lastname: updateInput.lastname,
+          firstName: updateInput.firstName,
+          lastName: updateInput.lastName,
         },
         { new: true }
       );

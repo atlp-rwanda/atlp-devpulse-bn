@@ -10,15 +10,15 @@ export const typeDefsTrainee = gql`
     deleteTraineeApplicant(email: String!): Boolean
   }
   type traineeApplicant {
-    lastname: String!
-    firstname: String!
+    lastName: String!
+    firstName: String!
     _id: ID!
     email: String!
   }
 
   input newTraineeApplicantInput {
-    lastname: String!
-    firstname: String!
+    lastName: String!
+    firstName: String!
     email: String!
   }
 
@@ -27,8 +27,8 @@ export const typeDefsTrainee = gql`
   }
 
   input traineeApplicantInputUpdate {
-    firstname: String
-    lastname: String
+    firstName: String
+    lastName: String
   }
 
   input pagination {
