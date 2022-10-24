@@ -1,31 +1,31 @@
 import { gql } from "apollo-server";
 export const typeDefsTrainee = gql`
   type Query {
-    allTrainees(input: pagination): [traineeApplicant]
-    getOneTrainee(ID: ID!): traineeApplicant
+    allTrainees(input: pagination): [traineeApplicant]!
+    oneTraineeApplicant(id: ID!): Trainee!
   }
   type Mutation {
-    createNewTraineeApplicant(
-      input: newTraineeApplicantInput
-    ): traineeApplicant!
+    createNewTraineeApplicant(input: newTraineeApplicantInput): traineeApplicant
     updateTraineeApplicant(
-      ID: ID!
-      updateInput: traineeApplicantInputUpdate
+      input: traineeApplicantInputUpdate
+      id: ID!
     ): traineeApplicant
     deleteTraineeApplicant(email: String!): Boolean
   }
   type traineeApplicant {
-    lastname: String!
-    firstname: String!
+    lastName: String!
+    firstName: String!
     _id: ID!
     email: String!
+    delete_at: Boolean!
   }
 
   input newTraineeApplicantInput {
-    lastname: String!
-    firstname: String!
+    lastName: String!
+    firstName: String!
     email: String!
     cycle: String
+    delete_at: Boolean
   }
 
   input traineeApplicantEmail {
@@ -33,9 +33,11 @@ export const typeDefsTrainee = gql`
   }
 
   input traineeApplicantInputUpdate {
-    firstname: String
-    lastname: String
+    firstName: String!
+    lastName: String!
+    email: String!
     cycle: String
+    delete_at: Boolean
   }
 
   input pagination {

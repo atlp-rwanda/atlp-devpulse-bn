@@ -5,7 +5,6 @@ import { applicationCycle } from "../models/applicationCycle";
 export const traineeApplicantResolver: any = {
   Query: {
     async allTrainees(_: any, { input }: any) {
-      // define page
       const { page, itemsPerPage, All } = input;
       let pages;
       let items;
@@ -16,7 +15,6 @@ export const traineeApplicantResolver: any = {
         pages = 1;
       }
       if (All) {
-        // count total items inside the collections
         const totalItems = await TraineeApplicant.countDocuments({});
         items = totalItems;
       } else {
@@ -29,54 +27,50 @@ export const traineeApplicantResolver: any = {
       // define items per page
       const itemsToSkip = (pages - 1) * items;
       const allTrainee = await TraineeApplicant.find({})
-        // .populate("applicant_id")
         .skip(itemsToSkip)
         .limit(items);
       return allTrainee;
     },
-
-    async getOneTrainee(_: any, { ID }: any) {
-      const trainee = await TraineeApplicant.findById(ID);
-      // console.log("trainee", trainee);
-      if (!trainee)
-        throw new Error("No trainee is found, pleade provide the correct ID");
-      return trainee;
+    async oneTraineeApplicant(parent: any, args: any) {
+      const getOnetrainee = await TraineeApplicant.findById(args.id);
+      if (!getOnetrainee) throw new Error("trainee doesn't exist");
+      return getOnetrainee;
     },
   },
 
   Mutation: {
     async updateTraineeApplicant(parent: any, args: any, context: any) {
-      const { ID, updateInput } = args;
+      const { input, id } = args;
 
-      if (updateInput.cycle) {
+      if (input.cycle) {
         const Validcycles = await applicationCycle.findOne({
-          name: updateInput.cycle,
+          name: input.cycle,
         });
 
         if (!Validcycles) {
           throw new Error("The cycle you entered does not exist!");
         } else {
-          const singleTraineeAttributes = await traineEAttributes.findOne({
-            trainee_id: ID,
+          const singleTraineeAttributes: any = await traineEAttributes.findOne({
+            trainee_id: id,
           });
-          const id = singleTraineeAttributes?._id;
-          await traineEAttributes.findByIdAndUpdate(id, {
-            cycle: updateInput.cycle,
+          const AttrId = singleTraineeAttributes?._id;
+          await traineEAttributes.findByIdAndUpdate(AttrId, {
+            cycle: input.cycle,
           });
         }
       }
       const updated = await TraineeApplicant.findByIdAndUpdate(
-        ID,
+        id,
         {
-          firstname: updateInput.firstname,
-          lastname: updateInput.lastname,
+          email: input.email,
+          firstName: input.firstName,
+          lastName: input.lastName,
+          deleted_at: input.deleted_at ? input.delete_at : false,
         },
         { new: true }
       );
-
       return updated;
     },
-
     async deleteTraineeApplicant(parent: any, args: any, context: any) {
       const emailInput = args.email;
       const oneTraineeApplicant = await TraineeApplicant.findOne({
@@ -90,7 +84,6 @@ export const traineeApplicantResolver: any = {
           { trainee_id: idToDelete },
           { trainee_id: null }
         );
-        console.log(upDate);
         if (upDate) {
           return true;
         } else {
@@ -105,12 +98,6 @@ export const traineeApplicantResolver: any = {
       const emailTest = args.input.email;
       const cycle = args.input.cycle;
 
-      const Validcycles = await applicationCycle.findOne({ name: cycle });
-
-      if (!Validcycles) {
-        throw new Error("The cycle you entered does not exist!");
-      }
-
       const validateEmail = (email: any) => {
         return String(email)
           .toLowerCase()
@@ -120,6 +107,14 @@ export const traineeApplicantResolver: any = {
       };
       if (validateEmail(emailTest) == null)
         throw new Error("This email is not valid please provide a valid email");
+
+      if (cycle) {
+        const Validcycles = await applicationCycle.findOne({ name: cycle });
+
+        if (!Validcycles) {
+          throw new Error("The cycle you entered does not exist!");
+        }
+      }
 
       const traineeToCreate = await TraineeApplicant.create(newTrainee);
       const trainee_id = traineeToCreate._id;

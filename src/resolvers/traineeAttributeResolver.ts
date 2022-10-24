@@ -3,7 +3,7 @@ import TraineeApplicant from "../models/traineeApplicant";
 
 export const traineeAttributeResolver: any = {
   Query: {
-    async allTraineesDetails(_: any, { input }: any) {
+    async allTraineesAttribute(_: any, { input }: any) {
       // define page
       const { page, itemsPerPage, All } = input;
       let pages;
@@ -23,8 +23,6 @@ export const traineeAttributeResolver: any = {
           items = itemsPerPage;
         } else {
           items = 3;
-
-
         }
       }
       // define items per page
@@ -77,7 +75,7 @@ export const traineeAttributeResolver: any = {
 
       // const updated = await traineEAttributes.findByIdAndUpdate(
       const updated = await traineEAttributes.findOneAndUpdate(
-        {trainee_id: ID},
+        { trainee_id: ID },
         {
           gender: attributeUpdateInput.gender,
           birth_date: attributeUpdateInput.birth_date,
@@ -88,7 +86,7 @@ export const traineeAttributeResolver: any = {
           province: attributeUpdateInput.province,
           district: attributeUpdateInput.district,
           sector: attributeUpdateInput.sector,
-          cohort: attributeUpdateInput.cohort,
+          cycle: attributeUpdateInput.cycle,
           isEmployed: attributeUpdateInput.isEmployed,
           haveLaptop: attributeUpdateInput.haveLaptop,
           isStudent: attributeUpdateInput.isStudent,
@@ -101,7 +99,9 @@ export const traineeAttributeResolver: any = {
       );
       // console.log("updated", updated);
       if (!updated)
-        throw new Error("No Trainee is found, please provide the correct trainee_id");
+        throw new Error(
+          "No Trainee is found, please provide the correct trainee_id"
+        );
       return updated;
     },
   },

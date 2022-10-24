@@ -6,29 +6,28 @@ const seedDeleteTrainee = async () => {
     const deleteTrainee = [
         {
             email: 'beniraa@gmail.com',
-            firstname: 'Ben',
-            lastname: 'iraa',
+            firstName: 'Ben',
+            lastName: 'iraa',
             deleted_at: false
             
         },
         {
             email: 'ben@gmail.com',
-            firstname: 'iradukunda',
-            lastname: 'benjamin',
+            firstName: 'iradukunda',
+            lastName: 'benjamin',
             deleted_at: false
 
         },
         {
             email: 'carlos@gmail.com',
-            firstname: 'carlos',
-            lastname: 'Bz',
+            firstName: 'carlos',
+            lastName: 'Bz',
             deleted_at: false
-
         },
         {
             email: 'nshuti@gmail.com',
-            firstname: 'blaise',
-            lastname: 'k',
+            firstName: 'blaise',
+            lastName: 'k',
             deleted_at: false
 
         },
