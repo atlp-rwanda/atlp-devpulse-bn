@@ -22,6 +22,9 @@ type NotFoundError implements BaseError {
 }
 union results=NotFoundError|traineeApplicant
 
+type Query {
+  allSoftDeletedTrainees(input: pagination): [traineeApplicant]
+}
 
 type Mutation {
     emptyRecyclebin:results!
