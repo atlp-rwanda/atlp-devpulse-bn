@@ -1,10 +1,10 @@
-import { connect } from '../database/db.config'
+import { connect } from "../database/db.config";
 
-import Applicationseed from './applicationcycle'
+import Applicationseed from "./applicationcycle";
+import seedDeleteTrainee from "./DelTrainee";
 
 connect().then(async () => {
-    console.log("mongo is running again for seeders")
-    const data = await Applicationseed()
-    console.log(data)
-    process.exit()
-})
+  await Applicationseed();
+  await seedDeleteTrainee();
+  process.exit();
+});
