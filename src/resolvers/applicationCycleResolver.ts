@@ -10,8 +10,7 @@ const applicationCycleResolver:any={
           const getOneapplicationCycle = await applicationCycle.findById(args.id)
           if(!applicationCycle) throw new Error("This cohort cycle doesn't exist");
           return getOneapplicationCycle;
-          
-          
+           
          },
         },
          Mutation: {
