@@ -110,11 +110,11 @@ const filterTraineeResolver: any = {
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase()) ||
-            value.trainee_id.firstname
+            value.trainee_id.firstName
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase()) ||
-            value.trainee_id.lastname
+            value.trainee_id.lastName
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase()) ||

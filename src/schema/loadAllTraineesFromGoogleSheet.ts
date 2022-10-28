@@ -8,7 +8,7 @@ type Query{
 }
 
 type traineeApplicant{
-    id:ID!
+    _id:ID!
     firstName:String!
     lastName:String!
     email:String!
