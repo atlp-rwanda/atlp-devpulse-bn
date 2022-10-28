@@ -11,7 +11,7 @@ type Trainee{
 
 input softdeleteTrainee{
     id:ID!
-    delete_at:Boolean
+   
     
 }
 input softRecover{
@@ -26,6 +26,7 @@ input deleteTrainee{
 type Query{
     getAllTrainees:[Trainee]
     traineeSchema(id: ID!):Trainee!
+    getAllSoftDeletedTrainees : [Trainee]
 }
 
 type Mutation {
