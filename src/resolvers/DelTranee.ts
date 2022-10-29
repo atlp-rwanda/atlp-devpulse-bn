@@ -2,14 +2,28 @@ import TraineeApplicant from '../models/traineeApplicant'
 
 const traineeResolvers:any={
   Query: {
-    async getAllTrainees(){
-        const gettrainee = await TraineeApplicant.find({});
+    async getAllTrainees(parent:any, args:any){
+    
+      
+        const gettrainee = await TraineeApplicant.find({delete_at: false});
+        
+
         return gettrainee;
+      
+     
+      },
+
+      async  getAllSoftDeletedTrainees (parent:any, args:any ){
+        const getAllTrainee= await TraineeApplicant.find({delete_at: true})
+        if(!getAllTrainee) throw new Error("no Trainee Available");
+        
+        return getAllTrainee
       },
      async traineeSchema(parent:any, args:any){
       const getOnetrainee = await TraineeApplicant.findById(args.id)
-      if(!getOnetrainee) throw new Error("trainee doesn't exist");
+      if(!getOnetrainee) throw new Error ("trainee doesn't exist");
       return getOnetrainee;
+      
       
       
      },
