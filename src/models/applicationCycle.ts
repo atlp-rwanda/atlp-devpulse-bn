@@ -2,7 +2,6 @@ import mongoose, { Schema } from "mongoose";
 const applicationCycle = mongoose.model(
     "applicationCycle",
     new Schema({
-  
       name: {
         type: String,
         required: true,
