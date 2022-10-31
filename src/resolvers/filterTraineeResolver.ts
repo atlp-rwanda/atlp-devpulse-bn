@@ -75,10 +75,6 @@ const filterTraineeResolver: any = {
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase()) ||
-            value.cohort
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
             value.isEmployed
               .toString()
               .toLowerCase()

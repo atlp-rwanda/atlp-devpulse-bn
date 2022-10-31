@@ -23,8 +23,6 @@ export const traineeAttributeResolver: any = {
           items = itemsPerPage;
         } else {
           items = 3;
-
-
         }
       }
       // define items per page
@@ -32,7 +30,13 @@ export const traineeAttributeResolver: any = {
       // console.log("items to skip", itemsToSkip)
       const allTraineeAttribute = await traineEAttributes
         .find({})
-        .populate("trainee_id")
+        .populate({
+          path: "trainee_id",
+          populate: {
+            path: "cycle_id",
+            model: "applicationCycle",
+          },
+        })
         .skip(itemsToSkip)
         .limit(items);
       // console.log("attributes", allTraineeAttribute)
@@ -77,7 +81,7 @@ export const traineeAttributeResolver: any = {
 
       // const updated = await traineEAttributes.findByIdAndUpdate(
       const updated = await traineEAttributes.findOneAndUpdate(
-        {trainee_id: ID},
+        { trainee_id: ID },
         {
           gender: attributeUpdateInput.gender,
           birth_date: attributeUpdateInput.birth_date,
@@ -88,7 +92,6 @@ export const traineeAttributeResolver: any = {
           province: attributeUpdateInput.province,
           district: attributeUpdateInput.district,
           sector: attributeUpdateInput.sector,
-          cohort: attributeUpdateInput.cohort,
           isEmployed: attributeUpdateInput.isEmployed,
           haveLaptop: attributeUpdateInput.haveLaptop,
           isStudent: attributeUpdateInput.isStudent,
@@ -101,7 +104,9 @@ export const traineeAttributeResolver: any = {
       );
       // console.log("updated", updated);
       if (!updated)
-        throw new Error("No Trainee is found, please provide the correct trainee_id");
+        throw new Error(
+          "No Trainee is found, please provide the correct trainee_id"
+        );
       return updated;
     },
   },
