@@ -1,5 +1,5 @@
 import TraineeApplicant from '../models/traineeApplicant'
-
+import { traineEAttributes } from "../models/traineeAttribute";
 const traineeResolvers:any={
   Query: {
     async getAllTrainees(parent:any, args:any){
@@ -29,14 +29,21 @@ const traineeResolvers:any={
      },
     },
     Mutation: {
-          async deleteTrainee(parent:any, args:any, context:any){
-            const deleteTrainee= await TraineeApplicant.findById(args.id)
-            if(!deleteTrainee) throw new Error(" Trainee doesn't exist")
-            const deletedTrainee = await TraineeApplicant.findByIdAndRemove(args.id);
+      async deleteTrainee(parent:any, args:any, context:any){
+        const deleteTrainee= await TraineeApplicant.findById(args.id)
+        if(!deleteTrainee) throw new Error(" Trainee doesn't exist")
 
-            
-            return deletedTrainee;
-          },
+     
+        const updated = await traineEAttributes.findOneAndDelete( {trainee_id: args.id}, 
+          (err:any,res:any)=>{ 
+            if(err){ console.log(err)} 
+      }).clone()
+
+        const deletedTrainee = await TraineeApplicant.findOneAndDelete(args.id);
+
+        
+        return deletedTrainee;
+      },
           async softdeleteTrainee(parent:any,args:any){
             const trainee = await TraineeApplicant.findById(args.input.id);
             if(!trainee) throw new Error("Trainee doesn't exist")

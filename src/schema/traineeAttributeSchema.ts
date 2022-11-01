@@ -7,6 +7,7 @@ type Query {
 type Mutation {
 	createTraineeAttribute(attributeInput: traineeAttributeInput): traineeAttributeCreated
 	updateTraineeAttribute(ID:ID!, attributeUpdateInput: traineeUpdateAttributeInput): traineeAttributeCreated
+    deleteTraineeAttribute(ID:ID!): traineeAttributeCreated
 }
 input one {id: ID!}
     

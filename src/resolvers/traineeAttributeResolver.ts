@@ -104,5 +104,13 @@ export const traineeAttributeResolver: any = {
         throw new Error("No Trainee is found, please provide the correct trainee_id");
       return updated;
     },
+    async deleteTraineeAttribute(_: any, args: any) {
+      const { ID } = args;
+    const updated = await traineEAttributes.findOneAndDelete( {trainee_id: ID}, 
+      (err:any,res:any)=>{ 
+        if(err){ console.log(err)} 
+      else{ console.log("Delete Succeed") 
+    }}
+      )},
   },
 };
