@@ -3,7 +3,7 @@ import { traineEAttributes } from "../models/traineeAttribute";
 const filterTraineeResolver: any = {
   Query: {
     async filterTraineesDetails(_: any, { input }: any) {
-      // define page
+      // define pagee
       const { page, itemsPerPage, All, wordEntered, filterAttribute } = input;
       let pages;
       let items;
