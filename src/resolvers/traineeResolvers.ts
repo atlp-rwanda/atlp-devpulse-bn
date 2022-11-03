@@ -1,15 +1,22 @@
 import TraineeApplicant from "../models/traineeApplicant";
 import { traineEAttributes } from "../models/traineeAttribute";
 import { google } from "googleapis";
+import { applicationCycle } from "../models/applicationCycle";
 
 const loadTraineeResolver: any = {
   Query: {
     async getAllTraineeApplicant() {
-      const trainees = await TraineeApplicant.find({});
+      const trainees = await TraineeApplicant.find({}).populate("cycle_id");
       return trainees;
     },
     async getAllTraineeAtributes() {
-      const traineesAttribute = await traineEAttributes.find({});
+      const traineesAttribute = await traineEAttributes.find({}).populate({
+        path: "trainee_id",
+        populate: {
+          path: "cycle_id",
+          model: "applicationCycle",
+        },
+      });
       return traineesAttribute;
     },
   },
@@ -49,7 +56,6 @@ const loadTraineeResolver: any = {
           "education_level",
           "province",
           "district",
-          "cohort",
           "isEmployed",
           "isStudent",
           "Hackerrank_score",
@@ -65,11 +71,9 @@ const loadTraineeResolver: any = {
         //loop through rows and add them to our db
         if (rows.data.values !== undefined && rows.data.values !== null) {
           for (let i = 1; i < rows.data?.values[0]?.length; i++) {
-           
-
             if (!validationArray.includes(rows.data.values[0][i])) {
               throw new Error(
-               `The column ",${rows.data.values[0][i]}," is not the same as  ",${validationArray[i]}," which is defined in the database" Please verify And Match Them:
+                `The column ",${rows.data.values[0][i]}," is not the same as  ",${validationArray[i]}," which is defined in the database" Please verify And Match Them:
               =================================================
               In order to avoid this error again kindly follow the following procedure!
 
@@ -96,14 +100,25 @@ const loadTraineeResolver: any = {
               column [19] heading should named as :sector,
               column [20] heading should named as :haveLaptop,
               column [21] heading should named as :trainee_id,
-              `);
-            }}
-          
+              `
+              );
+            }
+          }
+
           for (let i = 1; i < rows.data?.values?.length; i++) {
+            const cycle = await applicationCycle.findOne({
+              name: rows.data.values[i][11],
+            });
+
+            if (!cycle) {
+              throw new Error("The cycle provided was not found");
+            }
+
             const trainee = new TraineeApplicant({
               firstName: rows.data.values[i][1],
               lastName: rows.data.values[i][2],
               email: rows.data.values[i][4],
+              cycle_id: cycle?._id,
             });
 
             await trainee.save();
@@ -115,7 +130,6 @@ const loadTraineeResolver: any = {
               education_level: rows.data.values[i][8],
               province: rows.data.values[i][9],
               district: rows.data.values[i][10],
-              cohort: rows.data.values[i][11],
               isEmployed:
                 rows.data.values[i][12].toLowerCase() == "yes" ? true : false,
               isStudent:
