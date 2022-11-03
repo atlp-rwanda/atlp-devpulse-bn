@@ -46,11 +46,6 @@ const traineeAttributeSchema = new Schema({
     required: true,
     default: "-",
   },
-  cohort: {
-    type: String,
-    required: true,
-    default: "-",
-  },
   isEmployed: {
     type: Boolean,
     required: true,
