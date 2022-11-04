@@ -24,7 +24,7 @@ const filterTraineeResolver: any = {
           items = 3;
         }
       }
-      // define items per page
+      // define items per pagee
       const itemsToSkip = (pages - 1) * items;
 
       const allTraineeAttribute = await traineEAttributes
@@ -37,6 +37,7 @@ const filterTraineeResolver: any = {
       const nonNullTrainee = allTraineeAttribute.filter((value) => {
           return value.trainee_id !== null
       })
+
 
       if (wordEntered && !filterAttribute) {
         const filterResult = nonNullTrainee.filter((value: any) => {
