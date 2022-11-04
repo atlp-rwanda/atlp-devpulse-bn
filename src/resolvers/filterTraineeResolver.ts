@@ -33,8 +33,13 @@ const filterTraineeResolver: any = {
         .skip(itemsToSkip)
         .limit(items);
 
+
+      const nonNullTrainee = allTraineeAttribute.filter((value) => {
+          return value.trainee_id !== null
+      })
+
       if (wordEntered && !filterAttribute) {
-        const filterResult = allTraineeAttribute.filter((value: any) => {
+        const filterResult = nonNullTrainee.filter((value: any) => {
           return (
             value._id
               .toString()
