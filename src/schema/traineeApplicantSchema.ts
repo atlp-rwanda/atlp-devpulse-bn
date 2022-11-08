@@ -20,6 +20,7 @@ export const typeDefsTrainee = gql`
     _id: ID!
     email: String!
     cycle_id: applicationCycle
+    delete_at:Boolean
   }
 
   input newTraineeApplicantInput {
