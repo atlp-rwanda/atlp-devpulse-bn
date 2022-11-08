@@ -52,19 +52,19 @@ const traineeAttributeSchema = new Schema({
     default: "-",
   },
   isEmployed: {
-    type: Boolean,
+    type: String,
     required: true,
-    default: false
+    default: "-",
   },
   haveLaptop: {
-    type: Boolean,
+    type: String,
     required: true,
-    default: false
+    default: "-",
   },
   isStudent: {
-    type: Boolean,
+    type: String,
     required: true,
-    default: false
+    default: "-",
   },
   Hackerrank_score: {
     type: String,
@@ -86,8 +86,7 @@ const traineeAttributeSchema = new Schema({
   },
   past_andela_programs: {
     type: String,
-    default: "none"
-
+    default: "none",
   },
   trainee_id: {
     type: mongoose.Schema.Types.ObjectId,

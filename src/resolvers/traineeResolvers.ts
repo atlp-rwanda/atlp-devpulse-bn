@@ -59,91 +59,124 @@ const loadTraineeResolver: any = {
           "trainee_id",
         ];
 
-        const giveMeDataInACorrectFormat = (arr: any) => {
+        const getIndexArrOfTheTrainee = (correctColumnOfProperty: string[]) => {
+          const arrayOfTraineeProperties = ["firstName", "lastName", "email"];
+          const traineeIndexArray = [];
+          for (let i = 0; i < arrayOfTraineeProperties.length; i++) {
+            // @ts-ignore
+            if (correctColumnOfProperty.includes(arrayOfTraineeProperties[i])) {
+              // @ts-ignore
+              const index = correctColumnOfProperty.indexOf(
+                arrayOfTraineeProperties[i]
+              );
+              traineeIndexArray.push(index);
+            }
+          }
+          return traineeIndexArray;
+        };
+
+        const giveMeDataInACorrectFormatTrainee = (
+          arrOfAllRows: any,
+          correctColumnArr: any,
+          arrOfTraineeIndexes: any
+        ) => {
           const arrOfObject = [];
-          for (let i = 1; i < arr.length; i++) {
+          for (let i = 1; i < arrOfAllRows.length; i++) {
             arrOfObject.push({
-              [arr[0][3]]: arr[i][3],
-              [arr[0][4]]: arr[i][4],
-              [arr[0][5]]: arr[i][5],
-              [arr[0][6]]: arr[i][6],
-              [arr[0][7]]: arr[i][7],
-              [arr[0][8]]: arr[i][8],
-              [arr[0][9]]: arr[i][9],
-              [arr[0][10]]: arr[i][10],
-              [arr[0][11]]: arr[i][11],
-              [arr[0][12]]: arr[i][12],
-              [arr[0][13]]: arr[i][13],
-              [arr[0][14]]: arr[i][14],
-              [arr[0][15]]: arr[i][15],
-              [arr[0][16]]: arr[i][16],
-              [arr[0][17]]: arr[i][17],
-              [arr[0][18]]: arr[i][18],
-              [arr[0][19]]: arr[i][19],
-              [arr[0][20]]: arr[i][20],
-              [arr[0][0]]: arr[i][0],
-              [arr[0][1]]: arr[i][1],
-              [arr[0][2]]: arr[i][2],
+              [correctColumnArr[arrOfTraineeIndexes[0]]]:
+                arrOfAllRows[i][arrOfTraineeIndexes[0]],
+              [correctColumnArr[arrOfTraineeIndexes[1]]]:
+                arrOfAllRows[i][arrOfTraineeIndexes[1]],
+              [correctColumnArr[arrOfTraineeIndexes[2]]]:
+                arrOfAllRows[i][arrOfTraineeIndexes[2]],
             });
           }
           return arrOfObject;
         };
 
+        const giveMeDataInACorrectFormatAttributes = (
+          arr: any,
+          arrOfCorrectColumnProperties: any
+        ) => {
+          const arrOfObject = [];
+          for (let i = 1; i < arr.length; i++) {
+            arrOfObject.push({
+              [arrOfCorrectColumnProperties[3]]: arr[i][3],
+              [arrOfCorrectColumnProperties[4]]: arr[i][4],
+              [arrOfCorrectColumnProperties[5]]: arr[i][5],
+              [arrOfCorrectColumnProperties[6]]: arr[i][6],
+              [arrOfCorrectColumnProperties[7]]: arr[i][7],
+              [arrOfCorrectColumnProperties[8]]: arr[i][8],
+              [arrOfCorrectColumnProperties[9]]: arr[i][9],
+              [arrOfCorrectColumnProperties[10]]: arr[i][10],
+              [arrOfCorrectColumnProperties[11]]: arr[i][11],
+              [arrOfCorrectColumnProperties[12]]: arr[i][12],
+              [arrOfCorrectColumnProperties[13]]: arr[i][13],
+              [arrOfCorrectColumnProperties[14]]: arr[i][14],
+              [arrOfCorrectColumnProperties[15]]: arr[i][15],
+              [arrOfCorrectColumnProperties[16]]: arr[i][16],
+              [arrOfCorrectColumnProperties[17]]: arr[i][17],
+              [arrOfCorrectColumnProperties[18]]: arr[i][18],
+              [arrOfCorrectColumnProperties[19]]: arr[i][19],
+              [arrOfCorrectColumnProperties[20]]: arr[i][20],
+              [arrOfCorrectColumnProperties[0]]: arr[i][0],
+              [arrOfCorrectColumnProperties[1]]: arr[i][1],
+              [arrOfCorrectColumnProperties[2]]: arr[i][2],
+            });
+          }
+          const arrOfAttributesData = arrOfObject.map((dataObject: any) => {
+            delete dataObject["firstName"];
+            delete dataObject["lastName"];
+            delete dataObject["email"];
+            return dataObject;
+          });
+          return arrOfAttributesData;
+        };
+
         const SPValuesArr: any = rows.data.values;
+
         // console.log("the value of spread sheet is:", SPValuesArr[0]);
-        // console.log(giveMeDataInACorrectFormat(SPValuesArr));
+
         let newErrorArr: any = [0][0];
         let retunedNewUnmached: any = [];
         //loop through rows and add them to our db
         if (rows.data.values !== undefined && rows.data.values !== null) {
-          for (let count = 1; count <= 2; count++) {
-            for (let i = 0; i < rows.data?.values[0]?.length; i++) {
-              if (!validationArray.includes(SPValuesArr[0][i])) {
-                newErrorArr = SPValuesArr[0][i];
-                retunedNewUnmached.push(newErrorArr);
-                // console.log("The unMached records are : ", retunedNewUnmached);
-                // console.log(
-                //   "The unMached records are : ",
-                //   retunedNewUnmached[1]
-                // );
-              }
+          for (let i = 0; i < rows.data?.values[0]?.length; i++) {
+            if (!validationArray.includes(SPValuesArr[0][i])) {
+              newErrorArr = SPValuesArr[0][i];
+              retunedNewUnmached.push(newErrorArr);
             }
+          }
+          if (retunedNewUnmached.length !== 0) {
             throw new Error(`${retunedNewUnmached}`);
           }
 
-          for (let i = 1; i < rows.data?.values?.length; i++) {
-            const trainee = new TraineeApplicant({
-              firstName: rows.data.values[i][0],
-              lastName: rows.data.values[i][1],
-              email: rows.data.values[i][2],
-            });
+          // but if there is no error just save them or him into database.
+          // @ts-ignore
+          const correctColumn = rows?.data?.values[0];
+          const indexes = getIndexArrOfTheTrainee(correctColumn);
+          const traineeArray = giveMeDataInACorrectFormatTrainee(
+            rows?.data?.values,
+            correctColumn,
+            indexes
+          );
+          const attributesArray = giveMeDataInACorrectFormatAttributes(
+            rows?.data?.values,
+            correctColumn
+          );
 
+          for (let i = 0; i < rows.data?.values?.length - 1; i++) {
+            const trainee = new TraineeApplicant(traineeArray[i]);
             await trainee.save();
-            const traineeAttributes = new traineEAttributes({
-              gender: rows.data.values[i][3],
-              birth_date: rows.data.values[i][4],
-              phone: rows.data.values[i][5],
-              field_of_study: rows.data.values[i][6],
-              education_level: rows.data.values[i][7],
-              province: rows.data.values[i][8],
-              district: rows.data.values[i][9],
-              cohort: rows.data.values[i][10],
-              isEmployed:
-                rows.data.values[i][11].toLowerCase() == "yes" ? true : false,
-              isStudent:
-                rows.data.values[i][12].toLowerCase() == "yes" ? true : false,
-              Hackerrank_score: rows.data.values[i][13],
-              english_score: rows.data.values[i][14],
-              interview: rows.data.values[i][15],
-              interview_decision: rows.data.values[i][16],
-              past_andela_programs: rows.data.values[i][17],
-              Address: rows.data.values[i][18],
-              sector: rows.data.values[i][19],
-              haveLaptop:
-                rows.data.values[i][20].toLowerCase() == "yes" ? true : false,
-              trainee_id: trainee._id,
-            });
 
+            const traineeAttributeObj = {
+              ...attributesArray[i],
+              trainee_id: trainee._id,
+            };
+
+            const traineeAttributes = new traineEAttributes(
+              traineeAttributeObj
+            );
             await traineeAttributes.save();
           }
         }
@@ -154,14 +187,7 @@ const loadTraineeResolver: any = {
       }
     },
 
-    async reSendDataIntoDb(_parent:any, _args:any) {
-      const { columnData } = _args;
-      // console.log(columnData);
-      const arrOfProperty = Object.keys(columnData);
-      const arrOfValues = Object.values(columnData);
-      // console.log(arrOfProperty)
-      // console.log(arrOfValues)
-
+    async reSendDataIntoDb(_parent: any, _args: any) {
       const auth = new google.auth.GoogleAuth({
         keyFile: "credentials.json",
         scopes: "https://www.googleapis.com/auth/spreadsheets",
@@ -180,22 +206,135 @@ const loadTraineeResolver: any = {
         spreadsheetId,
         range: "Sheet1",
       });
-      // const SPVal: any = rows.data.values[0];
-      const replaceTheCorrectColumn = (SPValuesArr: string[]) => {
-        let arrayTracker = [];
-        for (let j = 0; j < SPValuesArr.length; j++) {
-          for (let i = 0; i < arrOfValues.length -1; i++) {
-            if (arrOfValues[i] === SPValuesArr[i]) {
-              arrayTracker.push(arrOfProperty[i]);
-            }
-            arrayTracker.push(SPValuesArr[i]);
+
+      const { columnData } = _args;
+      // const funny = {
+      //   email:"Emails",
+      //   email:"Emails",
+      //   email:"Emails",
+      //   gender:"Genders",
+      //   email:"Emails",
+      //   email:"Emails",
+      //   email:"Emails",
+      // }
+      // [["firstname", "lastName","jhk"],[],[]]
+      const arrOfProperty = Object.keys(columnData);
+      // ["email", "firstName",] arrOne[3]
+      const arrOfValues = Object.values(columnData);
+      // ["", "emails", "first Name", "", "", "", ] arrTwo[3]
+
+      const replaceToGetCorrectColumn = (firstRowColumnArr: string[]) => {
+        for (let i = 0; i < firstRowColumnArr.length; i++) {
+          // @ts-ignore
+          if (firstRowColumnArr.includes(arrOfValues[i])) {
+            // @ts-ignore
+            const index = firstRowColumnArr.indexOf(arrOfValues[i]);
+            firstRowColumnArr.splice(index, 1, arrOfProperty[i]);
           }
-        };
-        return arrayTracker;
+        }
+        return firstRowColumnArr;
+      };
+
+      const getIndexArrOfTheTrainee = (correctColumnOfProperty: string[]) => {
+        const arrayOfTraineeProperties = ["firstName", "lastName", "email"];
+        const traineeIndexArray = [];
+        for (let i = 0; i < arrayOfTraineeProperties.length; i++) {
+          // @ts-ignore
+          if (correctColumnOfProperty.includes(arrayOfTraineeProperties[i])) {
+            // @ts-ignore
+            const index = correctColumnOfProperty.indexOf(
+              arrayOfTraineeProperties[i]
+            );
+            traineeIndexArray.push(index);
+          }
+        }
+        return traineeIndexArray;
+      };
+
+      const giveMeDataInACorrectFormatTrainee = (
+        arrOfAllRows: any,
+        correctColumnArr: any,
+        arrOfTraineeIndexes: any
+      ) => {
+        // [1,8,12]
+        const arrOfObject = [];
+        for (let i = 1; i < arrOfAllRows.length; i++) {
+          arrOfObject.push({
+            [correctColumnArr[arrOfTraineeIndexes[0]]]:arrOfAllRows[i][arrOfTraineeIndexes[0]],
+            [correctColumnArr[arrOfTraineeIndexes[1]]]:arrOfAllRows[i][arrOfTraineeIndexes[1]],
+            [correctColumnArr[arrOfTraineeIndexes[2]]]:arrOfAllRows[i][arrOfTraineeIndexes[2]],
+          });
+        }
+        return arrOfObject;
+      };
+      // arrOfProperty.data.object = []
+      // [arr[0][3]]
+      const giveMeDataInACorrectFormatAttributes = (
+        arr: any,
+        arrOfCorrectColumnProperties: any
+      ) => {
+        const arrOfObject = [];
+        for (let i = 1; i < arr.length; i++) {
+          arrOfObject.push({
+            [arrOfCorrectColumnProperties[3]]: arr[i][3],
+            [arrOfCorrectColumnProperties[4]]: arr[i][4],
+            [arrOfCorrectColumnProperties[5]]: arr[i][5],
+            [arrOfCorrectColumnProperties[6]]: arr[i][6],
+            [arrOfCorrectColumnProperties[7]]: arr[i][7],
+            [arrOfCorrectColumnProperties[8]]: arr[i][8],
+            [arrOfCorrectColumnProperties[9]]: arr[i][9],
+            [arrOfCorrectColumnProperties[10]]: arr[i][10],
+            [arrOfCorrectColumnProperties[11]]: arr[i][11],
+            [arrOfCorrectColumnProperties[12]]: arr[i][12],
+            [arrOfCorrectColumnProperties[13]]: arr[i][13],
+            [arrOfCorrectColumnProperties[14]]: arr[i][14],
+            [arrOfCorrectColumnProperties[15]]: arr[i][15],
+            [arrOfCorrectColumnProperties[16]]: arr[i][16],
+            [arrOfCorrectColumnProperties[17]]: arr[i][17],
+            [arrOfCorrectColumnProperties[18]]: arr[i][18],
+            [arrOfCorrectColumnProperties[19]]: arr[i][19],
+            [arrOfCorrectColumnProperties[20]]: arr[i][20],
+            [arrOfCorrectColumnProperties[0]]: arr[i][0],
+            [arrOfCorrectColumnProperties[1]]: arr[i][1],
+            [arrOfCorrectColumnProperties[2]]: arr[i][2],
+          });
+        }
+
+        const arrOfAttributesData = arrOfObject.map((dataObject: any) => {
+          delete dataObject["firstName"];
+          delete dataObject["lastName"];
+          delete dataObject["email"];
+          return dataObject;
+        });
+        return arrOfAttributesData;
       };
 
       // @ts-ignore
-      console.log(replaceTheCorrectColumn(rows?.data?.values[0]));
+      const correctColumn = replaceToGetCorrectColumn(rows?.data?.values[0]);
+      const indexes = getIndexArrOfTheTrainee(correctColumn);
+      const traineeArray = giveMeDataInACorrectFormatTrainee(
+        rows?.data?.values,
+        correctColumn,
+        indexes
+      );
+      const attributesArray = giveMeDataInACorrectFormatAttributes(
+        rows?.data?.values,
+        correctColumn
+      );
+
+      // save the trainee to the database
+      // @ts-ignore
+      for (let i = 0; i < rows.data?.values?.length - 1; i++) {
+        const trainee = new TraineeApplicant(traineeArray[i]);
+        await trainee.save();
+
+        const traineeAttributeObj = {
+          ...attributesArray[i],
+          trainee_id: trainee._id,
+        };
+        const traineeAttributes = new traineEAttributes(traineeAttributeObj);
+        await traineeAttributes.save();
+      }
       return "the data is coming men and woman";
     },
   },

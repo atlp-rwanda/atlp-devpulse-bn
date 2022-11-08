@@ -10,7 +10,7 @@ const ResendDataSchema = gql`
     email: String!
     gender: String!
     birth_date: String!
-    Adress: String!
+    Address: String!
     phone: String!
     field_of_study: String!
     education_level: String!
