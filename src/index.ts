@@ -16,12 +16,14 @@ import  {usersResolvers}  from "./resolvers/userResolver";
 import { updateUserTypeDefs } from "./schema/updateUserTypeDefs";
 import loadTraineeResolver from "./resolvers/traineeResolvers";
 import loadAllTraineesFromGoogleSheet from "./schema/loadAllTraineesFromGoogleSheet"
+import ResendDataSchema from "./schema/resendDataIntoDbTypeDefs";
+;
 
 
-const PORT = process.env.PORT || 4001;
+const PORT = process.env.PORT || 4000;
 
 const resolvers = mergeResolvers([applicationCycleResolver, usersResolvers,traineeAttributeResolver, traineeApplicantResolver,traineeResolvers,loadTraineeResolver])
-const typeDefs= mergeTypeDefs([applicationCycleTypeDefs, typeDefsAttribute, typeDefsTrainee, updateUserTypeDefs, deleteTraineTypeDefs,loadAllTraineesFromGoogleSheet])
+const typeDefs= mergeTypeDefs([applicationCycleTypeDefs,ResendDataSchema, typeDefsAttribute, typeDefsTrainee, updateUserTypeDefs, deleteTraineTypeDefs,loadAllTraineesFromGoogleSheet])
 
 const server = new ApolloServer({
   typeDefs,

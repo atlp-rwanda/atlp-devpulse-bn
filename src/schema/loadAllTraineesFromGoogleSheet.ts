@@ -31,10 +31,8 @@ type traineeAttribute{
     english_score:String!
     interview:Int!
     interview_decision:String!
-    past_andela_programs:String!
-   
+    past_andela_programs:String! 
 }
-
 
 type Mutation{
     loadAllTrainees(spreadsheetId:String!):String!
