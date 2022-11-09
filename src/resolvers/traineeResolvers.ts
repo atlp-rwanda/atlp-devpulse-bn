@@ -94,6 +94,47 @@ const loadTraineeResolver: any = {
           return arrOfObject;
         };
 
+        const oneTwo = (dataObject: any) => {
+          let finObject = { ...dataObject };
+          if (dataObject.isEmployed.toLowerCase() === "no") {
+            finObject = {
+              ...finObject,
+              isEmployed: false,
+            };
+          }
+          if (dataObject.haveLaptop.toLowerCase() === "no") {
+            finObject = {
+              ...finObject,
+              haveLaptop: false,
+            };
+          }
+          if (dataObject.isStudent.toLowerCase() === "no") {
+            finObject = {
+              ...finObject,
+              isStudent: false,
+            };
+          }
+          if (dataObject.isStudent.toLowerCase() === "yes") {
+            finObject = {
+              ...finObject,
+              isStudent: true,
+            };
+          }
+          if (dataObject.haveLaptop.toLowerCase() === "yes") {
+            finObject = {
+              ...finObject,
+              haveLaptop: true,
+            };
+          }
+          if (dataObject.isEmployed.toLowerCase() === "yes") {
+            finObject = {
+              ...finObject,
+              isEmployed: true,
+            };
+          }
+          return finObject;
+        };
+
         const giveMeDataInACorrectFormatAttributes = (
           arr: any,
           arrOfCorrectColumnProperties: any
@@ -124,11 +165,11 @@ const loadTraineeResolver: any = {
               [arrOfCorrectColumnProperties[2]]: arr[i][2],
             });
           }
-          const arrOfAttributesData = arrOfObject.map((dataObject: any) => {
-            delete dataObject["firstName"];
-            delete dataObject["lastName"];
-            delete dataObject["email"];
-            return dataObject;
+          const arrOfAttributesData = arrOfObject.map((item: any) => {
+            delete item["firstName"];
+            delete item["lastName"];
+            delete item["email"];
+            return oneTwo(item);
           });
           return arrOfAttributesData;
         };
@@ -269,6 +310,47 @@ const loadTraineeResolver: any = {
       };
       // arrOfProperty.data.object = []
       // [arr[0][3]]
+const oneTwo = (dataObject: any) => {
+  let finObject = {...dataObject}
+  if (dataObject.isEmployed.toLowerCase() === "no") {
+    finObject = {
+      ...finObject,
+      isEmployed: false,
+    };
+  }
+   if (dataObject.haveLaptop.toLowerCase() === "no") {
+     finObject = {
+       ...finObject,
+       haveLaptop: false,
+     };
+   }
+    if (dataObject.isStudent.toLowerCase() === "no") {
+      finObject = {
+        ...finObject,
+        isStudent: false,
+      };
+    }
+     if (dataObject.isStudent.toLowerCase() === "yes") {
+       finObject = {
+         ...finObject,
+         isStudent: true,
+       };
+     }
+      if (dataObject.haveLaptop.toLowerCase() === "yes") {
+        finObject = {
+          ...finObject,
+          haveLaptop: true,
+        };
+      }
+       if (dataObject.isEmployed.toLowerCase() === "yes") {
+         finObject = {
+           ...finObject,
+           isEmployed: true,
+         };
+       }
+  return finObject;
+};
+
       const giveMeDataInACorrectFormatAttributes = (
         arr: any,
         arrOfCorrectColumnProperties: any
@@ -300,11 +382,11 @@ const loadTraineeResolver: any = {
           });
         }
 
-        const arrOfAttributesData = arrOfObject.map((dataObject: any) => {
-          delete dataObject["firstName"];
-          delete dataObject["lastName"];
-          delete dataObject["email"];
-          return dataObject;
+        const arrOfAttributesData = arrOfObject.map((item:any) => {
+               delete item["firstName"];
+               delete item["lastName"];
+               delete item["email"];
+          return oneTwo(item);
         });
         return arrOfAttributesData;
       };

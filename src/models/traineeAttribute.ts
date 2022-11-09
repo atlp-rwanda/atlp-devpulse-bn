@@ -52,19 +52,19 @@ const traineeAttributeSchema = new Schema({
     default: "-",
   },
   isEmployed: {
-    type: String,
+    type: Boolean,
     required: true,
-    default: "-",
+    default: true,
   },
   haveLaptop: {
-    type: String,
+    type: Boolean,
     required: true,
-    default: "-",
+    default: true,
   },
   isStudent: {
-    type: String,
+    type:Boolean,
     required: true,
-    default: "-",
+    default:true,
   },
   Hackerrank_score: {
     type: String,
