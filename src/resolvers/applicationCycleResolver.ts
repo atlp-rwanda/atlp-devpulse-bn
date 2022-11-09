@@ -1,4 +1,6 @@
 import {applicationCycle} from '../models/applicationCycle'
+import { traineEAttributes} from '../models/traineeAttribute'
+import TraineeApplicant from '../models/traineeApplicant'
 
 const applicationCycleResolver:any={
     Query: {
@@ -21,10 +23,18 @@ const applicationCycleResolver:any={
                 return newapplicationCycle;
               },
               async deleteApplicationCycle(_parent:any, _args:any){
-                const deleteapplicationCycle= await applicationCycle.findById(_args.id);
-                if(!deleteapplicationCycle) throw new Error("This applicationCycle doesn't exist")
-                const deletedapplicationCycle = await applicationCycle.findByIdAndRemove(_args.id);
-                return deletedapplicationCycle;
+                      const applicationCycleToDelete= await applicationCycle.findById(_args.id);
+                      if(applicationCycleToDelete !=null){
+                          const user = await  TraineeApplicant.findOne({cycle_id:_args.id})
+                          if (user) {
+                                throw new Error(`cycle has some applicants`) 
+                          }else{
+                            const applicationCycleDeleted = await applicationCycle.findByIdAndRemove(_args.id);
+                                return applicationCycleDeleted
+                            }
+                      }else{
+                             throw new Error("This applicationCycle doesn't exist")
+                      }
               },
               async updateApplicationCycle(_parent:any,_args:any){
                 const newapplicationCycle= await applicationCycle.findByIdAndUpdate(_args.id, {name:_args.input.name, startDate:_args.input.startDate,endDate:_args.input.endDate },{new:true});

@@ -7,7 +7,6 @@ type applicationCycle{
     startDate:String!
     endDate:String!
 }
-
 input createApplicationCycle{
     name:String!
     startDate:String!
