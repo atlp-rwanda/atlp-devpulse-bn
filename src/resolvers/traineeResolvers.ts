@@ -249,16 +249,6 @@ const loadTraineeResolver: any = {
       });
 
       const { columnData } = _args;
-      // const funny = {
-      //   email:"Emails",
-      //   email:"Emails",
-      //   email:"Emails",
-      //   gender:"Genders",
-      //   email:"Emails",
-      //   email:"Emails",
-      //   email:"Emails",
-      // }
-      // [["firstname", "lastName","jhk"],[],[]]
       const arrOfProperty = Object.keys(columnData);
       // ["email", "firstName",] arrOne[3]
       const arrOfValues = Object.values(columnData);
@@ -417,7 +407,7 @@ const oneTwo = (dataObject: any) => {
         const traineeAttributes = new traineEAttributes(traineeAttributeObj);
         await traineeAttributes.save();
       }
-      return "the data is coming men and woman";
+      return "The data mapped has been saved successfully, CONGRATS";
     },
   },
 };
