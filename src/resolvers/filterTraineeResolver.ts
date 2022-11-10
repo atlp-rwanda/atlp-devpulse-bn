@@ -29,12 +29,22 @@ const filterTraineeResolver: any = {
 
       const allTraineeAttribute = await traineEAttributes
         .find({})
-        .populate("trainee_id")
+        .populate({
+          path: "trainee_id",
+          populate: {
+            path: "cycle_id",
+            model: "applicationCycle",
+          },
+        })
         .skip(itemsToSkip)
         .limit(items);
 
+      const nonNullTrainee = allTraineeAttribute.filter((value) => {
+        return value !== null;
+      });
+
       if (wordEntered && !filterAttribute) {
-        const filterResult = allTraineeAttribute.filter((value: any) => {
+        const filterResult = nonNullTrainee.filter((value: any) => {
           return (
             value._id
               .toString()
@@ -75,10 +85,6 @@ const filterTraineeResolver: any = {
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase()) ||
-            value.cohort
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
             value.isEmployed
               .toString()
               .toLowerCase()
@@ -110,11 +116,11 @@ const filterTraineeResolver: any = {
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase()) ||
-            value.trainee_id.firstname
+            value.trainee_id.firstName
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase()) ||
-            value.trainee_id.lastname
+            value.trainee_id.lastName
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase()) ||

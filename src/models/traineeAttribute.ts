@@ -46,11 +46,6 @@ const traineeAttributeSchema = new Schema({
     required: true,
     default: "-",
   },
-  cohort: {
-    type: String,
-    required: true,
-    default: "-",
-  },
   isEmployed: {
     type: Boolean,
     required: true,
@@ -62,11 +57,16 @@ const traineeAttributeSchema = new Schema({
     default: true,
   },
   isStudent: {
-    type:Boolean,
+    type: Boolean,
     required: true,
-    default:true,
+    default: true,
   },
   Hackerrank_score: {
+    type: String,
+    required: true,
+    default: "-",
+  },
+  cohort: {
     type: String,
     required: true,
     default: "-",

@@ -9,6 +9,8 @@ import deleteTraineTypeDefs from '../src/schema/deleteTraineTypeDefs'
 import traineeResolvers from "./resolvers/DelTranee"
 import filterTraineeResolver from "./resolvers/filterTraineeResolver";
 import { filterTraineetypeDefs } from "./schema/filterTraineeTypeDefs"
+import { recyclebinresolver} from "./resolvers/emptyrecycle";
+import recyclebinempty from "./schema/recyclebin";
 
 import applicationCycleResolver from "./resolvers/applicationCycleResolver"
 import applicationCycleTypeDefs from './schema/applicationCycleTypeDefs'
@@ -22,8 +24,20 @@ import ResendDataSchema from "./schema/resendDataIntoDbTypeDefs";
 
 const PORT = process.env.PORT || 4000;
 
-const resolvers = mergeResolvers([applicationCycleResolver, usersResolvers,traineeAttributeResolver, traineeApplicantResolver,traineeResolvers,loadTraineeResolver])
-const typeDefs= mergeTypeDefs([applicationCycleTypeDefs,ResendDataSchema, typeDefsAttribute, typeDefsTrainee, updateUserTypeDefs, deleteTraineTypeDefs,loadAllTraineesFromGoogleSheet])
+// const PORT = process.env.PORT || 4001;
+
+const resolvers = mergeResolvers([applicationCycleResolver, usersResolvers,traineeAttributeResolver, traineeApplicantResolver,traineeResolvers, filterTraineeResolver,recyclebinresolver,loadTraineeResolver])
+const typeDefs = mergeTypeDefs([
+  applicationCycleTypeDefs,
+  ResendDataSchema,
+  typeDefsAttribute,
+  typeDefsTrainee,
+  updateUserTypeDefs,
+  deleteTraineTypeDefs,
+  filterTraineetypeDefs,
+  recyclebinempty,
+  loadAllTraineesFromGoogleSheet,
+]);
 
 const server = new ApolloServer({
   typeDefs,
