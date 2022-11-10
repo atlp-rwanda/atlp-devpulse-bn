@@ -66,11 +66,6 @@ const traineeAttributeSchema = new Schema({
     required: true,
     default: "-",
   },
-  cohort: {
-    type: String,
-    required: true,
-    default: "-",
-  },
   english_score: {
     type: String,
     required: true,

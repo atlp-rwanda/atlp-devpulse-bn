@@ -17,7 +17,6 @@ const ResendDataSchema = gql`
     province: String!
     district: String!
     sector: String!
-    cohort: String!
     isEmployed: String!
     haveLaptop: String!
     isStudent: String!
