@@ -50,87 +50,43 @@ const traineeResolvers: any = {
 
 
       if (wordEntered && !filterAttribute) {
+        console.log("word, entered", wordEntered)
         const filterResult = nonNullTrainee.filter((value: any) => {
+          console.log("vlaue", value)
           return (
             value._id
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase()) ||
-            value.gender
+            value.email
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase()) ||
-            value.birth_date
+            value.firstName
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase()) ||
-            value.Address.toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.phone
+            value.lastName
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase()) ||
-            value.field_of_study
+            value.delete_at
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase()) ||
-            value.education_level
+            value.cycle_id._id
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase()) ||
-            value.province
+            value.cycle_id.name
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase()) ||
-            value.district
+            value.cycle_id.startDate
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase()) ||
-            value.sector
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.isEmployed
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.haveLaptop
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.isStudent
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.Hackerrank_score.toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.interview_decision
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.past_andela_programs
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.trainee_id._id
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.trainee_id.email
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.trainee_id.firstName
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.trainee_id.lastName
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.trainee_id.delete_at
+            value.cycle_id.endDate
               .toString()
               .toLowerCase()
               .includes(wordEntered.toString().toLowerCase())
@@ -143,7 +99,7 @@ const traineeResolvers: any = {
       if (wordEntered && filterAttribute) {
         const filterAttributeResult = getAllSoftDeletedTrainee.filter(
           (value: any) => {
-            let arr = Object.keys(value.trainee_id.toJSON());
+            let arr = Object.keys(value.cycle_id.toJSON());
             let arr1 = Object.keys(value.toJSON());
 
             let allKeys: any = arr.concat(arr1);
@@ -155,7 +111,7 @@ const traineeResolvers: any = {
             }
 
             if (arr.includes(usedAttribute)) {
-              return value.trainee_id[usedAttribute]
+              return value.cycle_id[usedAttribute]
                 .toString()
                 .toLowerCase()
                 .includes(wordEntered.toString().toLowerCase());
