@@ -394,12 +394,12 @@ const loadTraineeResolver: any = {
             [arrOfCorrectColumnProperties[2]]: arr[i][2],
           });
         }
-        // const cycle_id
+        console.log(arrOfObject);
         const arrOfAttributesData = arrOfObject.map((item: any) => {
           delete item["firstName"];
           delete item["lastName"];
           delete item["email"];
-          const cycle_id = item["cycle_id"];
+          const cycle_id = columnData["cycle_id"];
           delete item["cycle_id"];
           const attributesObject = replaceNoOrYesWithTrueOrFalseFunc(item);
           return {
@@ -427,8 +427,10 @@ const loadTraineeResolver: any = {
       // save the trainee to the database
       // @ts-ignore
       for (let i = 0; i < rows.data?.values?.length - 1; i++) {
+          console.log(attributesArray[i].cycle_id);
           const cycle = await applicationCycle.findOne({name:attributesArray[i].cycle_id});
            if (!cycle) {
+            console.log("wrong cycle name is provided")
              throw new Error("Wrong cycle name is provided!!!!");
            }
         const trainee = new TraineeApplicant({
