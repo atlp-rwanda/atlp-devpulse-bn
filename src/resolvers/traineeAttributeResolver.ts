@@ -47,7 +47,13 @@ export const traineeAttributeResolver: any = {
       const { id } = input;
       const oneTraineeAttribute = await traineEAttributes
         .findOne({ trainee_id: id })
-        .populate("trainee_id")
+        .populate({
+          path: "trainee_id",
+          populate: {
+            path: "cycle_id",
+            model: "applicationCycle",
+          },
+        })
         .exec();
       // console.log(oneTraineeAttribute)
       return oneTraineeAttribute;
