@@ -23,9 +23,15 @@ const Schema = gql`
   type Query {
     getAllTrainees: [Trainee]
     traineeSchema(id: ID!): Trainee!
-    getAllSoftDeletedTrainees: [Trainee]
+    getAllSoftDeletedTrainees (input: filterOptions): [Trainee]
   }
-
+  input filterOptions {
+    page: Int!
+    itemsPerPage: Int
+    All: Boolean
+    wordEntered: String
+    filterAttribute: String
+  }
   type Mutation {
     deleteTrainee(id: ID!): Trainee!
     softdeleteTrainee(input: softdeleteTrainee): Trainee!
