@@ -11,7 +11,6 @@ const traineeResolvers: any = {
     },
 
     async getAllSoftDeletedTrainees(_: any, { input }: any) {
-
       // define page
       const { page, itemsPerPage, All, wordEntered, filterAttribute } = input;
       let pages;
@@ -38,21 +37,16 @@ const traineeResolvers: any = {
 
       const getAllSoftDeletedTrainee = await TraineeApplicant.find({
         delete_at: true,
-      }).populate("cycle_id")
+      })
+        .populate("cycle_id")
         .skip(itemsToSkip)
         .limit(items);
-
-      // if (!getAllSoftDeletedTrainee) throw new Error("no Trainee Available");
-
       const nonNullTrainee = getAllSoftDeletedTrainee.filter((value) => {
         return value !== null;
       });
 
-
       if (wordEntered && !filterAttribute) {
-        console.log("word, entered", wordEntered)
         const filterResult = nonNullTrainee.filter((value: any) => {
-          console.log("vlaue", value)
           return (
             value._id
               .toString()
@@ -128,23 +122,8 @@ const traineeResolvers: any = {
         return filterAttributeResult;
       }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
       return getAllSoftDeletedTrainee;
     },
-
-
 
     async traineeSchema(parent: any, args: any) {
       const getOnetrainee = await TraineeApplicant.findById(args.id).populate(
