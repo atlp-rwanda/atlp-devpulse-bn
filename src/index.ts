@@ -25,7 +25,7 @@ import ResendDataSchema from "./schema/resendDataIntoDbTypeDefs";
 import scoreTypeResolver from "./resolvers/scoreTypesResolvers";
 import scoreValuesResolver from "./resolvers/scoreValuesResolvers";
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3000;
 
 // const PORT = process.env.PORT || 4001;
 

@@ -23,7 +23,7 @@ type traineeAttribute{
     province:String!
     district:String!
     sector:String!
-    cohort:String!
+    cycle_id:String!
     isEmployed:Boolean!
     haveLaptop:Boolean!
     isStudent:Boolean!

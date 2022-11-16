@@ -2,10 +2,8 @@ import { userModel } from "../models/user";
 export const usersResolvers:any = {
   Query: {
     async user(_:any,  args:any, context:any ) {
-      console.log('args', args.ID)
       const id = args.ID
       const upvalue= await userModel.findById(id);
-      console.log('Update value', upvalue)
       return upvalue
 
     },
@@ -34,7 +32,6 @@ export const usersResolvers:any = {
       });
 
       const res = await createdUser.save(); // MongoDB saving
-      console.log("results", res);
       return res;
     },
      // @ts-ignore
@@ -53,7 +50,6 @@ export const usersResolvers:any = {
         )
         )
         .modifiedCount;
-      // console.log('Was edited',wasEdited)
       return wasEdited; //1||true if something was Edited, 0||true if nothing Edited
     },
   },

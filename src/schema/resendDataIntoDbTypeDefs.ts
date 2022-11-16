@@ -26,7 +26,7 @@ const ResendDataSchema = gql`
     interview_decision: String!
     past_andela_programs: String!
     spreadsheetId:String!
-    cycle_id:String!
+    cycle_name:String!
   }
 `;
 export default ResendDataSchema;

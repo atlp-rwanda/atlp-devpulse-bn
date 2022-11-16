@@ -63,8 +63,7 @@ const loadTraineeResolver: any = {
           "Address",
           "sector",
           "haveLaptop",
-          "trainee_id",
-          "cycle_id",
+          "cycle_name",
         ];
 
         const getIndexArrOfTheTrainee = (correctColumnOfProperty: string[]) => {
@@ -178,8 +177,8 @@ const loadTraineeResolver: any = {
             delete item["firstName"];
             delete item["lastName"];
             delete item["email"];
-            const cycle_id = item["cycle_id"];
-            delete item["cycle_id"];
+            const cycle_id = item["cycle_name"];
+            delete item["cycle_name"];
             const attributesObject = replaceNoOrYesWithTrueOrFalseFunc(item);
             return {
               attributes: attributesObject,
@@ -394,18 +393,17 @@ const loadTraineeResolver: any = {
             [arrOfCorrectColumnProperties[2]]: arr[i][2],
           });
         }
-        console.log(arrOfObject);
         const arrOfAttributesData = arrOfObject.map((item: any) => {
           delete item["firstName"];
           delete item["lastName"];
           delete item["email"];
           let cycle_id = "";
-          if (columnData["cycle_id"] === "") {
-            cycle_id = item["cycle_id"];
+          if (columnData["cycle_name"] === "") {
+            cycle_id = item["cycle_name"];
           } else {
-            cycle_id = columnData["cycle_id"];
+            cycle_id = columnData["cycle_name"];
           }
-          delete item["cycle_id"];
+          delete item["cycle_name"];
           const attributesObject = replaceNoOrYesWithTrueOrFalseFunc(item);
           return {
             attributes: attributesObject,
@@ -432,10 +430,8 @@ const loadTraineeResolver: any = {
       // save the trainee to the database
       // @ts-ignore
       for (let i = 0; i < rows.data?.values?.length - 1; i++) {
-          console.log(attributesArray[i].cycle_id);
           const cycle = await applicationCycle.findOne({name:attributesArray[i].cycle_id});
            if (!cycle) {
-            console.log("wrong cycle name is provided")
              throw new Error("Wrong cycle name is provided!!!!");
            }
         const trainee = new TraineeApplicant({
@@ -450,9 +446,6 @@ const loadTraineeResolver: any = {
         const traineeAttributes = new traineEAttributes(traineeAttributeObj);
         await traineeAttributes.save();
       }
-      console.log(
-        "the data has been saved successfully and yes it has been saved for sure"
-      );
       return "The data mapped has been saved successfully, CONGRATS";
     },
   },
