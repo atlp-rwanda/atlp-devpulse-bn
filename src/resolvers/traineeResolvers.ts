@@ -399,7 +399,12 @@ const loadTraineeResolver: any = {
           delete item["firstName"];
           delete item["lastName"];
           delete item["email"];
-          const cycle_id = columnData["cycle_id"];
+          let cycle_id = "";
+          if (columnData["cycle_id"] === "") {
+            cycle_id = item["cycle_id"];
+          } else {
+            cycle_id = columnData["cycle_id"];
+          }
           delete item["cycle_id"];
           const attributesObject = replaceNoOrYesWithTrueOrFalseFunc(item);
           return {
