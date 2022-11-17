@@ -17,7 +17,6 @@ export const traineeAttributeResolver: any = {
         // count total items inside the Attributes
         const totalItems = await traineEAttributes.countDocuments({});
         items = totalItems;
-        // console.log('items', items)
       } else {
         if (itemsPerPage) {
           items = itemsPerPage;
@@ -27,7 +26,6 @@ export const traineeAttributeResolver: any = {
       }
       // define items per page
       const itemsToSkip = (pages - 1) * items;
-      // console.log("items to skip", itemsToSkip)
       const allTraineeAttribute = await traineEAttributes
         .find({})
         .populate({
@@ -39,7 +37,6 @@ export const traineeAttributeResolver: any = {
         })
         .skip(itemsToSkip)
         .limit(items);
-      // console.log("attributes", allTraineeAttribute)
       return allTraineeAttribute;
     },
 
@@ -47,9 +44,14 @@ export const traineeAttributeResolver: any = {
       const { id } = input;
       const oneTraineeAttribute = await traineEAttributes
         .findOne({ trainee_id: id })
-        .populate("trainee_id")
+        .populate({
+          path: "trainee_id",
+          populate: {
+            path: "cycle_id",
+            model: "applicationCycle",
+          },
+        })
         .exec();
-      // console.log(oneTraineeAttribute)
       return oneTraineeAttribute;
     },
   },
@@ -62,7 +64,6 @@ export const traineeAttributeResolver: any = {
         .findOne({ trainee_id: search_id })
         .populate("trainee_id")
         .exec();
-      // console.log('UN ID',searchAttribute?.trainee_id)
       const traineeAvailble = await TraineeApplicant.findOne({
         _id: search_id,
       });
@@ -102,7 +103,6 @@ export const traineeAttributeResolver: any = {
         },
         { new: true }
       );
-      // console.log("updated", updated);
       if (!updated)
         throw new Error(
           "No Trainee is found, please provide the correct trainee_id"
