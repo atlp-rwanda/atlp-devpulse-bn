@@ -10,7 +10,7 @@ const traineeResolvers: any = {
       return gettrainee;
     },
 
-    async getAllSoftDeletedTrainees(_: any, { input }: any) {
+    async getAllSoftDeletedTraineesFiltered(_: any, { input }: any) {
       // define page
       const { page, itemsPerPage, All, wordEntered, filterAttribute } = input;
       let pages;

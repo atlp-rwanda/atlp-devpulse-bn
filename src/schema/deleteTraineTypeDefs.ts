@@ -23,7 +23,7 @@ const Schema = gql`
   type Query {
     getAllTrainees: [Trainee]
     traineeSchema(id: ID!): Trainee!
-    getAllSoftDeletedTrainees (input: filterOptions): [Trainee]
+    getAllSoftDeletedTraineesFiltered(input: filterOptions): [Trainee]
   }
   input filterOptions {
     page: Int!
