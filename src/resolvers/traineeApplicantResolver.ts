@@ -39,7 +39,6 @@ export const traineeApplicantResolver: any = {
 
     async getOneTrainee(_: any, { ID }: any) {
       const trainee = await TraineeApplicant.findById(ID).populate("cycle_id");
-      // console.log("trainee", trainee);
       if (!trainee)
         throw new Error("No trainee is found, pleade provide the correct ID");
       return trainee;
@@ -66,7 +65,6 @@ export const traineeApplicantResolver: any = {
         { new: true }
       ).populate("cycle_id");
 
-      // console.log("updated", updated);
       return updated;
     },
 
@@ -79,13 +77,11 @@ export const traineeApplicantResolver: any = {
         .exec();
       const idToDelete = oneTraineeApplicant?._id;
       const trainee = await TraineeApplicant.deleteOne({ email: emailInput });
-      console.log(trainee);
       if (trainee.deletedCount) {
         const upDate = await traineEAttributes.updateOne(
           { trainee_id: idToDelete },
           { trainee_id: null }
         );
-        console.log(upDate);
         if (upDate) {
           return true;
         } else {

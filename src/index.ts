@@ -19,11 +19,15 @@ import applicationCycleTypeDefs from "./schema/applicationCycleTypeDefs";
 import { usersResolvers } from "./resolvers/userResolver";
 import { updateUserTypeDefs } from "./schema/updateUserTypeDefs";
 import loadTraineeResolver from "./resolvers/traineeResolvers";
-import loadAllTraineesFromGoogleSheet from "./schema/loadAllTraineesFromGoogleSheet";
+import loadAllTraineesFromGoogleSheet from "./schema/loadAllTraineesFromGoogleSheet"
+import ResendDataSchema from "./schema/resendDataIntoDbTypeDefs";
+;
 import scoreTypeResolver from "./resolvers/scoreTypesResolvers";
 import scoreValuesResolver from "./resolvers/scoreValuesResolvers";
 
-const PORT = process.env.PORT || 4001;
+const PORT = process.env.PORT || 3000;
+
+// const PORT = process.env.PORT || 4001;
 
 const resolvers = mergeResolvers([
   applicationCycleResolver,
@@ -36,6 +40,7 @@ const resolvers = mergeResolvers([
   loadTraineeResolver,
   scoreTypeResolver,
   scoreValuesResolver,
+  
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -48,6 +53,7 @@ const typeDefs = mergeTypeDefs([
   loadAllTraineesFromGoogleSheet,
   scoreTypesSchema,
   scoreValueSchema,
+  ResendDataSchema,
 ]);
 
 const server = new ApolloServer({

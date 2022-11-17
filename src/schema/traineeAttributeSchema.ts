@@ -16,13 +16,6 @@ export const typeDefsAttribute = gql`
   input one {
     id: ID!
   }
-
-  input pagination {
-    page: Int!
-    itemsPerPage: Int
-    All: Boolean
-  }
-
   input traineeAttributeInput {
     gender: String!
     birth_date: String!
@@ -42,6 +35,12 @@ export const typeDefsAttribute = gql`
     past_andela_programs: String!
     trainee_id: String!
   }
+  input pagination {
+    page: Int!
+    itemsPerPage: Int
+    All: Boolean
+  }
+
   input traineeUpdateAttributeInput {
     gender: String
     birth_date: String
