@@ -191,7 +191,6 @@ const loadTraineeResolver: any = {
 
         const SPValuesArr: any = rows.data.values;
 
-
         let newErrorArr: any = [0][0];
         let retunedNewUnmached: any = [];
         //loop through rows and add them to our db
@@ -221,26 +220,64 @@ const loadTraineeResolver: any = {
           );
 
           for (let i = 0; i < rows.data?.values?.length - 1; i++) {
-                const cycle = await applicationCycle.findOne({
-                  name: attributesArray[i].cycle_id,
+            const cycle = await applicationCycle.findOne({
+              name: attributesArray[i].cycle_id,
+            });
+            if (!cycle) {
+              throw new Error("Wrong cycle name is provided!!!!");
+            }
+            const trainee = new TraineeApplicant({
+              ...traineeArray[i],
+              cycle_id: cycle?._id,
+            });
+            await trainee.save();
+            const traineeAttributeObj = {
+              ...attributesArray[i].attributes,
+              trainee_id: trainee._id,
+            };
+            try {
+              const traineeAttributes = new traineEAttributes(
+                traineeAttributeObj
+              );
+              await traineeAttributes.save();
+            } catch (error) {
+              //@ts-ignore
+              console.log(error.errors);
+              for (let j = i; j >= 0; j--) {
+                console.log(attributesArray[j].attributes["email"]);
+                await traineEAttributes.deleteOne({
+                  email: attributesArray[j].attributes["email"],
                 });
-                if (!cycle) {
-                  throw new Error("Wrong cycle name is provided!!!!")
-                }
-                const trainee = new TraineeApplicant({
-                  ...traineeArray[i],
-                  cycle_id: cycle?._id,
+                //@ts-ignore
+                console.log(traineeArray[j]["email"]);
+                await TraineeApplicant.deleteOne({
+                  //@ts-ignore
+                  email: traineeArray[j]["email"],
                 });
-                await trainee.save();
-                const traineeAttributeObj = {
-                  ...attributesArray[i].attributes,
-                  trainee_id: trainee._id,
-                };
-
-            const traineeAttributes = new traineEAttributes(
-              traineeAttributeObj
-            );
-            await traineeAttributes.save();
+              }
+              //@ts-ignore
+              throw new Error(
+                `Cast error on the column \"${
+                  //@ts-ignore
+                  error.errors[
+                    //@ts-ignore
+                    Object.keys(error.errors)[0]
+                  ].path
+                }\": ==> The string \"${
+                  //@ts-ignore
+                  error.errors[Object.keys(error.errors)[0]].value
+                }\" is inserted into the ${
+                  //@ts-ignore
+                  error.errors[
+                    //@ts-ignore
+                    Object.keys(error.errors)[0]
+                  ].path
+                } column at row \"\"\" ${i+2} \"\"\"while type \"\"${
+                  //@ts-ignore
+                  error.errors[Object.keys(error.errors)[0]].kind
+                }\"\" is expected!`
+              );
+            }
           }
         }
 
@@ -430,10 +467,12 @@ const loadTraineeResolver: any = {
       // save the trainee to the database
       // @ts-ignore
       for (let i = 0; i < rows.data?.values?.length - 1; i++) {
-          const cycle = await applicationCycle.findOne({name:attributesArray[i].cycle_id});
-           if (!cycle) {
-             throw new Error("Wrong cycle name is provided!!!!");
-           }
+        const cycle = await applicationCycle.findOne({
+          name: attributesArray[i].cycle_id,
+        });
+        if (!cycle) {
+          throw new Error("Wrong cycle name is provided!!!!");
+        }
         const trainee = new TraineeApplicant({
           ...traineeArray[i],
           cycle_id: cycle?._id,
@@ -443,8 +482,49 @@ const loadTraineeResolver: any = {
           ...attributesArray[i].attributes,
           trainee_id: trainee._id,
         };
-        const traineeAttributes = new traineEAttributes(traineeAttributeObj);
-        await traineeAttributes.save();
+          try {
+            const traineeAttributes = new traineEAttributes(
+              traineeAttributeObj
+            );
+            await traineeAttributes.save();
+          } catch (error) {
+            //@ts-ignore
+            console.log(error.errors);
+            for (let j = i; j >= 0; j--) {
+              console.log(attributesArray[j].attributes["email"]);
+              await traineEAttributes.deleteOne({
+                email: attributesArray[j].attributes["email"],
+              });
+              //@ts-ignore
+              console.log(traineeArray[j]["email"]);
+              await TraineeApplicant.deleteOne({
+                //@ts-ignore
+                email: traineeArray[j]["email"],
+              });
+            }
+            //@ts-ignore
+            throw new Error(
+              `Cast error on the column \"${
+                //@ts-ignore
+                error.errors[
+                  //@ts-ignore
+                  Object.keys(error.errors)[0]
+                ].path
+              }\": ==> The string \"${
+                //@ts-ignore
+                error.errors[Object.keys(error.errors)[0]].value
+              }\" is inserted into the ${
+                //@ts-ignore
+                error.errors[
+                  //@ts-ignore
+                  Object.keys(error.errors)[0]
+                ].path
+              } column at row \"\"\" ${i + 2} \"\"\"while type \"\"${
+                //@ts-ignore
+                error.errors[Object.keys(error.errors)[0]].kind
+              }\"\" is expected!`
+            );
+          }
       }
       return "The data mapped has been saved successfully, CONGRATS";
     },

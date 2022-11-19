@@ -62,17 +62,19 @@ const traineeAttributeSchema = new Schema({
     default: true,
   },
   Hackerrank_score: {
-    type: String,
+     type: Number,
     required: true,
-    default: "-",
+    default: 0,
   },
   english_score: {
-    type: String,
+    type: Number,
     required: true,
-    default: "-",
+    default: 0,
   },
   interview: {
     type: Number,
+    required: true,
+    default: 0,
   },
   interview_decision: {
     type: String,
