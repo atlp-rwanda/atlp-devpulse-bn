@@ -21,8 +21,10 @@ const Schema = gql`
   input updateScoreValue {
     id: ID!
     score_value: String!
-    # attr_id: String!
-    # score_id: String!
+  }
+  input updateManyScoreValue {
+    id: ID!
+    score_value: String!
   }
   input deleteScoreValue {
     id: ID!
@@ -37,6 +39,7 @@ const Schema = gql`
     createScoreValue(input: [createScoreValue]): [scoreValue!]
     deleteScoreValue(id: ID!): scoreValue!
     updateScoreValue(id: ID!, input: updateScoreValue): scoreValue!
+    updateManyScoreValues(input: [updateManyScoreValue]): [scoreValue!]
   }
 `;
 
