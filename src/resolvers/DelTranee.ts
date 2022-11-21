@@ -10,14 +10,121 @@ const traineeResolvers: any = {
       return gettrainee;
     },
 
-    async getAllSoftDeletedTrainees(parent: any, args: any) {
-      const getAllTrainee = await TraineeApplicant.find({
-        delete_at: true,
-      }).populate("cycle_id");
-      if (!getAllTrainee) throw new Error("no Trainee Available");
+    async getAllSoftDeletedTraineesFiltered(_: any, { input }: any) {
+      // define page
+      const { page, itemsPerPage, All, wordEntered, filterAttribute } = input;
+      let pages;
+      let items;
+      let usedAttribute: any;
+      if (page) {
+        pages = page;
+      } else {
+        pages = 1;
+      }
+      if (All) {
+        // count total items inside the collections
+        const totalItems = await TraineeApplicant.countDocuments({});
+        items = totalItems;
+      } else {
+        if (itemsPerPage) {
+          items = itemsPerPage;
+        } else {
+          items = 3;
+        }
+      }
+      // define items per page
+      const itemsToSkip = (pages - 1) * items;
 
-      return getAllTrainee;
+      const getAllSoftDeletedTrainee = await TraineeApplicant.find({
+        delete_at: true,
+      })
+        .populate("cycle_id")
+        .skip(itemsToSkip)
+        .limit(items);
+      const nonNullTrainee = getAllSoftDeletedTrainee.filter((value) => {
+        return value !== null;
+      });
+
+      if (wordEntered && !filterAttribute) {
+        const filterResult = nonNullTrainee.filter((value: any) => {
+          return (
+            value._id
+              .toString()
+              .toLowerCase()
+              .includes(wordEntered.toString().toLowerCase()) ||
+            value.email
+              .toString()
+              .toLowerCase()
+              .includes(wordEntered.toString().toLowerCase()) ||
+            value.firstName
+              .toString()
+              .toLowerCase()
+              .includes(wordEntered.toString().toLowerCase()) ||
+            value.lastName
+              .toString()
+              .toLowerCase()
+              .includes(wordEntered.toString().toLowerCase()) ||
+            value.delete_at
+              .toString()
+              .toLowerCase()
+              .includes(wordEntered.toString().toLowerCase()) ||
+            value.cycle_id._id
+              .toString()
+              .toLowerCase()
+              .includes(wordEntered.toString().toLowerCase()) ||
+            value.cycle_id.name
+              .toString()
+              .toLowerCase()
+              .includes(wordEntered.toString().toLowerCase()) ||
+            value.cycle_id.startDate
+              .toString()
+              .toLowerCase()
+              .includes(wordEntered.toString().toLowerCase()) ||
+            value.cycle_id.endDate
+              .toString()
+              .toLowerCase()
+              .includes(wordEntered.toString().toLowerCase())
+          );
+        });
+
+        return filterResult;
+      }
+
+      if (wordEntered && filterAttribute) {
+        const filterAttributeResult = getAllSoftDeletedTrainee.filter(
+          (value: any) => {
+            let arr = Object.keys(value.cycle_id.toJSON());
+            let arr1 = Object.keys(value.toJSON());
+
+            let allKeys: any = arr.concat(arr1);
+
+            for (let i = 0; i < allKeys.length; i++) {
+              if (allKeys[i].toLowerCase() == filterAttribute.toLowerCase()) {
+                usedAttribute = allKeys[i];
+              }
+            }
+
+            if (arr.includes(usedAttribute)) {
+              return value.cycle_id[usedAttribute]
+                .toString()
+                .toLowerCase()
+                .includes(wordEntered.toString().toLowerCase());
+            } else if (arr1.includes(usedAttribute)) {
+              return value[usedAttribute]
+                .toString()
+                .toLowerCase()
+                .includes(wordEntered.toString().toLowerCase());
+            } else {
+              return [];
+            }
+          }
+        );
+        return filterAttributeResult;
+      }
+
+      return getAllSoftDeletedTrainee;
     },
+
     async traineeSchema(parent: any, args: any) {
       const getOnetrainee = await TraineeApplicant.findById(args.id).populate(
         "cycle_id"
