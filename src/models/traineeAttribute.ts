@@ -92,9 +92,14 @@ const traineeAttributeSchema = new Schema({
   trainee_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Trainee",
-    required: true,
+    required: false,
   },
-});
+  additional_fields: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "AdditionalFields",
+    required: false
+  },
+},);
 
 const traineEAttributes = model("Attributes", traineeAttributeSchema);
 

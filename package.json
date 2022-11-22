@@ -38,6 +38,7 @@
     "googleapis": "^108.0.0",
     "graphql": "^16.6.0",
     "mongoose": "^6.6.1",
+    "mongoose-dynamic-schemas": "^1.2.6",
     "ts-node-dev": "^2.0.0"
   }
 }

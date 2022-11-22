@@ -7,6 +7,8 @@ type Query {
 type Mutation {
 	createTraineeAttribute(attributeInput: traineeAttributeInput): traineeAttributeCreated
 	updateTraineeAttribute(ID:ID!, attributeUpdateInput: traineeUpdateAttributeInput): traineeAttributeCreated
+	addDynamicFields(ID:ID!, addFieldsToTraineeAttributeInput: traineeNewFieldsInput): traineeAttributeCreated
+
 }
 input one {id: ID!}
     
@@ -19,8 +21,8 @@ input one {id: ID!}
 	input traineeAttributeInput {
 		gender: String!
 		birth_date: String!
-         Address: String!
-         phone: String!
+        Address: String!
+        phone: String!
         field_of_study: String!
         education_level: String!
         province: String!
@@ -35,6 +37,8 @@ input one {id: ID!}
         interview_decision: String!
         past_andela_programs: String!
         trainee_id: String!
+        additional_fields: String!
+
 	}
 	input traineeUpdateAttributeInput {
 		gender: String
@@ -54,6 +58,8 @@ input one {id: ID!}
         english_score: String
         interview_decision: String
         past_andela_programs: String
+        additional_fields: String
+        
 	}
 
 	type traineeAttribute {
@@ -74,9 +80,22 @@ input one {id: ID!}
         english_score: String!
         interview_decision: String!
         past_andela_programs: String!
-        _id:ID
+        _id:ID!
 		trainee_id: traineeApplicant!
+        additional_fields: additionalField!
+        # push(newAdditionalAttributesField)
 	}
+
+    input traineeNewFieldsInput {
+            field_name: String!
+            key_value: String!
+    }
+      type traineeNewFields {
+            field_name: String!
+            key_value: String!
+    }
+
+
 
     	type traineeAttributeCreated {
         gender: String!
@@ -96,7 +115,8 @@ input one {id: ID!}
         english_score: String!
         interview_decision: String!
         past_andela_programs: String!
-        _id:ID
+        _id:ID!
 		trainee_id: String!
+        additional_fields: String!
 	}
 `

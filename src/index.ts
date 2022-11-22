@@ -16,13 +16,15 @@ import  {usersResolvers}  from "./resolvers/userResolver";
 import { updateUserTypeDefs } from "./schema/updateUserTypeDefs";
 import { recyclebinresolver} from "./resolvers/emptyrecycle";
 import recyclebinempty from "./schema/recyclebin";
+import { typeDefsAdditionalFields } from "./schema/additionalFiledsTypeDefs";
+import additionalAttributesFieldResolver from "./resolvers/additionalAttributeField";
 
 
 
 const PORT = process.env.PORT || 4001;
 
-const resolvers = mergeResolvers([applicationCycleResolver, usersResolvers,traineeAttributeResolver, traineeApplicantResolver, traineeResolvers, filterTraineeResolver,recyclebinresolver])
-const typeDefs= mergeTypeDefs([applicationCycleTypeDefs, typeDefsAttribute, typeDefsTrainee, updateUserTypeDefs, deleteTraineTypeDefs, filterTraineetypeDefs,recyclebinempty ])
+const resolvers = mergeResolvers([applicationCycleResolver, usersResolvers,traineeAttributeResolver, traineeApplicantResolver, traineeResolvers, filterTraineeResolver,recyclebinresolver, additionalAttributesFieldResolver])
+const typeDefs= mergeTypeDefs([applicationCycleTypeDefs, typeDefsAttribute, typeDefsTrainee, updateUserTypeDefs, deleteTraineTypeDefs, filterTraineetypeDefs,recyclebinempty, typeDefsAdditionalFields ])
 
 const server = new ApolloServer({
   typeDefs,

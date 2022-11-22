@@ -1,5 +1,6 @@
 import { traineEAttributes } from "../models/traineeAttribute";
 import TraineeApplicant from "../models/traineeApplicant";
+var mongooseDynamic = require ('mongoose-dynamic-schemas');
 
 export const traineeAttributeResolver: any = {
   Query: {
@@ -32,7 +33,7 @@ export const traineeAttributeResolver: any = {
       // console.log("items to skip", itemsToSkip)
       const allTraineeAttribute = await traineEAttributes
         .find({})
-        .populate("trainee_id")
+        .populate("additional_fields").populate("trainee_id")
         .skip(itemsToSkip)
         .limit(items);
       // console.log("attributes", allTraineeAttribute)
@@ -49,6 +50,7 @@ export const traineeAttributeResolver: any = {
       return oneTraineeAttribute;
     },
   },
+
 
   Mutation: {
     async createTraineeAttribute(_: any, args: any) {
@@ -96,11 +98,25 @@ export const traineeAttributeResolver: any = {
           english_score: attributeUpdateInput.english_score,
           interview_decision: attributeUpdateInput.interview_decision,
           past_andela_programs: attributeUpdateInput.past_andela_programs,
+          additional_fields: attributeUpdateInput.additional_fields,
         },
         { new: true }
       );
       // console.log("updated", updated);
       if (!updated)
+        throw new Error("No Trainee is found, please provide the correct trainee_id");
+      return updated;
+    },
+    async addDynamicFields(parent: any, args: any, context: any) {
+      const { ID ,addFieldsToTraineeAttributeInput} = args;
+
+      const updated = await traineEAttributes.findOneAndUpdate(
+        {trainee_id: ID},
+        {$set: {[addFieldsToTraineeAttributeInput.field_name] : `${addFieldsToTraineeAttributeInput.key_value}` }},
+        {strict: false},
+      );
+      // console.log("updated", updated);
+      if (!ID)
         throw new Error("No Trainee is found, please provide the correct trainee_id");
       return updated;
     },
