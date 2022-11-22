@@ -5,7 +5,7 @@ import { typeDefsTrainee } from "./schema/traineeApplicantSchema";
 import { typeDefsAttribute } from "./schema/traineeAttributeSchema";
 import { traineeApplicantResolver } from "./resolvers/traineeApplicantResolver";
 import { traineeAttributeResolver } from "./resolvers/traineeAttributeResolver";
-import deleteTraineTypeDefs from "../src/schema/deleteTraineTypeDefs";
+import deleteTraineTypeDefs from "./schema/deleteTraineTypeDefs";
 import traineeResolvers from "./resolvers/DelTranee";
 import filterTraineeResolver from "./resolvers/filterTraineeResolver";
 import { filterTraineetypeDefs } from "./schema/filterTraineeTypeDefs";
@@ -19,9 +19,8 @@ import applicationCycleTypeDefs from "./schema/applicationCycleTypeDefs";
 import { usersResolvers } from "./resolvers/userResolver";
 import { updateUserTypeDefs } from "./schema/updateUserTypeDefs";
 import loadTraineeResolver from "./resolvers/traineeResolvers";
-import loadAllTraineesFromGoogleSheet from "./schema/loadAllTraineesFromGoogleSheet"
+import loadAllTraineesFromGoogleSheet from "./schema/loadAllTraineesFromGoogleSheet";
 import ResendDataSchema from "./schema/resendDataIntoDbTypeDefs";
-;
 import scoreTypeResolver from "./resolvers/scoreTypesResolvers";
 import scoreValuesResolver from "./resolvers/scoreValuesResolvers";
 
@@ -40,7 +39,6 @@ const resolvers = mergeResolvers([
   loadTraineeResolver,
   scoreTypeResolver,
   scoreValuesResolver,
-  
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
