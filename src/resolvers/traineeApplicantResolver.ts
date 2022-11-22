@@ -60,6 +60,7 @@ export const traineeApplicantResolver: any = {
         {
           firstName: updateInput.firstName,
           lastName: updateInput.lastName,
+          status: updateInput.status,
           cycle_id: new mongoose.Types.ObjectId(updateInput.cycle_id),
         },
         { new: true }

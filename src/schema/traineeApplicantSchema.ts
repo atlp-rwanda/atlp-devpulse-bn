@@ -20,7 +20,8 @@ export const typeDefsTrainee = gql`
     _id: ID!
     email: String!
     cycle_id: applicationCycle
-    delete_at:Boolean
+    delete_at: Boolean
+    status: String!
   }
 
   input newTraineeApplicantInput {
@@ -38,6 +39,7 @@ export const typeDefsTrainee = gql`
     firstName: String
     lastName: String
     cycle_id: String
+    status: String
   }
 
   input pagination {
