@@ -115,6 +115,27 @@ const scoreTypeResolver: any = {
       );
       return newscoreType;
     },
+    async updateManyScoreValues(_parent: any, _args: any) {
+      const inputValues = _args.input;
+      var newObjId;
+      var lastObjId;
+      var returnedValue: any = {};
+      var arr: any = [];
+      var arr: any = [];
+
+      for (let i = 0; i < inputValues.length; i++) {
+        newObjId = inputValues[i].id;
+        lastObjId = inputValues[i];
+        const newscoreValue = await scoreValuesModel.findByIdAndUpdate(
+          newObjId,
+          lastObjId,
+          { new: true }
+        );
+        arr.push(newscoreValue);
+      }
+
+      return arr;
+    },
   },
 };
 
