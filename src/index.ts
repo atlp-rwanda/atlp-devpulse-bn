@@ -24,6 +24,8 @@ import ResendDataSchema from "./schema/resendDataIntoDbTypeDefs";
 ;
 import scoreTypeResolver from "./resolvers/scoreTypesResolvers";
 import scoreValuesResolver from "./resolvers/scoreValuesResolvers";
+import sendBulkyEmailResolver from "./resolvers/bulkyEmailResolver";
+import sendBulkyEmailTypeDefs from "./schema/bulkyEmailTypeDefs";
 
 const PORT = process.env.PORT || 3000;
 
@@ -40,6 +42,7 @@ const resolvers = mergeResolvers([
   loadTraineeResolver,
   scoreTypeResolver,
   scoreValuesResolver,
+  sendBulkyEmailResolver
   
 ]);
 const typeDefs = mergeTypeDefs([
@@ -54,6 +57,7 @@ const typeDefs = mergeTypeDefs([
   scoreTypesSchema,
   scoreValueSchema,
   ResendDataSchema,
+  sendBulkyEmailTypeDefs
 ]);
 
 const server = new ApolloServer({
