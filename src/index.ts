@@ -27,6 +27,8 @@ import { ApolloServerPluginInlineTrace } from "apollo-server-core";
 import { findOrCreateUser } from "./utils/controllers/userController";
 import { LoggedUserSchema } from "./schema/loggedUser";
 import { loggedUserResolvers } from "./resolvers/loginUserResolver";
+import sendBulkyEmailResolver from "./resolvers/bulkyEmailResolver";
+import sendBulkyEmailTypeDefs from "./schema/bulkyEmailTypeDefs";
 
 const PORT = process.env.PORT || 3000;
 
@@ -44,6 +46,7 @@ const resolvers = mergeResolvers([
   scoreTypeResolver,
   scoreValuesResolver,
   loggedUserResolvers,
+  sendBulkyEmailResolver,
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -58,6 +61,7 @@ const typeDefs = mergeTypeDefs([
   scoreValueSchema,
   ResendDataSchema,
   LoggedUserSchema,
+  sendBulkyEmailTypeDefs,
 ]);
 
 const server = new ApolloServer({
