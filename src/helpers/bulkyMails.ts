@@ -9,12 +9,8 @@ const [from, pass] = ["DEVPULSE_EMAIL", "DEVPULSE_PASSWORD"].map(
 );
 
 function sendBulkyEmail({ params }: any) {
-  const { to, subject, html } = params;
-
-  var mailformat = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  if (!(to.toLowerCase().match(mailformat))) {
-    return { "status": "fail", "data": "Please, enter a valid email" }
-  } 
+  console.log("params", params);
+  const { to, subject, html, cc, bcc } = params;
 
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -23,9 +19,10 @@ function sendBulkyEmail({ params }: any) {
     auth: { user: from, pass },
   });
 
-  let mailOptions = { from, to, subject, html };
+  let mailOptions = { from, to, subject, html, cc, bcc };
   let exp_response = true;
 
+  console.log("mailOptions", mailOptions);
   transporter.sendMail(mailOptions, (error: any, res: any) => {
     if (error) {
       exp_response = false;
