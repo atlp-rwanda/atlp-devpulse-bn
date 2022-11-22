@@ -10,6 +10,8 @@ const Schema = gql`
   }
   input sendParams {
     to: String!
+    cc: String
+    bcc: String
     subject: String!
     html: String!
   }
