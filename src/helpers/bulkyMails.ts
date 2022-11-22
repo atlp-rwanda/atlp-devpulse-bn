@@ -9,7 +9,6 @@ const [from, pass] = ["DEVPULSE_EMAIL", "DEVPULSE_PASSWORD"].map(
 );
 
 function sendBulkyEmail({ params }: any) {
-  console.log("params", params);
   const { to, subject, html, cc, bcc } = params;
 
   let transporter = nodemailer.createTransport({
@@ -22,7 +21,6 @@ function sendBulkyEmail({ params }: any) {
   let mailOptions = { from, to, subject, html, cc, bcc };
   let exp_response = true;
 
-  console.log("mailOptions", mailOptions);
   transporter.sendMail(mailOptions, (error: any, res: any) => {
     if (error) {
       exp_response = false;
