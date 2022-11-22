@@ -24,6 +24,8 @@ import ResendDataSchema from "./schema/resendDataIntoDbTypeDefs";
 ;
 import scoreTypeResolver from "./resolvers/scoreTypesResolvers";
 import scoreValuesResolver from "./resolvers/scoreValuesResolvers";
+import additionalAttributesFieldResolver from "./resolvers/additionalAttributeField";
+import { typeDefsAdditionalFields } from "./schema/additionalFiledsTypeDefs";
 
 const PORT = process.env.PORT || 3000;
 
@@ -40,6 +42,7 @@ const resolvers = mergeResolvers([
   loadTraineeResolver,
   scoreTypeResolver,
   scoreValuesResolver,
+  additionalAttributesFieldResolver
   
 ]);
 const typeDefs = mergeTypeDefs([
@@ -54,6 +57,7 @@ const typeDefs = mergeTypeDefs([
   scoreTypesSchema,
   scoreValueSchema,
   ResendDataSchema,
+  typeDefsAdditionalFields,
 ]);
 
 const server = new ApolloServer({

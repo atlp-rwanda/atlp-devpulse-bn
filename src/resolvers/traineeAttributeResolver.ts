@@ -34,7 +34,7 @@ export const traineeAttributeResolver: any = {
             path: "cycle_id",
             model: "applicationCycle",
           },
-        })
+        }).populate("additional_fields")
         .skip(itemsToSkip)
         .limit(items);
       return allTraineeAttribute;
@@ -50,7 +50,7 @@ export const traineeAttributeResolver: any = {
             path: "cycle_id",
             model: "applicationCycle",
           },
-        })
+      }).populate("additional_fields")
         .exec();
       return oneTraineeAttribute;
     },
@@ -100,6 +100,7 @@ export const traineeAttributeResolver: any = {
           english_score: attributeUpdateInput.english_score,
           interview_decision: attributeUpdateInput.interview_decision,
           past_andela_programs: attributeUpdateInput.past_andela_programs,
+          additional_fields: attributeUpdateInput.additional_fields,
         },
         { new: true }
       );

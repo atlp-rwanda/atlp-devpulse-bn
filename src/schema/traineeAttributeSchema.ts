@@ -34,6 +34,7 @@ export const typeDefsAttribute = gql`
     interview_decision: String!
     past_andela_programs: String!
     trainee_id: String!
+    additional_fields: String!
   }
   input pagination {
     page: Int!
@@ -58,6 +59,7 @@ export const typeDefsAttribute = gql`
     english_score: String
     interview_decision: String
     past_andela_programs: String
+    additional_fields: String
   }
 
   type traineeAttribute {
@@ -79,6 +81,7 @@ export const typeDefsAttribute = gql`
     past_andela_programs: String!
     _id: ID
     trainee_id: traineeApplicant!
+    additional_fields: additionalField!
   }
 
   type traineeAttributeCreated {
@@ -100,5 +103,6 @@ export const typeDefsAttribute = gql`
     past_andela_programs: String!
     _id: ID
     trainee_id: String!
+    additional_fields: String!
   }
 `;
