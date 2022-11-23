@@ -38,7 +38,7 @@ export const typeDefsTrainee = gql`
   input traineeApplicantInputUpdate {
     firstName: String
     lastName: String
-    cycle_id: String
+    cycle_id: String!
     status: String
   }
 
