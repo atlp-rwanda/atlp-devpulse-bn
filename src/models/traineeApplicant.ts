@@ -24,6 +24,10 @@ const TraineeApplicant = mongoose.model(
       ref: "applicationCycle",
       required: true,
     },
+    status: {
+      type: String,
+      default: "Not Assigned",
+    },
   })
 );
 
