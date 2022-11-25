@@ -2,9 +2,13 @@ import { gql } from "apollo-server";
 export const filterTraineetypeDefs = gql`
   type Query {
     filterTraineesDetails(input: filterOptions): [traineeAttribute]
+     getAlltraineEAttributescount:count!
   }
   input one {
     id: ID!
+  }
+  type count{
+    total:Int!
   }
 
   input filterOptions {
