@@ -1,8 +1,14 @@
 import { gql } from "apollo-server";
 export const typeDefsTrainee = gql`
   type Query {
-    allTrainees(input: pagination): [traineeApplicant]
+    allTrainees(input: pagination): response
     getOneTrainee(ID: ID!): traineeApplicant
+  }
+  type response {
+    totalItems: Int!
+    page: Int!
+    itemsPerPage: Int!
+    data: [traineeApplicant]!
   }
   type Mutation {
     createNewTraineeApplicant(

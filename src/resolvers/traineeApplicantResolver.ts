@@ -11,17 +11,17 @@ export const traineeApplicantResolver: any = {
       let pages;
       let items;
 
-      if (page) {
+      const totalItems = await TraineeApplicant.countDocuments({});
+      if (page && page > 1) {
         pages = page;
       } else {
         pages = 1;
       }
       if (All) {
         // count total items inside the collections
-        const totalItems = await TraineeApplicant.countDocuments({});
         items = totalItems;
       } else {
-        if (itemsPerPage) {
+        if (itemsPerPage && itemsPerPage > 0) {
           items = itemsPerPage;
         } else {
           items = 3;
@@ -34,7 +34,15 @@ export const traineeApplicantResolver: any = {
         // .populate("applicant_id")
         .skip(itemsToSkip)
         .limit(items);
-      return allTrainee;
+
+      const traineeApplicant = allTrainee;
+
+      return {
+        data: traineeApplicant,
+        totalItems,
+        page: pages,
+        itemsPerPage: items,
+      };
     },
 
     async getOneTrainee(_: any, { ID }: any) {
