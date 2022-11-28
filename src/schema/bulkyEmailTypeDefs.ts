@@ -2,14 +2,14 @@ import { gql } from "apollo-server";
 
 const Schema = gql`
   type Query {
-    sendBulkyEmail(params: sendParams): response
+    sendBulkyEmail(params: sendParams): send_response
   }
-  type response {
+  type send_response {
     status: String!
-    data: String!
+    mail_res: String!
   }
   input sendParams {
-    to: String!
+    to: [String!]
     cc: String
     bcc: String
     subject: String!
