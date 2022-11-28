@@ -1,10 +1,10 @@
-import sendBulkyEmail from "../helpers/bulkyMails";
+import sendEmail from "../helpers/bulkyMails";
 
 
 const sendBulkyEmailResolver = {
   Query: {
     async sendBulkyEmail(_: any,  params: any) {
-        return sendBulkyEmail(params)
+        return sendEmail(params)
     },
   },
 };
