@@ -96,10 +96,10 @@ const filterTraineeResolver: any = {
       
       return allTraineeAttribute;
     },
-    async getAlltraineEAttributescount(){
-        const AlltraineEAttributescount = await traineEAttributes.count();
-        return {total:AlltraineEAttributescount};
-      },
+    async getAlltraineEAttributescount() {
+      const AlltraineEAttributescount = await traineEAttributes.count();
+      return { total: AlltraineEAttributescount };
+    },
   },
 };
 
