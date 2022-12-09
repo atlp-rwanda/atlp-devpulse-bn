@@ -1,4 +1,5 @@
 import TraineeApplicant from "../models/traineeApplicant";
+import { traineEAttributes } from "../models/traineeAttribute";
 
 const traineeResolvers: any = {
   Query: {
@@ -134,17 +135,52 @@ const traineeResolvers: any = {
     },
   },
   Mutation: {
+    // async deleteTrainee(parent: any, args: any, context: any) {
+    //   const deleteTrainee = await TraineeApplicant.findById(args.id).populate(
+    //     "cycle_id"
+    //   );
+    //   if (!deleteTrainee) throw new Error(" Trainee doesn't exist");
+
+    //   const updated = await traineEAttributes
+    //     .findOneAndDelete({ trainee_id: args.id }, (err: any, res: any) => {
+    //       if (err) {
+    //         console.log(err);
+    //       }
+    //     })
+    //     .clone();
+
+    //   const deletedTrainee = await TraineeApplicant.findOneAndDelete(
+    //     args.id
+    //   ).populate("cycle_id");
+
+    //   // const deletedTrainee = await TraineeApplicant.findByIdAndRemove(
+    //   //   args.id
+    //   // ).populate("cycle_id");
+
+    //   return deletedTrainee;
+    // },
+
     async deleteTrainee(parent: any, args: any, context: any) {
       const deleteTrainee = await TraineeApplicant.findById(args.id).populate(
         "cycle_id"
       );
       if (!deleteTrainee) throw new Error(" Trainee doesn't exist");
-      const deletedTrainee = await TraineeApplicant.findByIdAndRemove(
+
+      const updated = await traineEAttributes
+        .findOneAndDelete({ trainee_id: args.id }, (err: any, res: any) => {
+          if (err) {
+            console.log(err);
+          }
+        })
+        .clone();
+
+      const deletedTrainee = await TraineeApplicant.findOneAndDelete(
         args.id
       ).populate("cycle_id");
 
       return deletedTrainee;
     },
+
     async softdeleteTrainee(parent: any, args: any) {
       const trainee = await TraineeApplicant.findById(args.input.id).populate(
         "cycle_id"
