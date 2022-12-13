@@ -29,7 +29,7 @@ export const traineeApplicantResolver: any = {
       }
       // define items per page
       const itemsToSkip = (pages - 1) * items;
-      const allTrainee = await TraineeApplicant.find({})
+      const allTrainee = await TraineeApplicant.find({delete_at:false})
         .populate("cycle_id")
         // .populate("applicant_id")
         .skip(itemsToSkip)
