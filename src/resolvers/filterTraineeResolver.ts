@@ -1,4 +1,5 @@
 import { traineEAttributes } from "../models/traineeAttribute";
+import TraineeApplicant from "../models/traineeApplicant";
 
 const filterTraineeResolver: any = {
   Query: {
@@ -26,9 +27,12 @@ const filterTraineeResolver: any = {
       }
       // define items per page
       const itemsToSkip = (pages - 1) * items;
-
+      let allTraineeAttribute
+      if(wordEntered==''){
+      const docs=await TraineeApplicant.find({delete_at:false},{_id:1})
+      const ids= docs.map((doc)=>doc._id)
       const allTraineeAttribute = await traineEAttributes
-        .find({})
+        .find({trainee_id:{$in:ids}})
         .populate({
           path: "trainee_id",
           populate: {
@@ -38,135 +42,58 @@ const filterTraineeResolver: any = {
         })
         .skip(itemsToSkip)
         .limit(items);
-
-      const nonNullTrainee = allTraineeAttribute.filter((value) => {
-        return value !== null;
-      });
-
-      if (wordEntered && !filterAttribute) {
-        const filterResult = nonNullTrainee.filter((value: any) => {
-          return (
-            value._id
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.gender
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.birth_date
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.Address.toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.phone
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.field_of_study
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.education_level
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.province
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.district
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.sector
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.isEmployed
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.haveLaptop
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.isStudent
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.Hackerrank_score.toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.interview_decision
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.past_andela_programs
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.trainee_id._id
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.trainee_id.email
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.trainee_id.firstName
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.trainee_id.lastName
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase()) ||
-            value.trainee_id.delete_at
-              .toString()
-              .toLowerCase()
-              .includes(wordEntered.toString().toLowerCase())
-          );
-        });
-
-        return filterResult;
+        return allTraineeAttribute
       }
+      //   const nonNullTrainee = allTraineeAttribute.filter((value) => {
+      //   return value !== null;
+      // });
+      enum traineeAplicant {email = <any>'email',firstName = <any>'firstName',lastName = <any>'lastName',status=<any>'status',_id=<any>'_id'}
+      enum traineeAttribute {Address = <any>'Address',province = <any>'province',district = <any>'district',sector = <any>'sector',gender = <any>'gender', birth_date= <any>'birth_date',phone= <any>'phone',field_of_study= <any>'field_of_study',education_level= <any>'education_level',isEmployed= <any>'isEmployed',haveLaptop= <any>'haveLaptop',isStudent= <any>'isStudent',Hackerrank_score= <any>'Hackerrank_score',english_score= <any>'english_score',interview= <any>'interview',interview_decision= <any>'interview_decision',past_andela_programs= <any>'past_andela_programs'}
+      if (filterAttribute in traineeAplicant && wordEntered!=='') {
+        try {
+        const docs=await TraineeApplicant.find({[filterAttribute]:{$regex: wordEntered,$options: 'i'}},{_id:1})
+        const ids= docs.map((doc)=>doc._id)
+        const allTraineeAttribute = await traineEAttributes
+        .find({trainee_id:{$in:ids}})
+        .populate({
+          path: "trainee_id",
+          populate: {
+            path: "cycle_id",
+            model: "applicationCycle",
+          },
+        })
+        .skip(itemsToSkip)
+        .limit(items);
+        return allTraineeAttribute
+        } catch (error) {
+          return []
+        }
 
-      if (wordEntered && filterAttribute) {
-        const filterAttributeResult = allTraineeAttribute.filter(
-          (value: any) => {
-            let arr = Object.keys(value.trainee_id.toJSON());
-            let arr1 = Object.keys(value.toJSON());
-
-            let allKeys: any = arr.concat(arr1);
-
-            for (let i = 0; i < allKeys.length; i++) {
-              if (allKeys[i].toLowerCase() == filterAttribute.toLowerCase()) {
-                usedAttribute = allKeys[i];
-              }
-            }
-
-            if (arr.includes(usedAttribute)) {
-              return value.trainee_id[usedAttribute]
-                .toString()
-                .toLowerCase()
-                .includes(wordEntered.toString().toLowerCase());
-            } else if (arr1.includes(usedAttribute)) {
-              return value[usedAttribute]
-                .toString()
-                .toLowerCase()
-                .includes(wordEntered.toString().toLowerCase());
-            } else {
-              return [];
-            }
-          }
-        );
-        return filterAttributeResult;
       }
-
-      // Return all attributes otherwise
+      if (filterAttribute in traineeAttribute && wordEntered!=='') {
+        console.log(wordEntered,filterAttribute)
+        try {
+        const allTraineeAttribute = await traineEAttributes
+        .find({[filterAttribute]:{$regex: wordEntered,$options: 'i'}})
+        .populate({
+          path: "trainee_id",
+          populate: {
+            path: "cycle_id",
+            model: "applicationCycle",
+          },
+        })
+        .skip(itemsToSkip)
+        .limit(items);
+        console.log(allTraineeAttribute)
+        return allTraineeAttribute
+          
+        } catch (error) {
+          console.log(error)
+          return []
+        }
+  
+      }
+      
       return allTraineeAttribute;
     },
     async getAlltraineEAttributescount(){
