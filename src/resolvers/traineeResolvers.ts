@@ -220,28 +220,70 @@ const loadTraineeResolver: any = {
             correctColumn
           );
 
-          for (let i = 0; i < rows.data?.values?.length - 1; i++) {
-                const cycle = await applicationCycle.findOne({
-                  name: attributesArray[i].cycle_id,
-                });
-                if (!cycle) {
-                  throw new Error("Wrong cycle name is provided!!!!")
-                }
-                const trainee = new TraineeApplicant({
-                  ...traineeArray[i],
-                  cycle_id: cycle?._id,
-                });
-                await trainee.save();
-                const traineeAttributeObj = {
-                  ...attributesArray[i].attributes,
-                  trainee_id: trainee._id,
-                };
+          // @ts-ignore
+          const promisesForCycles = [];
+          const promisesForTrainees = [];
+          const promisesForAttributes = [];
 
-            const traineeAttributes = new traineEAttributes(
-              traineeAttributeObj
+          for (let i = 0; i < rows.data?.values?.length - 1; i++) {
+            // find cycles  and return just _id field only because it is what is need ONLY
+            const cycle = applicationCycle.findOne(
+              {
+                name: attributesArray[i].cycle_id,
+              },
+              {
+                projection: { _id: 1 },
+              }
             );
-            await traineeAttributes.save();
+            promisesForCycles.push(cycle);
           }
+          const cycles = await Promise.all(promisesForCycles);
+
+          for (let i = 0; i < rows.data?.values?.length - 1; i++) {
+
+            const trainee = TraineeApplicant.create(
+              {
+                ...traineeArray[i],
+                cycle_id: cycles[i]?._id,
+              }
+            );
+            promisesForTrainees.push(trainee);
+          }
+          const trainees = await Promise.all(promisesForTrainees);
+
+            for (let i = 0; i < rows.data?.values?.length - 1; i++) {
+                const traineeAttribute = traineEAttributes.create(
+                {
+                  ...attributesArray[i].attributes,
+                  trainee_id: trainees[i]._id,
+                }
+                );
+                promisesForAttributes.push(traineeAttribute);
+            }
+            const attributes = await Promise.all(promisesForAttributes);
+
+          // for (let i = 0; i < rows.data?.values?.length - 1; i++) {
+          //       const cycle = await applicationCycle.findOne({
+          //         name: attributesArray[i].cycle_id,
+          //       });
+          //       if (!cycle) {
+          //         throw new Error("Wrong cycle name is provided!!!!")
+          //       }
+          //       const trainee = new TraineeApplicant({
+          //         ...traineeArray[i],
+          //         cycle_id: cycle?._id,
+          //       });
+          //       await trainee.save();
+          //       const traineeAttributeObj = {
+          //         ...attributesArray[i].attributes,
+          //         trainee_id: trainee._id,
+          //       };
+
+          //   const traineeAttributes = new traineEAttributes(
+          //     traineeAttributeObj
+          //   );
+          //   await traineeAttributes.save();
+          // }
         }
 
         return "Trainees data loaded to db successfully";
@@ -427,25 +469,60 @@ const loadTraineeResolver: any = {
         correctColumn
       );
 
-      // save the trainee to the database
+      const promisesForCycles = [];
+      const promisesForTrainees = [];
+      const promisesForAttributes = [];
       // @ts-ignore
       for (let i = 0; i < rows.data?.values?.length - 1; i++) {
-          const cycle = await applicationCycle.findOne({name:attributesArray[i].cycle_id});
-           if (!cycle) {
-             throw new Error("Wrong cycle name is provided!!!!");
-           }
-        const trainee = new TraineeApplicant({
-          ...traineeArray[i],
-          cycle_id: cycle?._id,
-        });
-        await trainee.save();
-        const traineeAttributeObj = {
-          ...attributesArray[i].attributes,
-          trainee_id: trainee._id,
-        };
-        const traineeAttributes = new traineEAttributes(traineeAttributeObj);
-        await traineeAttributes.save();
+        // find cycles  and return just _id field only because it is what is need ONLY
+        const cycle = applicationCycle.findOne(
+          {
+            name: attributesArray[i].cycle_id,
+          },
+          {
+            projection: { _id: 1 },
+          }
+        );
+        promisesForCycles.push(cycle);
       }
+      const cycles = await Promise.all(promisesForCycles);
+      // @ts-ignore
+      for (let i = 0; i < rows.data?.values?.length - 1; i++) {
+        const trainee = TraineeApplicant.create({
+          ...traineeArray[i],
+          cycle_id: cycles[i]?._id,
+        });
+        promisesForTrainees.push(trainee);
+      }
+      const trainees = await Promise.all(promisesForTrainees);
+      // @ts-ignore
+      for (let i = 0; i < rows.data?.values?.length - 1; i++) {
+        const traineeAttribute = traineEAttributes.create({
+          ...attributesArray[i].attributes,
+          trainee_id: trainees[i]._id,
+        });
+        promisesForAttributes.push(traineeAttribute);
+      }
+      const attributes = await Promise.all(promisesForAttributes);
+      // save the trainee to the database
+      // @ts-ignore
+      // for (let i = 0; i < rows.data?.values?.length - 1; i++) {
+      //     const cycle = await applicationCycle.findOne({name:attributesArray[i].cycle_id});
+      //      if (!cycle) {
+      //        throw new Error("Wrong cycle name is provided!!!!");
+      //      }
+      //   const trainee = new TraineeApplicant({
+      //     ...traineeArray[i],
+      //     cycle_id: cycle?._id,
+      //   });
+      //   await trainee.save();
+      //   const traineeAttributeObj = {
+      //     ...attributesArray[i].attributes,
+      //     trainee_id: trainee._id,
+      //   };
+      //   const traineeAttributes = new traineEAttributes(traineeAttributeObj);
+      //   await traineeAttributes.save();
+      // }
       return "The data mapped has been saved successfully, CONGRATS";
     },
   },
