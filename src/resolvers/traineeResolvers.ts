@@ -66,43 +66,57 @@ const loadTraineeResolver: any = {
           "cycle_name",
         ];
 
-        const getIndexArrOfTheTrainee = (correctColumnOfProperty: string[]) => {
-          const arrayOfTraineeProperties = ["firstName", "lastName", "email"];
-          const traineeIndexArray = [];
-          for (let i = 0; i < arrayOfTraineeProperties.length; i++) {
-            // @ts-ignore
-            if (correctColumnOfProperty.includes(arrayOfTraineeProperties[i])) {
-              // @ts-ignore
-              const index = correctColumnOfProperty.indexOf(
-                arrayOfTraineeProperties[i]
-              );
-              traineeIndexArray.push(index);
-            }
-          }
-          return traineeIndexArray;
-        };
+        // const getIndexArrOfTheTrainee = (correctColumnOfProperty: string[]) => {
+        //   const arrayOfTraineeProperties = ["firstName", "lastName", "email"];
+        //   const traineeIndexArray = [];
+        //   for (let i = 0; i < arrayOfTraineeProperties.length; i++) {
+        //     // @ts-ignore
+        //     if (correctColumnOfProperty.includes(arrayOfTraineeProperties[i])) {
+        //       // @ts-ignore
+        //       const index = correctColumnOfProperty.indexOf(
+        //         arrayOfTraineeProperties[i]
+        //       );
+        //       traineeIndexArray.push(index);
+        //     }
 
-        const giveMeDataInACorrectFormatTrainee = (
-          arrOfAllRows: any,
-          correctColumnArr: any,
-          arrOfTraineeIndexes: any
-        ) => {
-          const arrOfObject = [];
-          for (let i = 1; i < arrOfAllRows.length; i++) {
-            arrOfObject.push({
-              [correctColumnArr[arrOfTraineeIndexes[0]]]:
-                arrOfAllRows[i][arrOfTraineeIndexes[0]],
-              [correctColumnArr[arrOfTraineeIndexes[1]]]:
-                arrOfAllRows[i][arrOfTraineeIndexes[1]],
-              [correctColumnArr[arrOfTraineeIndexes[2]]]:
-                arrOfAllRows[i][arrOfTraineeIndexes[2]],
-            });
-          }
-          return arrOfObject;
-        };
+        //     // If the indexes of trainees is yet captured, do not continue to iterate on the array,
+        //     // JUST GO OUT OF THE LOOP as the purpose of iterating is already achieved!
+        //     if (traineeIndexArray.length === 3) continue
+        //   }
+        //   return traineeIndexArray;
+        // };
 
+        // const giveMeDataInACorrectFormatTrainee = (
+        //   arrOfAllRows: any,
+        //   correctColumnArr: any,
+        //   arrOfTraineeIndexes: any
+        // ) => {
+        //   const arrOfObject = [];
+
+        //   for (let i = 1; i < arrOfAllRows.length; i++) {
+        //     // th data format of arrOfAllRows is
+        //     // As the length of the indexes of the array is well known and should be three as it is representing,
+        //     // three datafields; email, firstName and secondName. so we can get them automatically by accessing them
+        //     // through index 0, 1, 2.
+        //     arrOfObject.push({
+        //       [correctColumnArr[arrOfTraineeIndexes[0]]]:
+        //         arrOfAllRows[i][arrOfTraineeIndexes[0]],
+        //       [correctColumnArr[arrOfTraineeIndexes[1]]]:
+        //         arrOfAllRows[i][arrOfTraineeIndexes[1]],
+        //       [correctColumnArr[arrOfTraineeIndexes[2]]]:
+        //         arrOfAllRows[i][arrOfTraineeIndexes[2]],
+        //     });
+        //   }
+        //   return arrOfObject;
+        // };
+
+        // some of the data received from the table contains the yes or no values while in the database schema
+        // it is declared as boolean either true or false. So this function is there to loop through them
+        // and replace true or false where it found yes or no.
         const replaceNoOrYesWithTrueOrFalseFunc = (dataObject: any) => {
           let finObject = { ...dataObject };
+          // note that since the datafields which normally receives the no or yes response are known,
+          // we can hardcode them and they are : isEmployed, haveLaptop, isStudent.
           if (dataObject.isEmployed.toLowerCase() === "no") {
             finObject = {
               ...finObject,
@@ -142,7 +156,7 @@ const loadTraineeResolver: any = {
           return finObject;
         };
 
-        const giveMeDataInACorrectFormatAttributes = (
+        const giveMeDataOfAttributesAndTraineesSeparately = (
           arr: any,
           arrOfCorrectColumnProperties: any
         ) => {
@@ -173,24 +187,68 @@ const loadTraineeResolver: any = {
             });
           }
           // @ts-ignore
-          const arrOfAttributesData = arrOfObject.map((item: any) => {
-            delete item["firstName"];
-            delete item["lastName"];
-            delete item["email"];
-            const cycle_id = item["cycle_name"];
-            delete item["cycle_name"];
-            const attributesObject = replaceNoOrYesWithTrueOrFalseFunc(item);
-            return {
+
+          const arrOfTraineesAndAttributes = [];
+          for (let Item of arrOfObject) {
+            // @ts-ignore
+            const cycle_id = Item["cycle_name"];
+            // create the object of the trainees swapped from the general
+            // object containing all of the datas from the table
+            const traineesObject = {
+              // @ts-ignore
+              firstName: Item.firstName,
+              // @ts-ignore
+              lastName: Item.lastName,
+              // @ts-ignore
+              email: Item.email,
+            };
+            // Remove the ones which pertains to the trainees, which are email, firstName and lastName.
+            // @ts-ignore
+            delete Item["firstName"];
+            // @ts-ignore
+            delete Item["lastName"];
+            // @ts-ignore
+            delete Item["email"];
+            // @ts-ignore
+            delete Item["cycle_name"];
+            // go to replace the no or  yes values with the true and false values as they are the ones which are required
+            // when saving them in the database
+            const attributesObject = replaceNoOrYesWithTrueOrFalseFunc(Item);
+            arrOfTraineesAndAttributes.push({
+              trainees: traineesObject,
               attributes: attributesObject,
               cycle_id: cycle_id,
-            };
-          });
+            });
+          }
 
-          return arrOfAttributesData;
+          // const arrOfTraineesAndAttributes = arrOfObject.map((item: any) => {
+          //   const cycle_id = item["cycle_name"];
+          //   // create the object of the trainees swapped from the general
+          //   // object containing all of the datas from the table
+          //   const traineesObject = {
+          //     firstName: item.firstName,
+          //     lastName: item.lastName,
+          //     email: item.email,
+          //   };
+          //   // Remove the ones which pertains to the trainees, which are email, firstName and lastName.
+          //   delete item["firstName"];
+          //   delete item["lastName"];
+          //   delete item["email"];
+          //   delete item["cycle_name"];
+          //   // go to replace the no or  yes values with the true and false values as they are the ones which are required
+          //   // when saving them in the database
+          //   const attributesObject = replaceNoOrYesWithTrueOrFalseFunc(item);
+          //   return {
+          //     trainees: traineesObject,
+          //     attributes: attributesObject,
+          //     cycle_id: cycle_id,
+          //   };
+          // });
+
+          return arrOfTraineesAndAttributes;
         };
 
         const SPValuesArr: any = rows.data.values;
-
 
         let newErrorArr: any = [0][0];
         let retunedNewUnmached: any = [];
@@ -209,16 +267,11 @@ const loadTraineeResolver: any = {
           // but if there is no error just save them or him into database.
           // @ts-ignore
           const correctColumn = rows?.data?.values[0];
-          const indexes = getIndexArrOfTheTrainee(correctColumn);
-          const traineeArray = giveMeDataInACorrectFormatTrainee(
-            rows?.data?.values,
-            correctColumn,
-            indexes
-          );
-          const attributesArray = giveMeDataInACorrectFormatAttributes(
-            rows?.data?.values,
-            correctColumn
-          );
+          const attributesAndTraineesArray =
+            giveMeDataOfAttributesAndTraineesSeparately(
+              rows?.data?.values,
+              correctColumn
+            );
 
           // @ts-ignore
           const promisesForCycles = [];
@@ -229,7 +282,7 @@ const loadTraineeResolver: any = {
             // find cycles  and return just _id field only because it is what is need ONLY
             const cycle = applicationCycle.findOne(
               {
-                name: attributesArray[i].cycle_id,
+                name: attributesAndTraineesArray[i].cycle_id,
               },
               {
                 projection: { _id: 1 },
@@ -239,51 +292,25 @@ const loadTraineeResolver: any = {
           }
           const cycles = await Promise.all(promisesForCycles);
 
+          // loop through all of the data in the array and save them but INSTEAD OF AWAITING ALL OF THEM EACH TIME,
+          // use promise.all to await all of them at once after loop.
           for (let i = 0; i < rows.data?.values?.length - 1; i++) {
-
-            const trainee = TraineeApplicant.create(
-              {
-                ...traineeArray[i],
-                cycle_id: cycles[i]?._id,
-              }
-            );
+            const trainee = TraineeApplicant.create({
+              ...attributesAndTraineesArray[i].trainees,
+              cycle_id: cycles[i]?._id,
+            });
             promisesForTrainees.push(trainee);
           }
           const trainees = await Promise.all(promisesForTrainees);
 
-            for (let i = 0; i < rows.data?.values?.length - 1; i++) {
-                const traineeAttribute = traineEAttributes.create(
-                {
-                  ...attributesArray[i].attributes,
-                  trainee_id: trainees[i]._id,
-                }
-                );
-                promisesForAttributes.push(traineeAttribute);
-            }
-            const attributes = await Promise.all(promisesForAttributes);
-
-          // for (let i = 0; i < rows.data?.values?.length - 1; i++) {
-          //       const cycle = await applicationCycle.findOne({
-          //         name: attributesArray[i].cycle_id,
-          //       });
-          //       if (!cycle) {
-          //         throw new Error("Wrong cycle name is provided!!!!")
-          //       }
-          //       const trainee = new TraineeApplicant({
-          //         ...traineeArray[i],
-          //         cycle_id: cycle?._id,
-          //       });
-          //       await trainee.save();
-          //       const traineeAttributeObj = {
-          //         ...attributesArray[i].attributes,
-          //         trainee_id: trainee._id,
-          //       };
-
-          //   const traineeAttributes = new traineEAttributes(
-          //     traineeAttributeObj
-          //   );
-          //   await traineeAttributes.save();
-          // }
+          for (let i = 0; i < rows.data?.values?.length - 1; i++) {
+            const traineeAttribute = traineEAttributes.create({
+              ...attributesAndTraineesArray[i].attributes,
+              trainee_id: trainees[i]._id,
+            });
+            promisesForAttributes.push(traineeAttribute);
+          }
+          const attributes = await Promise.all(promisesForAttributes);
         }
 
         return "Trainees data loaded to db successfully";
@@ -327,43 +354,6 @@ const loadTraineeResolver: any = {
         }
         return firstRowColumnArr;
       };
-
-      const getIndexArrOfTheTrainee = (correctColumnOfProperty: string[]) => {
-        const arrayOfTraineeProperties = ["firstName", "lastName", "email"];
-        const traineeIndexArray = [];
-        for (let i = 0; i < arrayOfTraineeProperties.length; i++) {
-          // @ts-ignore
-          if (correctColumnOfProperty.includes(arrayOfTraineeProperties[i])) {
-            // @ts-ignore
-            const index = correctColumnOfProperty.indexOf(
-              arrayOfTraineeProperties[i]
-            );
-            traineeIndexArray.push(index);
-          }
-        }
-        return traineeIndexArray;
-      };
-
-      const giveMeDataInACorrectFormatTrainee = (
-        arrOfAllRows: any,
-        correctColumnArr: any,
-        arrOfTraineeIndexes: any
-      ) => {
-        // [1,8,12]
-        const arrOfObject = [];
-        for (let i = 1; i < arrOfAllRows.length; i++) {
-          arrOfObject.push({
-            [correctColumnArr[arrOfTraineeIndexes[0]]]:
-              arrOfAllRows[i][arrOfTraineeIndexes[0]],
-            [correctColumnArr[arrOfTraineeIndexes[1]]]:
-              arrOfAllRows[i][arrOfTraineeIndexes[1]],
-            [correctColumnArr[arrOfTraineeIndexes[2]]]:
-              arrOfAllRows[i][arrOfTraineeIndexes[2]],
-          });
-        }
-        return arrOfObject;
-      };
-      // [arr[0][3]]
       const replaceNoOrYesWithTrueOrFalseFunc = (dataObject: any) => {
         let finObject = { ...dataObject };
         if (dataObject.isEmployed.toLowerCase() === "no") {
@@ -404,8 +394,7 @@ const loadTraineeResolver: any = {
         }
         return finObject;
       };
-
-      const giveMeDataInACorrectFormatAttributes = (
+      const giveMeDataOfAttributesAndTraineesSeparately = (
         arr: any,
         arrOfCorrectColumnProperties: any
       ) => {
@@ -435,40 +424,51 @@ const loadTraineeResolver: any = {
             [arrOfCorrectColumnProperties[2]]: arr[i][2],
           });
         }
-        const arrOfAttributesData = arrOfObject.map((item: any) => {
-          delete item["firstName"];
-          delete item["lastName"];
-          delete item["email"];
-          let cycle_id = "";
-          if (columnData["cycle_name"] === "") {
-            cycle_id = item["cycle_name"];
-          } else {
-            cycle_id = columnData["cycle_name"];
-          }
-          delete item["cycle_name"];
-          const attributesObject = replaceNoOrYesWithTrueOrFalseFunc(item);
-          return {
+        // @ts-ignore
+
+        const arrOfTraineesAndAttributes = [];
+        for (let Item of arrOfObject) {
+          // @ts-ignore
+          const cycle_id = Item["cycle_name"];
+          // create the object of the trainees swapped from the general
+          // object containing all of the datas from the table
+          const traineesObject = {
+            // @ts-ignore
+            firstName: Item.firstName,
+            // @ts-ignore
+            lastName: Item.lastName,
+            // @ts-ignore
+            email: Item.email,
+          };
+          // Remove the ones which pertains to the trainees, which are email, firstName and lastName.
+          // @ts-ignore
+          delete Item["firstName"];
+          // @ts-ignore
+          delete Item["lastName"];
+          // @ts-ignore
+          delete Item["email"];
+          // @ts-ignore
+          delete Item["cycle_name"];
+          // go to replace the no or  yes values with the true and false values as they are the ones which are required
+          // when saving them in the database
+          const attributesObject = replaceNoOrYesWithTrueOrFalseFunc(Item);
+          arrOfTraineesAndAttributes.push({
+            trainees: traineesObject,
             attributes: attributesObject,
             cycle_id: cycle_id,
-          };
-        });
-
-        return arrOfAttributesData;
+          });
+        }
+        return arrOfTraineesAndAttributes;
       };
 
       // @ts-ignore
       const correctColumn = replaceToGetCorrectColumn(rows?.data?.values[0]);
-      const indexes = getIndexArrOfTheTrainee(correctColumn);
-      const traineeArray = giveMeDataInACorrectFormatTrainee(
-        rows?.data?.values,
-        correctColumn,
-        indexes
-      );
-      const attributesArray = giveMeDataInACorrectFormatAttributes(
-        rows?.data?.values,
-        correctColumn
-      );
-
+      
+      const attributesAndTraineesArray =
+        giveMeDataOfAttributesAndTraineesSeparately(
+          rows?.data?.values,
+          correctColumn
+        );
       const promisesForCycles = [];
       const promisesForTrainees = [];
       const promisesForAttributes = [];
@@ -477,7 +477,7 @@ const loadTraineeResolver: any = {
         // find cycles  and return just _id field only because it is what is need ONLY
         const cycle = applicationCycle.findOne(
           {
-            name: attributesArray[i].cycle_id,
+            name: attributesAndTraineesArray[i].cycle_id,
           },
           {
             projection: { _id: 1 },
@@ -489,7 +489,7 @@ const loadTraineeResolver: any = {
       // @ts-ignore
       for (let i = 0; i < rows.data?.values?.length - 1; i++) {
         const trainee = TraineeApplicant.create({
-          ...traineeArray[i],
+          ...attributesAndTraineesArray[i].trainees,
           cycle_id: cycles[i]?._id,
         });
         promisesForTrainees.push(trainee);
@@ -498,30 +498,12 @@ const loadTraineeResolver: any = {
       // @ts-ignore
       for (let i = 0; i < rows.data?.values?.length - 1; i++) {
         const traineeAttribute = traineEAttributes.create({
-          ...attributesArray[i].attributes,
+          ...attributesAndTraineesArray[i].attributes,
           trainee_id: trainees[i]._id,
         });
         promisesForAttributes.push(traineeAttribute);
       }
       const attributes = await Promise.all(promisesForAttributes);
-      // save the trainee to the database
-      // @ts-ignore
-      // for (let i = 0; i < rows.data?.values?.length - 1; i++) {
-      //     const cycle = await applicationCycle.findOne({name:attributesArray[i].cycle_id});
-      //      if (!cycle) {
-      //        throw new Error("Wrong cycle name is provided!!!!");
-      //      }
-      //   const trainee = new TraineeApplicant({
-      //     ...traineeArray[i],
-      //     cycle_id: cycle?._id,
-      //   });
-      //   await trainee.save();
-      //   const traineeAttributeObj = {
-      //     ...attributesArray[i].attributes,
-      //     trainee_id: trainee._id,
-      //   };
-      //   const traineeAttributes = new traineEAttributes(traineeAttributeObj);
-      //   await traineeAttributes.save();
       // }
       return "The data mapped has been saved successfully, CONGRATS";
     },
