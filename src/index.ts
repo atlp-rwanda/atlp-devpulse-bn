@@ -24,6 +24,7 @@ import ResendDataSchema from "./schema/resendDataIntoDbTypeDefs";
 ;
 import scoreTypeResolver from "./resolvers/scoreTypesResolvers";
 import scoreValuesResolver from "./resolvers/scoreValuesResolvers";
+import { ApolloServerPluginInlineTrace } from "apollo-server-core";
 
 const PORT = process.env.PORT || 3000;
 
@@ -61,6 +62,7 @@ const server = new ApolloServer({
   resolvers,
   introspection: true,
   csrfPrevention: true,
+  plugins: [ApolloServerPluginInlineTrace()],
   // cache: "bounded",
 });
 
