@@ -19,11 +19,14 @@ import applicationCycleTypeDefs from "./schema/applicationCycleTypeDefs";
 import { usersResolvers } from "./resolvers/userResolver";
 import { updateUserTypeDefs } from "./schema/updateUserTypeDefs";
 import loadTraineeResolver from "./resolvers/traineeResolvers";
-import loadAllTraineesFromGoogleSheet from "./schema/loadAllTraineesFromGoogleSheet"
+import loadAllTraineesFromGoogleSheet from "./schema/loadAllTraineesFromGoogleSheet";
 import ResendDataSchema from "./schema/resendDataIntoDbTypeDefs";
-;
 import scoreTypeResolver from "./resolvers/scoreTypesResolvers";
 import scoreValuesResolver from "./resolvers/scoreValuesResolvers";
+import { ApolloServerPluginInlineTrace } from "apollo-server-core";
+import { findOrCreateUser } from "./utils/controllers/userController";
+import { LoggedUserSchema } from "./schema/loggedUser";
+import { loggedUserResolvers } from "./resolvers/loginUserResolver";
 
 const PORT = process.env.PORT || 3000;
 
@@ -40,7 +43,7 @@ const resolvers = mergeResolvers([
   loadTraineeResolver,
   scoreTypeResolver,
   scoreValuesResolver,
-  
+  loggedUserResolvers,
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -54,13 +57,29 @@ const typeDefs = mergeTypeDefs([
   scoreTypesSchema,
   scoreValueSchema,
   ResendDataSchema,
+  LoggedUserSchema,
 ]);
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: async ({ req }) => {
+    let authToken = null;
+    let currentUser = null;
+    try {
+      authToken = req.headers.authorization;
+      if (authToken) {
+        //find or create User
+        currentUser = await findOrCreateUser(authToken);
+      }
+    } catch (error) {
+      console.error(`Unable to authenticate user with token ${authToken}`);
+    }
+    return { currentUser };
+  },
   introspection: true,
   csrfPrevention: true,
+  plugins: [ApolloServerPluginInlineTrace()],
   // cache: "bounded",
 });
 

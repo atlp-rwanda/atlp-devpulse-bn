@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/atlp-rwanda/atlp-devpulse-bn#readme",
   "devDependencies": {
+    "apollo-server-core": "^3.11.1",
     "nodemon": "^2.0.19",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.3"
@@ -36,8 +37,11 @@
     "@graphql-tools/merge": "^8.3.7",
     "apollo-server": "^3.10.2",
     "dotenv": "^16.0.2",
+    "google-auth-library": "^8.7.0",
     "googleapis": "^108.0.0",
     "graphql": "^16.6.0",
+    "jsonwebtoken": "^9.0.0",
+    "jwt-decode": "^3.1.2",
     "mongoose": "^6.6.1",
     "ts-node-dev": "^2.0.0"
   }

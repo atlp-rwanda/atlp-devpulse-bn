@@ -1,14 +1,13 @@
 import { model, Schema } from "mongoose";
 const userSchema = new Schema({
   createdAt: String,
-  firstName: String,
-  lastName: String,
+  name: String,
   email: {
     type: String,
     required: true,
     unique: true,
   },
-  profile: String,
+  picture: String,
 });
 
-export const userModel = model("LoggedUser", userSchema);
+export const LoggedUserModel = model("LoggedUserModel", userSchema);
