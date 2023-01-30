@@ -5,7 +5,7 @@ import { typeDefsTrainee } from "./schema/traineeApplicantSchema";
 import { typeDefsAttribute } from "./schema/traineeAttributeSchema";
 import { traineeApplicantResolver } from "./resolvers/traineeApplicantResolver";
 import { traineeAttributeResolver } from "./resolvers/traineeAttributeResolver";
-import deleteTraineTypeDefs from "../src/schema/deleteTraineTypeDefs";
+import deleteTraineTypeDefs from "./schema/deleteTraineTypeDefs";
 import traineeResolvers from "./resolvers/DelTranee";
 import filterTraineeResolver from "./resolvers/filterTraineeResolver";
 import { filterTraineetypeDefs } from "./schema/filterTraineeTypeDefs";
