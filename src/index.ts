@@ -5,7 +5,7 @@ import { typeDefsTrainee } from "./schema/traineeApplicantSchema";
 import { typeDefsAttribute } from "./schema/traineeAttributeSchema";
 import { traineeApplicantResolver } from "./resolvers/traineeApplicantResolver";
 import { traineeAttributeResolver } from "./resolvers/traineeAttributeResolver";
-import deleteTraineTypeDefs from "../src/schema/deleteTraineTypeDefs";
+import deleteTraineTypeDefs from "./schema/deleteTraineTypeDefs";
 import traineeResolvers from "./resolvers/DelTranee";
 import filterTraineeResolver from "./resolvers/filterTraineeResolver";
 import { filterTraineetypeDefs } from "./schema/filterTraineeTypeDefs";
@@ -13,7 +13,6 @@ import { recyclebinresolver } from "./resolvers/emptyrecycle";
 import recyclebinempty from "./schema/recyclebin";
 import scoreTypesSchema from "./schema/scoreTypesSchema";
 import scoreValueSchema from "./schema/scoreValueSchema";
-
 import applicationCycleResolver from "./resolvers/applicationCycleResolver";
 import applicationCycleTypeDefs from "./schema/applicationCycleTypeDefs";
 import { usersResolvers } from "./resolvers/userResolver";

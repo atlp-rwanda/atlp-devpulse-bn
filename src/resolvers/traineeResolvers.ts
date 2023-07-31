@@ -275,10 +275,7 @@ const loadTraineeResolver: any = {
         const client = await auth.getClient();
         //instance of google sheets API
 
-        const googleSheets = google.sheets({
-          version: "v4",
-          auth: client,
-        });
+        const googleSheets = google.sheets("v4");
 
         // Get ID for the arguments passed when calling this api on the front end.
         const spreadsheetId = _args.spreadsheetId;
@@ -425,10 +422,8 @@ const loadTraineeResolver: any = {
       //create client instance for auth
       const client = await auth.getClient();
       //instance of google sheets API
-      const googleSheets = google.sheets({
-        version: "v4",
-        auth: client,
-      });
+      const googleSheets = google.sheets("v4");
+
       //read rows from spreadsheet
       const spreadsheetId = _args.columnData.spreadsheetId;
       const rows = await googleSheets.spreadsheets.values.get({
