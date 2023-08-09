@@ -93,10 +93,9 @@ const server = new ApolloServer({
   introspection: true,
   csrfPrevention: true,
   plugins: [ApolloServerPluginInlineTrace()],
-  // cache: "bounded",
 });
 
 connect().then(() => {
   console.log("Database connected!");
-  server.listen(PORT).then(({ url }) => console.info(`App on ${url}`));
+  server.listen(PORT).then(({ url }) =>   console.info(`App on ${url}`));
 });

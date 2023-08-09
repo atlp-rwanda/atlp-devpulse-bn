@@ -8,13 +8,14 @@ export const LoggedUserSchema = gql`
     lastname: String
     code: String
     email: String
-    role: String
+    role: Role
     picture: String
     country: String
     gender: String
     telephone: String
     password: String
     token: String!
+    isActive:Boolean
   }
 
   input UserInput_Logged {
