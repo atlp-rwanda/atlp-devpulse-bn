@@ -1,4 +1,5 @@
 import { gql } from "apollo-server";
+
 const Schema = gql`
   type Trainee {
     id: ID!
