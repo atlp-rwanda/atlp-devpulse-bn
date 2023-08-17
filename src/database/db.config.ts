@@ -19,3 +19,9 @@ export const connect = async (): Promise<void> => {
         process.exit(1)
     }
 }
+
+
+export default {
+    adminEmail: process.env.ADMIN_EMAIL 
+  };
+  

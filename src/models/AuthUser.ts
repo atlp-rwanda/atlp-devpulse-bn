@@ -8,6 +8,11 @@ const userSchema = new Schema({
     unique: true,
   },
   picture: String,
+  role: {
+    type: String, 
+    enum: ["applicant", "admin"],
+    
+  },
 });
 
 export const LoggedUserModel = model("LoggedUserModel", userSchema);

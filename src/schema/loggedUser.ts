@@ -6,6 +6,8 @@ export const LoggedUserSchema = gql`
     createdAt: String
     name: String
     email: String
+    role:  String
+  
   }
 
   input UserInput_Logged {

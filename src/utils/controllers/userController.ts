@@ -28,7 +28,7 @@ const checkIfUserExists = async (email: any) =>
   await LoggedUserModel.findOne({ email }).exec();
 
 const createNewUser = async (googleUser: any) => {
-  const { name, email, picture } = googleUser;
-  const user = { name, email, picture, createdAt: new Date().toISOString() };
+  const { name, email,role, picture} = googleUser;
+  const user = { name, email, picture,role, createdAt: new Date().toISOString() };
   return new LoggedUserModel(user).save();
 };

@@ -2,6 +2,7 @@ import TraineeApplicant from "../models/traineeApplicant";
 import { traineEAttributes } from "../models/traineeAttribute";
 import { applicationCycle } from "../models/applicationCycle";
 import mongoose, { ObjectId } from "mongoose";
+import { AuthenticationError } from 'apollo-server';
 
 export const traineeApplicantResolver: any = {
   Query: {
@@ -54,7 +55,10 @@ export const traineeApplicantResolver: any = {
   },
 
   Mutation: {
-    async updateTraineeApplicant(parent: any, args: any, context: any) {
+    async updateTraineeApplicant(parent: any, args: any, ctx: any) {
+      if (!ctx.currentUser||ctx.currentUser.role !== 'admin') {
+        throw new AuthenticationError('You are not authorized to perform this action');
+      }
       const { ID, updateInput } = args;
 
       if (updateInput.cycle_id) {
