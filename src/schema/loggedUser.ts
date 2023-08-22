@@ -6,6 +6,9 @@ export const LoggedUserSchema = gql`
     createdAt: String
     name: String
     email: String
+    picture:String
+    role: Role
+    isActive: Boolean
   }
 
   input UserInput_Logged {
@@ -25,5 +28,7 @@ export const LoggedUserSchema = gql`
     createUser_Logged(userInput: UserInput_Logged): User_Logged!
     deleteUser_Logged(ID: ID!): Boolean
     updateUser_Logged(ID: ID!, editUserInput: EditUserInput_Logged): Boolean
+    assignRoleToUser(ID: ID!, roleID: ID!): User_Logged
+    updateUserStatus(ID: ID!): Boolean
   }
 `;

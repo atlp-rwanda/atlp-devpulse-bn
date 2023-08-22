@@ -9,6 +9,11 @@ const userSchema = new Schema({
     unique: true,
   },
   profile: String,
+  role: {
+    type: String,
+    default: "applicant",
+  },
+  isActive: Boolean,
 });
 
 export const userModel = model("LoggedUser", userSchema);

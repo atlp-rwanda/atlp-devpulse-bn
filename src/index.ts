@@ -28,6 +28,10 @@ import { LoggedUserSchema } from "./schema/loggedUser";
 import { loggedUserResolvers } from "./resolvers/loginUserResolver";
 import sendBulkyEmailResolver from "./resolvers/bulkyEmailResolver";
 import sendBulkyEmailTypeDefs from "./schema/bulkyEmailTypeDefs";
+import {roleSchema} from "./schema/roleTypedefs";
+import { roleResolvers } from "./resolvers/roleResolver";
+import { permissionResolvers } from "./resolvers/permissionResolver";
+import { permissionSchemaTypeDef } from "./schema/permissionTypeSchema";
 
 const PORT = process.env.PORT || 3000;
 
@@ -46,6 +50,8 @@ const resolvers = mergeResolvers([
   scoreValuesResolver,
   loggedUserResolvers,
   sendBulkyEmailResolver,
+  roleResolvers,
+  permissionResolvers,
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -61,6 +67,8 @@ const typeDefs = mergeTypeDefs([
   ResendDataSchema,
   LoggedUserSchema,
   sendBulkyEmailTypeDefs,
+  roleSchema,
+  permissionSchemaTypeDef,
 ]);
 
 const server = new ApolloServer({
