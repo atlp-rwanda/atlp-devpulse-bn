@@ -1,0 +1,78 @@
+import mongoose, { Schema } from "mongoose";
+
+const newApplicationsModel = mongoose.model(
+    'newApplications',
+    new Schema({
+        firstName:{
+            type:String,
+            required:true
+        },
+        lastName:{
+            type:String,
+            requires:true
+        },
+        email:{
+            type:String,
+            required:true
+        },
+        dob:{
+            type:Date,
+            required:true
+        },
+        currentlyStudying:Boolean,
+        educationLevel:{
+            type:String,
+            required:true
+        },
+        highestLevelOfEducation:{
+            type:String
+        },
+        whatWasYourDiscipline:{
+            type:String,
+            required:true
+        },
+        nationality:{
+            type:String,
+            required:true
+        },
+        gender:{
+            type:String,
+            enum:["male"||"female"],
+            required:true
+        },
+        province:{
+            type:String,
+            required:true
+        },
+        district:{
+            type:String,
+            required:true
+        },
+        sector:{
+            type:String,
+            required:true
+        },
+        areYouEmployed:{
+            type:Boolean,
+            required:true
+        },
+        howDidYouFindThisApplication:{
+            type:String,
+            required:true
+        },
+        participateAndelaPrograms:{
+            type:String,
+            required:true
+        },
+        atlpUnPaid:{
+            type:Boolean,
+            required:true
+        },
+        doYouHaveLaptop:{
+            type:String,
+            required:true
+        }
+    })
+)
+
+export default newApplicationsModel

@@ -32,6 +32,8 @@ import {roleSchema} from "./schema/roleTypedefs";
 import { roleResolvers } from "./resolvers/roleResolver";
 import { permissionResolvers } from "./resolvers/permissionResolver";
 import { permissionSchemaTypeDef } from "./schema/permissionTypeSchema";
+import { newApplicationResolver } from "./resolvers/newApplications";
+import newApplicant from './schema/newApplications'
 
 const PORT = process.env.PORT || 3000;
 
@@ -52,6 +54,7 @@ const resolvers = mergeResolvers([
   sendBulkyEmailResolver,
   roleResolvers,
   permissionResolvers,
+  newApplicationResolver
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -69,6 +72,7 @@ const typeDefs = mergeTypeDefs([
   sendBulkyEmailTypeDefs,
   roleSchema,
   permissionSchemaTypeDef,
+  newApplicant
 ]);
 
 const server = new ApolloServer({
