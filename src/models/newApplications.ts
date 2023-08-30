@@ -56,6 +56,14 @@ const newApplicationsModel = mongoose.model(
             type:Boolean,
             required:true
         },
+        occupation:{
+            type:String,
+            required:true
+        },
+        whichCompany:{
+            type:String,
+            required:true
+        },
         howDidYouFindThisApplication:{
             type:String,
             required:true
@@ -69,7 +77,7 @@ const newApplicationsModel = mongoose.model(
             required:true
         },
         doYouHaveLaptop:{
-            type:String,
+            type:Boolean,
             required:true
         }
     })

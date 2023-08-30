@@ -20,7 +20,9 @@ const typeDefs = gql`
     howDidYouFindThisApplication: String
     participateAndelaPrograms: String
     atlpUnPaid: Boolean
-    doYouHaveLaptop: String
+    doYouHaveLaptop: Boolean,
+    occupation:String,
+    whichCompany:String
   }
   
   type Mutation {
@@ -42,7 +44,9 @@ const typeDefs = gql`
     howDidYouFindThisApplication: String
     participateAndelaPrograms: String
     atlpUnPaid: Boolean
-    doYouHaveLaptop: String
+    doYouHaveLaptop: Boolean,
+    occupation:String,
+    whichCompany:String
     ): ApplicantInfo!
   }
   
@@ -64,7 +68,9 @@ const typeDefs = gql`
     howDidYouFindThisApplication: String
     participateAndelaPrograms: String
     atlpUnPaid: Boolean
-    doYouHaveLaptop: String
+    doYouHaveLaptop: String,
+    occupation:String,
+    whichCompany:String
   }
 `;
 

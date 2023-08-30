@@ -34,8 +34,22 @@ import { permissionResolvers } from "./resolvers/permissionResolver";
 import { permissionSchemaTypeDef } from "./schema/permissionTypeSchema";
 import { newApplicationResolver } from "./resolvers/newApplications";
 import newApplicant from './schema/newApplications'
+import { formatError } from "./validations/customeError";
+import fs from 'fs';
+import path from 'path';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const PORT = process.env.PORT || 3000;
+
+const configPath = path.join(__dirname,'..', 'credentials.json');
+const configFileContent = fs.readFileSync(configPath, 'utf8');
+const config = JSON.parse(configFileContent);
+
+config.web.client_id = process.env.CLIENT_ID;
+config.web.client_secret = process.env.CLIENT_SECRET;
+config.web.project_id = process.env.PROJECT_ID;
 
 // const PORT = process.env.PORT || 4001;
 
@@ -78,6 +92,7 @@ const typeDefs = mergeTypeDefs([
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  formatError,
   context: async ({ req }) => {
     let authToken = null;
     let currentUser = null;
