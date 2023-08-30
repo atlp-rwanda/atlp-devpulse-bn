@@ -103,6 +103,7 @@ export const roleResolvers = {
         throw new Error('One or more permissions not found.');
       }
 
+      //@ts-ignore
       role.permissions = permissions.map(permission => permission._id) as Types.ObjectId[];
       await role.save();
       await role.populate('permissions');

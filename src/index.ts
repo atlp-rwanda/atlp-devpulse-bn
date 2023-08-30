@@ -32,6 +32,7 @@ import {roleSchema} from "./schema/roleTypedefs";
 import { roleResolvers } from "./resolvers/roleResolver";
 import { permissionResolvers } from "./resolvers/permissionResolver";
 import { permissionSchemaTypeDef } from "./schema/permissionTypeSchema";
+import userLoginSchema from "./schema/userLoginSchema";
 
 const PORT = process.env.PORT || 3000;
 
@@ -69,6 +70,7 @@ const typeDefs = mergeTypeDefs([
   sendBulkyEmailTypeDefs,
   roleSchema,
   permissionSchemaTypeDef,
+  userLoginSchema,
 ]);
 
 const server = new ApolloServer({
