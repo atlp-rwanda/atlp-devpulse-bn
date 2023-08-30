@@ -19,3 +19,4 @@ export const connect = async (): Promise<void> => {
         process.exit(1)
     }
 }
+

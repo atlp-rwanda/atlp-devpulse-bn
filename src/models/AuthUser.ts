@@ -8,6 +8,14 @@ const userSchema = new Schema({
     unique: true,
   },
   picture: String,
+  role: {
+    type: Schema.Types.ObjectId,
+    ref: 'Role', // Reference to the 'Role' model
+  },
+  isActive:{
+    type: Boolean,
+    default: true
+  } 
 });
 
 export const LoggedUserModel = model("LoggedUserModel", userSchema);
