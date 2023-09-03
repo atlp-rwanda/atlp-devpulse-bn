@@ -236,6 +236,10 @@ export const loggedUserResolvers: any = {
           throw new Error("Inactive users cannot be assigned roles.");
         }
 
+        if (!user.isActive) {
+          throw new Error("Inactive users cannot be assigned roles.");
+        }
+
         const role = await RoleModel.findById(roleID);
 
         if (!role) {
