@@ -1,74 +1,171 @@
 import { AuthenticationError } from 'apollo-server';
-import mongoose, { model, Schema, Types } from 'mongoose';
 import { RoleModel } from '../models/roleModel';
-import { LoggedUserModel } from '../models/AuthUser';
 import { PermissionModel } from '../models/permissionModel';
 
 export const roleResolvers = {
   Query: {
-    role: async (_: any, { id }: { id: string }, context:any) => {
+    getRole: async (_: any, { id }: any, context: any) => {
+      if (!context.currentUser) {
+        throw new AuthenticationError('User not authenticated.');
+      }
 
-      const userWithRole = await LoggedUserModel.findById(context.currentUser?._id).populate('role');
+      const userWithRole = await RoleModel.findOne({ _id: context.currentUser.role });
 
-      if (!userWithRole || (userWithRole.role as any)?.roleName !== 'superAdmin') {
+      if (!userWithRole || userWithRole.roleName !== 'superAdmin') {
         throw new AuthenticationError('Only superadmin can access role details.');
       }
+
       return await RoleModel.findById(id).populate('permissions');
     },
-    roles: async (_: any, __: any, context: any) => {
-      const userWithRole = await LoggedUserModel.findById(context.currentUser?._id).populate('role');
+    getAllRoles: async ( _: any,__: any, context: any) => {
+      if (!context.currentUser) {
+        throw new AuthenticationError('User not authenticated.');
+      }
 
-      if (!userWithRole || (userWithRole.role as any)?.roleName !== 'superAdmin') {
+      const userWithRole = await RoleModel.findOne({ _id: context.currentUser.role });
+
+      if (!userWithRole || userWithRole.roleName !== 'superAdmin') {
         throw new AuthenticationError('Only superadmin can access roles list.');
       }
+
       return await RoleModel.find().populate('permissions');
     },
   },
   Mutation: {
-    createRole: async (_: any, { input }: { input: any }, context: any) => {
-      // console.log(context.currentUser, context.currentUser.role);
+    createRole: async (_: any, { input }: any, context: any) => {
       if (!context.currentUser) {
         throw new AuthenticationError('User not authenticated.');
       }
-  
-      const userWithRole = await LoggedUserModel.findById(context.currentUser._id).populate('role');
-  
-      if (!userWithRole || (userWithRole.role as any)?.roleName !== 'superAdmin') {
+
+      const userWithRole = await RoleModel.findOne({
+        _id: context.currentUser.role,
+      });
+
+      if (!userWithRole || userWithRole.roleName !== 'superAdmin') {
         throw new AuthenticationError('Only superadmin can create roles.');
       }
-  
-      const { roleName, description } = input;
-      const newRole = await RoleModel.create({
-        roleName,
-        description,
-      });
-  
-      return newRole;
+
+      const { roleName, description, permissions } = input;
+
+      let existingRole = await RoleModel.findOne({ roleName });
+
+      if (!existingRole) {
+        existingRole = await RoleModel.create({
+          roleName,
+          description,
+        });
+      }
+
+      for (const permissionInput of permissions) {
+        const { entity, permissions: permissionFields } = permissionInput;
+
+        let existingPermission = await PermissionModel.findOne({ entity });
+
+        if (!existingPermission) {
+          existingPermission = await PermissionModel.create({
+            entity,
+          });
+        }
+
+        if (existingPermission) {
+          for (const field of permissionFields) {
+            if (typeof (existingPermission as any)[field] === 'boolean') {
+              (existingPermission as any)[field] = !(existingPermission as any)[field]; 
+            }
+          }
+          await existingPermission.save();
+
+          if (
+            !existingRole.permissions.some(
+              (permissionId) =>
+                permissionId && existingPermission &&
+               permissionId.toString() === existingPermission._id.toString()
+            )
+          ) {
+            existingRole.permissions.push(existingPermission._id);
+          }
+        }
+      }
+
+      await existingRole.save();
+      const populatedRole = await 
+      RoleModel.populate(existingRole, 'permissions');
+
+      return populatedRole;
     },
-    updateRole: async (_: any, { input }: { input: any }, context: any) => {
-      const { _id, roleName, description } = input;
 
-      const userWithRole = await LoggedUserModel.findById(context.currentUser._id).populate('role');
+    updateRole: async (_: any, { id, input }: any, context: any) => {
+      if (!context.currentUser) {
+        throw new AuthenticationError('User not authenticated.');
+      }
 
-      if (!userWithRole || (userWithRole.role as any)?.roleName !== 'superAdmin') {
+      const userWithRole = await RoleModel.findOne({
+        _id: context.currentUser.role,
+      });
+
+      if (!userWithRole || userWithRole.roleName !== 'superAdmin') {
         throw new AuthenticationError('Only superadmin can update roles.');
       }
 
-      if (!_id) {
-        throw new Error('Role ID is required for updating.');
+      const { roleName, description, permissions } = input;
+
+     
+     
+        const existingRole = await RoleModel.findById(id);
+
+        if (!existingRole) {
+          throw new Error('Role not found');
+        }
+
+        if (roleName) {
+          existingRole.roleName = roleName;
+        }
+        if (description) {
+          existingRole.description = description;
+        }
+
+        if (permissions && permissions.length > 0) {
+          existingRole.permissions = []; 
+
+          for (const permissionInput of permissions) {
+            const { entity, permissions: permissionFields } = permissionInput;
+
+            let existingPermission = await PermissionModel.findOne({ entity });
+
+            if (!existingPermission) {
+              existingPermission = await PermissionModel.create({
+                entity,
+              });
+            }
+
+            if (existingPermission) {
+              for (const field of permissionFields) {
+                if (typeof (existingPermission as any)[field] === 'boolean') {
+                  (existingPermission as any)[field] = !(existingPermission as any)[field]; 
+                }
+              }
+              await existingPermission.save();
+
+              existingRole.permissions.push(existingPermission._id);
+            }
+          }
+        }
+
+        const updatedRole = await existingRole.save();
+        const populatedRole = await RoleModel.populate(updatedRole, 'permissions');
+
+        return populatedRole;
+     
+    },
+
+    deleteRole: async (_: any, { id }: any, context: any) => {
+      if (!context.currentUser) {
+        throw new AuthenticationError('User not authenticated.');
       }
 
-      const updatedRole = await RoleModel.findByIdAndUpdate(_id, {
-        roleName,
-        description,
-      }, { new: true });
+      const userWithRole = await RoleModel.findOne({ _id: context.currentUser.role });
 
-      return updatedRole;
-    },
-    deleteRole: async (_:any, { id }: { id: string }, context: any) => {
-      const userWithRole = await LoggedUserModel.findById(context.currentUser._id).populate('role');
-
-      if (!userWithRole || (userWithRole.role as any)?.roleName !== 'superAdmin') {
+      if (!userWithRole || userWithRole.roleName !== 'superAdmin') {
         throw new AuthenticationError('Only superadmin can delete roles.');
       }
 
@@ -81,32 +178,6 @@ export const roleResolvers = {
       return true;
     },
 
-    assignPermissionsToRole: async (_:any, { roleId, permissionIds }:any, context:any) => {
-      const userWithRole = await LoggedUserModel.findById(
-        context.currentUser?._id
-      ).populate('role');
-
-      if (
-        !userWithRole ||
-        (userWithRole.role as any)?.roleName !== 'superAdmin'
-      ) {
-        throw new AuthenticationError('Only superadmin can assign permissions.');
-      }
-
-      const role = await RoleModel.findById(roleId);
-      if (!role) {
-        throw new Error('Role not found.');
-      }
-
-      const permissions = await PermissionModel.find({ _id: { $in: permissionIds } });
-      if (permissions.length !== permissionIds.length) {
-        throw new Error('One or more permissions not found.');
-      }
-      //@ts-ignore
-      role.permissions = permissions.map(permission => permission._id) as Types.ObjectId[];
-      await role.save();
-      await role.populate('permissions');
-      return role;
-    },
+    
   },
 };
