@@ -4,16 +4,28 @@ export const LoggedUserSchema = gql`
   type User_Logged {
     id: String
     createdAt: String
-    name: String
+    firstname: String
+    lastname: String
+    code: String
     email: String
-    picture:String
-    role: Role
-    isActive: Boolean
+    role: String
+    picture: String
+    country: String
+    gender: String
+    telephone: String
+    password: String
+    token: String!
   }
 
   input UserInput_Logged {
-    name: String
+    firstname: String
+    lastname: String
     email: String
+    password: String
+    code: String
+    telephone: String
+    gender: String
+    country: String
   }
   input EditUserInput_Logged {
     name: String
