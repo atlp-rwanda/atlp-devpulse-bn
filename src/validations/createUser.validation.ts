@@ -12,8 +12,8 @@ interface UserLoggedInput {
 }
 
 export const validateUserLogged = Joi.object<UserLoggedInput>({
-  firstname: Joi.string().required(),
-  lastname: Joi.string().required(),
+  firstname: Joi.string().min(3).required(),
+  lastname: Joi.string().min(3).required(),
   email: Joi.string()
     .email({
       minDomainSegments: 2,
@@ -27,5 +27,5 @@ export const validateUserLogged = Joi.object<UserLoggedInput>({
   gender: Joi.string().required(),
   telephone: Joi.string().required(),
   country: Joi.string().required(),
-  code: Joi.string().required(),
+  code: Joi.string().required().min(2).max(4),
 });
