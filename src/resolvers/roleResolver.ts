@@ -26,7 +26,7 @@ export const roleResolvers = {
   },
   Mutation: {
     createRole: async (_: any, { input }: { input: any }, context: any) => {
-      console.log(context.currentUser, context.currentUser.role);
+      // console.log(context.currentUser, context.currentUser.role);
       if (!context.currentUser) {
         throw new AuthenticationError('User not authenticated.');
       }
