@@ -27,6 +27,7 @@ export const LoggedUserSchema = gql`
     telephone: String
     gender: String
     country: String
+    role:String
   }
   input EditUserInput_Logged {
     name: String
