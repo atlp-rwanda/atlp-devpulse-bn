@@ -33,6 +33,9 @@ import { roleResolvers } from "./resolvers/roleResolver";
 import { permissionResolvers } from "./resolvers/permissionResolver";
 import { permissionSchemaTypeDef } from "./schema/permissionTypeSchema";
 import userLoginSchema from "./schema/userLoginSchema";
+import { formSchema } from "./schema/formSchema";
+import { formsResolver } from "./resolvers/forms.resolver";
+import { formatError } from "./utils/customErrorHandler";
 
 const PORT = process.env.PORT || 3000;
 
@@ -53,6 +56,7 @@ const resolvers = mergeResolvers([
   sendBulkyEmailResolver,
   roleResolvers,
   permissionResolvers,
+  formsResolver,
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -71,11 +75,13 @@ const typeDefs = mergeTypeDefs([
   roleSchema,
   permissionSchemaTypeDef,
   userLoginSchema,
+  formSchema
 ]);
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  formatError,
   context: async ({ req }) => {
     let authToken = null;
     let currentUser = null;
