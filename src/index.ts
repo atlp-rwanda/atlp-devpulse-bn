@@ -36,6 +36,8 @@ import userLoginSchema from "./schema/userLoginSchema";
 import { formSchema } from "./schema/formSchema";
 import { formsResolver } from "./resolvers/forms.resolver";
 import { formatError } from "./utils/customErrorHandler";
+import { formJobSchema } from "./schema/formJobSchema";
+import { jobPostResolver } from  "./resolvers/jobPostResolvers"
 
 const PORT = process.env.PORT || 3000;
 
@@ -57,6 +59,7 @@ const resolvers = mergeResolvers([
   roleResolvers,
   permissionResolvers,
   formsResolver,
+  jobPostResolver,
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -75,7 +78,8 @@ const typeDefs = mergeTypeDefs([
   roleSchema,
   permissionSchemaTypeDef,
   userLoginSchema,
-  formSchema
+  formSchema,
+  formJobSchema
 ]);
 
 const server = new ApolloServer({
