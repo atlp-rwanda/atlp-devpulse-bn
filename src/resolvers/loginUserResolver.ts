@@ -290,7 +290,7 @@ export const loggedUserResolvers: any = {
       const passwordMatch = BcryptUtil.compare(password, user.password);
 
       if (!passwordMatch) {
-        throw new Error("Invalid password");
+        throw new Error("Email or Password is invalid");
       }
 
       const payload = {
@@ -298,6 +298,7 @@ export const loggedUserResolvers: any = {
         email: user.email,
         role: user.role,
         firstname: user.firstname,
+        picture: user.picture
       };
       //@ts-ignore
       const token = generateToken(payload, {
