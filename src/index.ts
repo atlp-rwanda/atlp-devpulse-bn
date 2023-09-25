@@ -24,6 +24,7 @@ import scoreTypeResolver from "./resolvers/scoreTypesResolvers";
 import scoreValuesResolver from "./resolvers/scoreValuesResolvers";
 import { ApolloServerPluginInlineTrace } from "apollo-server-core";
 import { findOrCreateUser } from "./utils/controllers/userController";
+import candidateApplicationResolver from "./resolvers/candidateApplicationResolver";
 import { LoggedUserSchema } from "./schema/loggedUser";
 import { loggedUserResolvers } from "./resolvers/loginUserResolver";
 import sendBulkyEmailResolver from "./resolvers/bulkyEmailResolver";
@@ -32,6 +33,7 @@ import {roleSchema} from "./schema/roleTypedefs";
 import { roleResolvers } from "./resolvers/roleResolver";
 import { permissionResolvers } from "./resolvers/permissionResolver";
 import { permissionSchemaTypeDef } from "./schema/permissionTypeSchema";
+import candidateApplication from "./schema/candidateApplication";
 import userLoginSchema from "./schema/userLoginSchema";
 import { formSchema } from "./schema/formSchema";
 import { formsResolver } from "./resolvers/forms.resolver";
@@ -63,6 +65,7 @@ const resolvers = mergeResolvers([
   formsResolver,
   jobPostResolver,
   programResolvers,
+  candidateApplicationResolver
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -84,6 +87,7 @@ const typeDefs = mergeTypeDefs([
   formSchema,
   formJobSchema,
   programTypeDefs,
+  candidateApplication
 ]);
 
 const server = new ApolloServer({
