@@ -3,6 +3,7 @@ const Schema = gql`
 
 type candidateApplication{
     message:String!
+    id:ID
 }
 
 input deleteCandidateApplication{

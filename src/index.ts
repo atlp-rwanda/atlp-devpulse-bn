@@ -44,6 +44,8 @@ import { programTypeDefs } from "./schema/programSchema";
 import { programResolvers } from "./resolvers/programResolver";
 import { cohortSchema } from "./schema/cohortScheme";
 import { cohortResolver } from "./resolvers/cohortResolver";
+import { viewOwnApplicationTypeDefs }  from "./schema/viewOwnApplication";
+import candidateViewOwnApplication from "./resolvers/viewOwnApplicationResolver";
 
 const PORT = process.env.PORT || 3000;
 
@@ -68,7 +70,8 @@ const resolvers = mergeResolvers([
   jobPostResolver,
   programResolvers,
   candidateApplicationResolver,
-  cohortResolver
+  cohortResolver,
+  candidateViewOwnApplication,
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -91,7 +94,8 @@ const typeDefs = mergeTypeDefs([
   formJobSchema,
   programTypeDefs,
   candidateApplication,
-  cohortSchema
+  cohortSchema,
+  viewOwnApplicationTypeDefs,
 ]);
 
 const server = new ApolloServer({
