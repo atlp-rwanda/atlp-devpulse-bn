@@ -3,7 +3,19 @@ import { gql } from 'apollo-server-express';
 
 export const programTypeDefs = gql`
 type Query {
-  programs: [Program!]!
+  getAll (data:Page!): [Program!]!
+  selectedPrograms(filter: ProgramFilter!,page:Int,pageSize:Int): [Program!]!
+  geSingleProgram(id:ID!):Program!
+}
+input ProgramFilter {
+  title: String
+  modeOfExecution: String
+  mainObjective: String
+}
+
+input Page {
+  page: Int!
+  pageSize: Int!
 }
 
 type Program {

@@ -13,7 +13,7 @@ export const formModel = mongoose.model('forms',
         category: {
             type: String,
             enum: ["ATLP", "RCA", "Girls Program", "Vocation Program"],
-            required: true // This makes the field required
+            required: true 
         },
         link:{
             type:String,
