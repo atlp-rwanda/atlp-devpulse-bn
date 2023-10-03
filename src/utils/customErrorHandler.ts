@@ -7,7 +7,7 @@ export class CustomGraphQLError extends Error {
 
 export const formatError = (error:any) => {
     if (error.originalError instanceof CustomGraphQLError) {
-        return { message: error.message };
+        return { message: 'something went wrong',error:error.message };
     }
     return error;
 };
