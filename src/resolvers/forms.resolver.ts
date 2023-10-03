@@ -1,5 +1,6 @@
 import { LoggedUserModel } from "../models/AuthUser";
 import { formModel } from "../models/formsModel";
+import { jobModels } from "../models/jobModels";
 import { CustomGraphQLError } from "../utils/customErrorHandler";
 
 export const formsResolver = {
@@ -73,9 +74,19 @@ export const formsResolver = {
 						`A record with LINK ${args.link} already exists.`
 					);
 				}
+				const jobPostExist = await jobModels.findById(args.jobpost);
+
+				if (!jobPostExist) {
+
+					throw new CustomGraphQLError('job post does not exist');
+				}
+
+				const updateJobPost = await jobModels.findByIdAndUpdate(args.jobpost, { link: args.link });
 
 				const userInputs = await formModel.create(args);
+
 				return userInputs;
+
 			} catch (error) {
 				throw new CustomGraphQLError(`Something went wrong: ${error}`);
 			}
@@ -100,32 +111,32 @@ export const formsResolver = {
 				throw new CustomGraphQLError(`Error deleting application: ${error}`);
 			}
 		},
-		updateApplication: async (_:any, args:any, context:any) => {
-            const userWithRole = await LoggedUserModel.findById(
-              context.currentUser?._id
-            ).populate("role");
-          
-            if (
-              !userWithRole ||
-              ((userWithRole.role as any)?.roleName !== "managers" &&
-                (userWithRole.role as any)?.roleName !== "superAdmin")
-            ) {
-              throw new CustomGraphQLError(
-                "You do not have permission to perform this action"
-              );
-            }
-          
-            try {
-              const updatedApplication = await formModel.findByIdAndUpdate(
-                args.id,
-                args,  
-                { new: true }
-              );
-              return updatedApplication;
-            } catch (error) {
-              throw new CustomGraphQLError(`Something went wrong: ${error}`);
-            }
-          },
-          
+		updateApplication: async (_: any, args: any, context: any) => {
+			const userWithRole = await LoggedUserModel.findById(
+				context.currentUser?._id
+			).populate("role");
+
+			if (
+				!userWithRole ||
+				((userWithRole.role as any)?.roleName !== "managers" &&
+					(userWithRole.role as any)?.roleName !== "superAdmin")
+			) {
+				throw new CustomGraphQLError(
+					"You do not have permission to perform this action"
+				);
+			}
+
+			try {
+				const updatedApplication = await formModel.findByIdAndUpdate(
+					args.id,
+					args,
+					{ new: true }
+				);
+				return updatedApplication;
+			} catch (error) {
+				throw new CustomGraphQLError(`Something went wrong: ${error}`);
+			}
+		},
+
 	},
 };
