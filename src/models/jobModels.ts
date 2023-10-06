@@ -1,21 +1,44 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
+const statusValues = ["due", "in-recruitment", "running", "done"];
+const labelValues = ["private", "public"];
 export const jobModels = mongoose.model('jobform',
     new mongoose.Schema({
         title:{
             type:String,
+            
+        },
+        program:{
+            type: Schema.Types.ObjectId,
+            ref: "ProgramModel",
             required:true
         },
-        category: {
-            type: String,
+        cohort:{
+            type: Schema.Types.ObjectId,
+            ref: "cohortModel",
+            required:true
+        },
+        cycle: {
+            type: Schema.Types.ObjectId,
+            ref: "applicationCycle",
             required: true 
         },
         link:{
             type:String,
-            required:true
         },
         description:{
             type:String,
+            required:true
+        },
+        status:{
+            type:String,
+            enum: statusValues,
+            default: 'due',
+            required:true
+        },
+        label:{
+            type:String,
+            enum: labelValues,
             required:true
         },
     })
