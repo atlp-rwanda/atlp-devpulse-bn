@@ -5,7 +5,7 @@ export const formSchema = gql`
 		id: ID!
 		link: String!
 		title: String!
-		jobpost: String!
+		category: String!
 		description: String!
 	}
 
@@ -18,7 +18,7 @@ export const formSchema = gql`
 		createApplication(
 			link: String!
 			title: String!
-			jobpost: String!
+			category: String!
 			description: String!
 		): Application
 		deleteApplication(id: ID!): Application
@@ -26,7 +26,7 @@ export const formSchema = gql`
 			id:String!
 			link: String!
 			title: String!
-			jobpost: String!
+			category: String!
 			description: String!
 		): Application!
 	}
