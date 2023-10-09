@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 
 export const formModel = mongoose.model('forms',
     new mongoose.Schema({
@@ -10,9 +10,9 @@ export const formModel = mongoose.model('forms',
             type:String,
             required:true
         },
-        jobpost: {
-            type: Schema.Types.ObjectId,
-            ref: "jobform",
+        category: {
+            type: String,
+            enum: ["ATLP", "RCA", "Girls Program", "Vocation Program"],
             required: true 
         },
         link:{
