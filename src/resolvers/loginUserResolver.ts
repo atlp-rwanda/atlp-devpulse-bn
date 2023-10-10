@@ -298,7 +298,8 @@ export const loggedUserResolvers: any = {
         email: user.email,
         role: user.role,
         firstname: user.firstname,
-        picture: user.picture
+        picture: user.picture,
+        source:'dev-pulse'
       };
       //@ts-ignore
       const token = generateToken(payload, {
