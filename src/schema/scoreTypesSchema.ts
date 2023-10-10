@@ -3,22 +3,39 @@ import { gql } from "apollo-server";
 const Schema = gql`
   type scoreType {
     id: ID!
-    score_type: String!
+    title:String!
+    description:String!
+    modeOfEngagement:String!
+    duration:String!
+    startDate:String
+    endDate:String
+    program:Program
   }
 
   input createScoreType {
-    score_type: String!
+    title:String!
+    description:String!
+    modeOfEngagement:String!
+    duration:String!
+    startDate:String
+    endDate:String
+    program:String
   }
   input updateScoreType {
-    id: ID!
-    score_type: String!
+    title:String
+    description:String
+    modeOfEngagement:String
+    duration:String
+    startDate:String
+    endDate:String
+    program:String
   }
   input deleteScoreType {
     id: ID!
   }
 
   type Query {
-    getAllScoreTypes: [scoreType]
+    getAllScoreTypes(title: String, programId: String): [scoreType]
     getOneScoreType(id: ID!): scoreType
   }
 
