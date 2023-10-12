@@ -4,7 +4,7 @@
   "description": "backend for phase II of pulse",
   "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "node dist/index",
     "dev": "nodemon src/index.ts",
     "seed": "ts-node-dev --transpile-only --no-notify --exit-child src/seeders/index.ts",
@@ -26,6 +26,8 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.2",
+    "@types/jest": "^29.5.5",
+    "jest": "^29.7.0",
     "apollo-server-core": "^3.11.1"
   },
   "dependencies": {
