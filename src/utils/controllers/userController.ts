@@ -2,7 +2,6 @@ import { OAuth2Client } from 'google-auth-library';
 import { LoggedUserModel } from '../../models/AuthUser';
 import { RoleModel } from '../../models/roleModel';
 import { verifyToken } from '../generateToken';
-
 const client = new OAuth2Client(process.env.OAUTH_CLIENT_ID);
 
 export const findOrCreateUser = async (token: any) => {
