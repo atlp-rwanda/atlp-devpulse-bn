@@ -46,6 +46,8 @@ import { cohortSchema } from "./schema/cohortScheme";
 import { cohortResolver } from "./resolvers/cohortResolver";
 import { viewOwnApplicationTypeDefs }  from "./schema/viewOwnApplication";
 import candidateViewOwnApplication from "./resolvers/viewOwnApplicationResolver";
+import { gradingTypeDefs } from "./schema/gradingSchema";
+import gradingResolver from "./resolvers/grading";
 
 const PORT = process.env.PORT || 3000;
 
@@ -72,6 +74,7 @@ const resolvers = mergeResolvers([
   candidateApplicationResolver,
   cohortResolver,
   candidateViewOwnApplication,
+  gradingResolver
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -96,6 +99,7 @@ const typeDefs = mergeTypeDefs([
   candidateApplication,
   cohortSchema,
   viewOwnApplicationTypeDefs,
+  gradingTypeDefs,
 ]);
 
 const server = new ApolloServer({
