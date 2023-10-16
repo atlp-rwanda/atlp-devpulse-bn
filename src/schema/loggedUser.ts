@@ -30,7 +30,8 @@ export const LoggedUserSchema = gql`
     role:String
   }
   input EditUserInput_Logged {
-    name: String
+    firstname: String
+    lastname: String
   }
 
   type Query {

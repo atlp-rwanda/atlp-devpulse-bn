@@ -12,6 +12,15 @@ import { sendUserCredentials } from '../helpers/bulkyMails';
 export const loggedUserResolvers: any = {
   Query: {
     async user_Logged(_: any, args: any, ctx: any) {
+
+      if (!ctx.currentUser) {
+        throw new AuthenticationError('You must be logged in');
+      }
+      const userWithRole = await LoggedUserModel.findById(ctx.currentUser._id).populate('role');
+
+      if (!userWithRole || (userWithRole.role as any)?.roleName !== 'superAdmin') {
+        throw new AuthenticationError('Ony superAdmin can access  user.');
+      }
       const id = args.ID;
       const upvalue = await LoggedUserModel.findById(id).populate('role');
       return upvalue;
@@ -176,8 +185,8 @@ export const loggedUserResolvers: any = {
 
     async updateUser_Logged(
       _: any,
-      { ID, editUserInput: { name } }: any,
-      ctx: any,
+      { ID, editUserInput: { firstname,lastname } }: any,
+      ctx: any
     ) {
       if (!ctx.currentUser) {
         throw new AuthenticationError('You must be logged in');
@@ -191,13 +200,13 @@ export const loggedUserResolvers: any = {
       ) {
         throw new AuthenticationError('Unauthorized to update  user.');
       }
-      const wasEdited = (await LoggedUserModel.updateOne({ _id: ID }, { name }))
+      const wasEdited = (await LoggedUserModel.updateOne({ _id: ID }, { firstname,lastname }))
         .modifiedCount;
       return wasEdited; //1||true if something was Edited, 0||true if nothing Edited
     },
 
     // ...
-
+    
     assignRoleToUser: async (
       _: any,
       { ID, roleID }: { ID: string; roleID: string },
@@ -223,6 +232,14 @@ export const loggedUserResolvers: any = {
           throw new Error('User not found');
         }
 
+        if (!user.isActive) {
+          throw new Error("Inactive users cannot be assigned roles.");
+        }
+
+        if (!user.isActive) {
+          throw new Error("Inactive users cannot be assigned roles.");
+        }
+
         const role = await RoleModel.findById(roleID);
 
         if (!role) {
@@ -231,8 +248,15 @@ export const loggedUserResolvers: any = {
 
         user.role = role._id;
         await user.save();
-        await user.populate('role');
-
+        await user.populate({
+          path: 'role',
+          populate: {
+            path: 'permissions',
+            model: PermissionModel, 
+          },
+        });
+      
+      
         return user;
       } catch (error) {
         throw new Error('Error assigning role: ' + (error as Error).message);
