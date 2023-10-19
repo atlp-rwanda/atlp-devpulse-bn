@@ -1,6 +1,7 @@
 import scoreTypesModel from "../models/scoreTypesModel";
 import scoreValuesModel from "../models/scoreValueModel";
 import { LoggedUserModel } from "../models/AuthUser";
+import { gradingModel } from "../models/grading";
 
 const scoreTypeResolver: any = {
   Query: {
@@ -22,11 +23,18 @@ const scoreTypeResolver: any = {
         if (_args.programId) {
           filter.program = _args.programId;
         }
+        if (_args.description) {
+          filter.description = { $regex: new RegExp(_args.description, "i") };
+        }
+    
+        if (_args.modeOfEngagement) {
+          filter.modeOfEngagement = { $regex: new RegExp(_args.modeOfEngagement, "i") };
+        }
         if (Object.keys(filter).length === 0) {
-          const allScoreTypes = await scoreTypesModel.find({});
+          const allScoreTypes = await scoreTypesModel.find({}).populate('program grading');
           return allScoreTypes;
         }
-        const getScoreTypes = await scoreTypesModel.find(filter);
+        const getScoreTypes = await scoreTypesModel.find(filter).populate('program grading');
         return getScoreTypes;
       }
       catch{
@@ -40,7 +48,7 @@ const scoreTypeResolver: any = {
       if (!userWithRole || !['admin', 'superAdmin'].includes((userWithRole.role as any)?.roleName)) {
         throw new Error("Permission denied. You must be an admin or super admin to access this data.");
       }
-      const getOneScoreType = await scoreTypesModel.findById(args.id);
+      const getOneScoreType = await scoreTypesModel.findById(args.id).populate('program grading');
       if (!scoreTypesModel) throw new Error("This cohort cycle doesn't exist");
       return getOneScoreType;
     },
@@ -60,16 +68,34 @@ const scoreTypeResolver: any = {
       });
 
       if (scoreTypeExists) throw new Error("assessement already exists");
-      const newscoreType = await scoreTypesModel.create({
-        title: _args.input.title,
-        description: _args.input.description,
-        modeOfEngagement: _args.input.modeOfEngagement,
-        duration: _args.input.duration,
-        startDate: _args.input.startDate,
-        endDate:_args.input.endDate,
-        program:_args.input.program
+      const { title, description, modeOfEngagement, duration, startDate, program,durationUnit,grading} = _args.input;
+
+      if(startDate){
+        const start=new Date(startDate)
+        if(!isNaN(start.getTime())){
+          start.setHours(start.getHours() + duration)
+          const formattedEndDate = start.toLocaleString();
+          const selectedGrading = await gradingModel.findById(grading);
+
+          if (!selectedGrading) {
+            throw new Error("Selected grading not found");
+          }
+      const newScoreType = await scoreTypesModel.create({
+        title,
+        description,
+        modeOfEngagement,
+        duration,
+        startDate,
+        durationUnit,
+        endDate:formattedEndDate,
+        program,
+        grading:selectedGrading,
       });
-      return newscoreType;
+      selectedGrading.assessment.push(newScoreType._id);
+      await selectedGrading.save();
+      return newScoreType;
+    }
+    }
     }
     catch(error:any){
       if (error.message.includes("Token expired")) {
