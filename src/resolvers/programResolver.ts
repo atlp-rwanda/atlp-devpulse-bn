@@ -10,6 +10,7 @@ import {
 export const programResolvers = {
   Query: {
     getAll: async (_: any, { data }: any, context: any) => {
+      console.log(context.currentUser);
       try {
         const userWithRole = await LoggedUserModel.findById(
           context.currentUser?._id,

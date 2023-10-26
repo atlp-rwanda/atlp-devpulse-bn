@@ -23,7 +23,7 @@ const candidateApplicationResolver = {
             { _id: id },
             { $set: { status: "deleted" } }
           );
-          return { message: "Application has been deleted!" };
+          return { message: "Application has been deleted!", id };
         }
 
         if (
@@ -34,7 +34,7 @@ const candidateApplicationResolver = {
             { _id: id },
             { $set: { status: "withdrawn" } }
           );
-          return { message: "Application has been withdrawn!" };
+          return { message: "Application has been withdrawn!", id };
         }
 
         return { message: "Application not found" };
