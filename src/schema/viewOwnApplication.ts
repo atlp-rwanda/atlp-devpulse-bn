@@ -1,13 +1,6 @@
 import { gql } from 'apollo-server';
 
 export const viewOwnApplicationTypeDefs = gql`
-  enum ApplicationStatus {
-    submitted
-    received
-    deleted
-    withdrawn
-    old
-  }
 
   type Application {
     _id: ID!
@@ -20,7 +13,7 @@ export const viewOwnApplicationTypeDefs = gql`
     comments: String!
     address: String!
     availability_for_interview: String!
-    status: ApplicationStatus!
+    status: String!
     formUrl: String
     dateOfSubmission:String!
     associatedForm:Form!
@@ -39,7 +32,7 @@ export const viewOwnApplicationTypeDefs = gql`
   }
 
   input ApplicationFilter {
-    status: [ApplicationStatus!]
+    status: String!
   }
 
   input PaginationInput {
