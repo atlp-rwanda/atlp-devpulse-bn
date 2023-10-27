@@ -15,7 +15,14 @@ export const LoggedUserSchema = gql`
     telephone: String
     password: String
     token: String!
-    isActive:Boolean
+    isActive: Boolean
+  }
+
+  type Role {
+    _id: ID!
+    roleName: String!
+    description: String!
+    permissions: [Permission]
   }
 
   input UserInput_Logged {
@@ -27,7 +34,7 @@ export const LoggedUserSchema = gql`
     telephone: String
     gender: String
     country: String
-    role:String
+    role: String
   }
   input EditUserInput_Logged {
     firstname: String
@@ -37,6 +44,7 @@ export const LoggedUserSchema = gql`
   type Query {
     user_Logged(ID: ID!): User_Logged!
     getUsers_Logged(amount: Int): [User_Logged]
+    checkUserRole(email: String): Role!
   }
 
   type Mutation {
