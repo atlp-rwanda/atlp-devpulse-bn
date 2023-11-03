@@ -56,8 +56,28 @@ export const gradingTypeDefs = gql`
     scale: ScaleInput
     attribute: String!
   }
+  
+ input gradingSearch {
+  name: String,
+  scale: String,
+  attribute: String,
+ }
+
+ type GradingList {
+    gradings: [Grading!]
+  }
+  type Query {
+    viewAllGradings(
+      page: Int
+      pageSize: Int
+      searchParams: gradingSearch
+    ): [Grading]
+    viewSingleGrading(gradingId: ID!): Grading
+  }
+
 
   type Mutation {
     createGrading(gradingInput: GradingInput!): Grading!
   }
 `;
+
