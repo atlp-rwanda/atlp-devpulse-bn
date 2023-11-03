@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose";
 
-const statusValues = ["submitted", "received", "deleted", "withdrawn", "old"];
+
 const application = new Schema(
   {
     firstName: String,
@@ -14,7 +14,6 @@ const application = new Schema(
     address: String,
     status: {
       type:String,
-      enum: statusValues,
       default: "submitted"
     },
     formUrl: String,
