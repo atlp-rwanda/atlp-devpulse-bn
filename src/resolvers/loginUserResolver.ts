@@ -126,6 +126,7 @@ export const loggedUserResolvers: any = {
         }
 
         const superAdminEmail = process.env.SUPER_ADMIN_EMAIL;
+        const adminEmail = process.env.ADMIN_EMAIL;
 
         let superAdminRole = await RoleModel.findOne({
           roleName: 'superAdmin',
@@ -138,6 +139,15 @@ export const loggedUserResolvers: any = {
           await superAdminRole.save();
         }
 
+        let adminRole = await RoleModel.findOne({ roleName: 'admin' });
+        if (!adminRole) {
+          adminRole = new RoleModel({
+            roleName: 'admin',
+            description: 'Admin Role Description',
+          });
+          await adminRole.save();
+        }
+
         let applicantRole = await RoleModel.findOne({ roleName: 'applicant' });
         if (!applicantRole) {
           applicantRole = new RoleModel({
@@ -148,8 +158,13 @@ export const loggedUserResolvers: any = {
         }
 
         const isSuperAdmin = email === superAdminEmail;
+        const isAdmin = email === adminEmail;
 
-        const role = isSuperAdmin ? superAdminRole : applicantRole;
+        const role = isSuperAdmin
+         ? superAdminRole 
+         : isAdmin
+         ? adminRole
+         : applicantRole;
 
         const createdUser = new LoggedUserModel({
           firstname,
