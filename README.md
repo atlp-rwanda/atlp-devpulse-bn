@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Pulse is a platform designed to handle ratings for the companies in the **Ed-tech** industries with the its first paying customer being **Andela**. It is currently under development using modern web technologies that prioritize speed and security. This repo holds the codebase for the backend part of the platform which uses **Graphql, Apollo and mongoDB**.
+Pulse is a platform designed to handle ratings for the companies in the **Ed-tech** industries with the its first paying customer being **Andela**. It is currently under development using modern web technologies that prioritize speed and security. This repository holds the codebase for the backend part of the platform which uses **Graphql, Apollo and mongoDB**.
 
 ## Hosted Link
 
