@@ -1,5 +1,5 @@
-import TraineeApplicant from "../models/traineeApplicant";
-import { traineEAttributes } from "../models/traineeAttribute";
+import TraineeApplicant from "../models/traineeApplicant.js";
+import { traineEAttributes } from "../models/traineeAttribute.js";
 
 const traineeResolvers: any = {
   Query: {

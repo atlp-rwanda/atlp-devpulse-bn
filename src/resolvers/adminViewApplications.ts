@@ -1,8 +1,8 @@
-import { CustomGraphQLError } from "../utils/customErrorHandler";
-import { LoggedUserModel } from "../models/AuthUser";
-import { applicant_records } from '../models/candidateApplication';
-import { formModel } from '../models/formsModel';
-import { jobModels } from '../models/jobModels';
+import { CustomGraphQLError } from "../utils/customErrorHandler.js";
+import { LoggedUserModel } from "../models/AuthUser.js";
+import { applicant_records } from '../models/candidateApplication.js';
+import { formModel } from '../models/formsModel.js';
+import { jobModels } from '../models/jobModels.js';
 
 // admin or superadmin list all applications
 export const adminViewApplicationsResolvers = {

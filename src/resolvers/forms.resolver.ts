@@ -1,7 +1,7 @@
-import { LoggedUserModel } from "../models/AuthUser";
-import { formModel } from "../models/formsModel";
-import { jobModels } from "../models/jobModels";
-import { CustomGraphQLError } from "../utils/customErrorHandler";
+import { LoggedUserModel } from "../models/AuthUser.js";
+import { formModel } from "../models/formsModel.js";
+import { jobModels } from "../models/jobModels.js";
+import { CustomGraphQLError } from "../utils/customErrorHandler.js";
 
 export const formsResolver = {
 	Query: {

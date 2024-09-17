@@ -1,6 +1,6 @@
-import TraineeApplicant from "../models/traineeApplicant";
-import { traineEAttributes } from "../models/traineeAttribute";
-import { applicationCycle } from "../models/applicationCycle";
+import TraineeApplicant from "../models/traineeApplicant.js";
+import { traineEAttributes } from "../models/traineeAttribute.js";
+import { applicationCycle } from "../models/applicationCycle.js";
 import mongoose, { ObjectId } from "mongoose";
 
 export const traineeApplicantResolver: any = {

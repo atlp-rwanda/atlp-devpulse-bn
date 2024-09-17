@@ -1,4 +1,4 @@
-import sendEmail from "../helpers/bulkyMails";
+import sendEmail from "../helpers/bulkyMails.js";
 
 
 const sendBulkyEmailResolver = {

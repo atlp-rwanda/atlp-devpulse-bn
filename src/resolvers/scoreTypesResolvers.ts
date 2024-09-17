@@ -1,7 +1,7 @@
-import scoreTypesModel from "../models/scoreTypesModel";
-import scoreValuesModel from "../models/scoreValueModel";
-import { LoggedUserModel } from "../models/AuthUser";
-import { gradingModel } from "../models/grading";
+import scoreTypesModel from "../models/scoreTypesModel.js";
+import scoreValuesModel from "../models/scoreValueModel.js";
+import { LoggedUserModel } from "../models/AuthUser.js";
+import { gradingModel } from "../models/grading.js";
 
 const scoreTypeResolver: any = {
   Query: {

@@ -1,7 +1,7 @@
-import { connect } from '../database/db.config'
+import { connect } from '../database/db.config.js'
 
-import Applicationseed from './applicationcycle'
-import seedDeleteTrainee from './DelTrainee'
+import Applicationseed from './applicationcycle.js'
+import seedDeleteTrainee from './DelTrainee.js'
 
 connect().then(async () => {
     await Applicationseed()

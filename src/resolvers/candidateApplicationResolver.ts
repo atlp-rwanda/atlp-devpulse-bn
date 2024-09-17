@@ -1,4 +1,4 @@
-import { applicant_records } from "../models/candidateApplication";
+import { applicant_records } from "../models/candidateApplication.js";
 
 const candidateApplicationResolver = {
   Mutation: {

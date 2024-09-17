@@ -1,4 +1,4 @@
-import  TraineeApplicant from '../models/traineeApplicant';
+import  TraineeApplicant from '../models/traineeApplicant.js';
 
 
 const seedDeleteTrainee = async () => {

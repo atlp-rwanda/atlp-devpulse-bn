@@ -1,4 +1,4 @@
-import { applicationCycle } from '../models/applicationCycle';
+import { applicationCycle } from '../models/applicationCycle.js';
 
 const seedApplicationCycle = async () => {
 

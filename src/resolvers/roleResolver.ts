@@ -1,6 +1,6 @@
 import { AuthenticationError } from 'apollo-server';
-import { RoleModel } from '../models/roleModel';
-import { PermissionModel } from '../models/permissionModel';
+import { RoleModel } from '../models/roleModel.js';
+import { PermissionModel } from '../models/permissionModel.js';
 
 export const roleResolvers = {
   Query: {

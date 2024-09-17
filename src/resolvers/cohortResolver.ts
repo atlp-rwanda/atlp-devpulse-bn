@@ -1,6 +1,6 @@
-import { cohortModels } from "../models/cohortModel";
-import { LoggedUserModel } from "../models/AuthUser";
-import { CustomGraphQLError } from "../utils/customErrorHandler";
+import { cohortModels } from "../models/cohortModel.js";
+import { LoggedUserModel } from "../models/AuthUser.js";
+import { CustomGraphQLError } from "../utils/customErrorHandler.js";
 
 export const cohortResolver =  {
     Query: {

@@ -1,6 +1,6 @@
 import { AuthenticationError, ForbiddenError } from 'apollo-server';
-import { applicant_records } from "../models/candidateApplication";
-import { formModel } from '../models/formsModel';
+import { applicant_records } from "../models/candidateApplication.js";
+import { formModel } from '../models/formsModel.js';
 const candidateViewOwnApplication = {
   Query: {
     viewAllOwnApplications: async (_:any, { filter, pagination }:any, context:any) => {
