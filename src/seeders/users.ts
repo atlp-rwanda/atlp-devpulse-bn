@@ -1,6 +1,8 @@
 import { LoggedUserModel } from "../models/AuthUser";
 import { RoleModel } from "../models/roleModel";
+import BcryptUtil from "../utils/bcrypt";
 
+// Seed users with superAdmin role.
 const seedUsers = async() => {
         const superAdminRole = await RoleModel.findOne({ roleName: 'superAdmin' });
         const applicantRole = await RoleModel.findOne({ roleName: 'applicant' });
@@ -15,7 +17,7 @@ const seedUsers = async() => {
                 firstname: "Super",
                 lastname: "Admin",
                 email: "admin@example.com",
-                password: "password123",
+                password: await BcryptUtil.hash("password123"),
                 role: superAdminRole._id,
                 country: "Rwanda",
                 code: "+250",
