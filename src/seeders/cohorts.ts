@@ -7,7 +7,6 @@ const seedCohorts = async () => {
     const cycle = await applicationCycle.findOne();
 
     if(!program || !cycle){
-        console.error("Program or cycle not found. Please ensure they exist in the database.");
         return;
     }
     const cohorts = [

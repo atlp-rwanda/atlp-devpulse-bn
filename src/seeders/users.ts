@@ -6,7 +6,6 @@ const seedUsers = async() => {
         const applicantRole = await RoleModel.findOne({ roleName: 'applicant' });
 
         if(!superAdminRole || !applicantRole){
-            console.error("Roles not found");
             return;
         }
 

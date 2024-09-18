@@ -6,7 +6,6 @@ const seedDeleteTrainee = async () => {
     const cycle = await applicationCycle.findOne();
     
     if (!cycle) {
-      console.error("No application cycle found");
       return;
     }
 
