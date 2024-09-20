@@ -68,6 +68,10 @@ export const loggedUserResolvers: any = {
       ctx: any,
     ) {
       const existingUser = await LoggedUserModel.findOne({ email });
+      
+      if (!process.env.JWT_SECRET) {
+        throw new Error("Please ensure that the secret key is properly configured")
+      }
 
       if (existingUser) {
         throw new Error('Email already exists. Please use a different email.');
