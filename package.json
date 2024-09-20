@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "backend for phase II of pulse",
   "main": "src/index.ts",
+  "type": "commonjs",
   "scripts": {
     "test": "jest",
     "start": "node dist/index",
