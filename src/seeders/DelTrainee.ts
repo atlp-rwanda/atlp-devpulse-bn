@@ -43,7 +43,7 @@ const seedDeleteTrainee = async () => {
 
         },
     ];
-    await TraineeApplicant.deleteMany({});
+    await TraineeApplicant.deleteMany({deleteTrainee});
     await TraineeApplicant.insertMany(deleteTrainee);
     return null;
 }

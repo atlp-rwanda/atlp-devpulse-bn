@@ -21,7 +21,7 @@ const seedPrograms = async () => {
             modeOfExecution: "Hybrid"
         }
     ]
-    await ProgramModel.deleteMany({})
+    await ProgramModel.deleteMany({programs})
     await ProgramModel.insertMany(programs)
     return null;
 }
