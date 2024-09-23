@@ -30,14 +30,28 @@ export const roleSchema = gql`
     permissions: [PermissionInput]
   }
 
+  input FilterOptions { 
+    page: Int!
+    itemsPerPage: Int
+    All: Boolean
+    wordEntered: String
+    filterAttribute: String
+  }
+
   type Mutation {
     createRole(input: CreateRoleInput!): Role
     updateRole(id: ID!, input: UpdateRoleInput!): Role
     deleteRole(id: ID!): Boolean
   }
 
+  type Count {
+    total: Int!
+  }
+
   type Query {
     getRole(id: ID!): Role
     getAllRoles: [Role!]!
+    filterRoleDetails(input: FilterOptions): [Role]
+		getAll\RoleAttributescount: Count!
   }
 `;
