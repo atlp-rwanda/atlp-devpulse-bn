@@ -26,7 +26,7 @@ const seedUsers = async() => {
 
             }
         ]
-
+        await LoggedUserModel.deleteMany({users});
         await LoggedUserModel.insertMany(users);
 
 }

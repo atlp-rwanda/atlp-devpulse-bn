@@ -43,7 +43,7 @@ const seedJobs = async () => {
 
     ]
 
-    await jobModels.deleteMany({});
+    await jobModels.deleteMany({jobs});
     await jobModels.insertMany(jobs);
     return null;
 }

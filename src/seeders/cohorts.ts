@@ -28,7 +28,7 @@ const seedCohorts = async () => {
         },
     ];
 
-    await cohortModels.deleteMany({});
+    await cohortModels.deleteMany({cohorts});
     await cohortModels.insertMany(cohorts);
 }
 

@@ -16,7 +16,7 @@ const seedApplicationCycle = async () => {
 			
 		},
 	];
-	await applicationCycle.deleteMany({});
+	await applicationCycle.deleteMany({application});
 	await applicationCycle.insertMany(application);
 	return null;
 };
