@@ -1,0 +1,34 @@
+name: CI
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+    build:
+      runs-on: ubuntu-latest
+      services:
+        mongo:
+          image: mongo:latest
+          ports:
+            - 6000:27017
+      env:
+        MONGO_TEST_DB: ${{ secrets.MONGO_TEST_DB }}
+        NODE_ENV: test
+        MONGO_PROD_DB: 'oe'
+      concurrency: test_environment
+      steps:
+        - uses: actions/checkout@v3
+        - name: Uses Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: 18.x
+            cache: 'npm'
+            
+        - run: npm install
+        - run: npm run build
+        - run: npm run test -- --coverage
+
+        - name: Upload coverage reports to Codecov
+          uses: codecov/codecov-action@v4.0.1
+          with:
+            token: ${{ secrets.CODECOV_TOKEN }}

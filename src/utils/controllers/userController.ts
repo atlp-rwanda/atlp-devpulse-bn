@@ -41,8 +41,10 @@ const checkIfUserExists = async (email: any) =>
 const createNewUser = async (googleUser: any) => {
   const { given_name, family_name, email, picture, isActive } = googleUser;
   const superAdminEmail = process.env.SUPER_ADMIN_EMAIL;
+  const adminEmail = process.env.ADMIN_EMAIL;
   const applicantRole = await RoleModel.findOne({ roleName: 'applicant' });
   const superAdminRole = await RoleModel.findOne({ roleName: 'superAdmin' });
+  const adminRole = await RoleModel.findOne({ roleName: 'admin' });
 
   const createSuperAdminRole = async () => {
     const newSuperAdminRole = new RoleModel({
@@ -52,6 +54,15 @@ const createNewUser = async (googleUser: any) => {
     const savedSuperAdminRole = await newSuperAdminRole.save();
     return savedSuperAdminRole._id;
   };
+
+  const createAdminRole = async () => {
+    const newAdminRole = new RoleModel({
+      roleName: 'admin',
+      description: 'Admin Role Description',
+    });
+    const savedAdminRole = await newAdminRole.save();
+    return savedAdminRole._id;
+  }
 
   const createApplicantRole = async () => {
     const newApplicantRole = new RoleModel({
@@ -65,6 +76,8 @@ const createNewUser = async (googleUser: any) => {
   const roleId =
     email === superAdminEmail
       ? superAdminRole?._id || createSuperAdminRole()
+      : email === adminEmail
+      ? adminRole?._id || createAdminRole()
       : applicantRole?._id || createApplicantRole();
 
   const user = {

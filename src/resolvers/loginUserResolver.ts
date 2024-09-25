@@ -69,6 +69,10 @@ export const loggedUserResolvers: any = {
       ctx: any,
     ) {
       const existingUser = await LoggedUserModel.findOne({ email });
+      
+      if (!process.env.JWT_SECRET) {
+        throw new Error("Please ensure that the secret key is properly configured")
+      }
 
       if (existingUser) {
         throw new Error('Email already exists. Please use a different email.');
@@ -123,6 +127,7 @@ export const loggedUserResolvers: any = {
         }
 
         const superAdminEmail = process.env.SUPER_ADMIN_EMAIL;
+        const adminEmail = process.env.ADMIN_EMAIL;
 
         let superAdminRole = await RoleModel.findOne({
           roleName: 'superAdmin',
@@ -135,6 +140,15 @@ export const loggedUserResolvers: any = {
           await superAdminRole.save();
         }
 
+        let adminRole = await RoleModel.findOne({ roleName: 'admin' });
+        if (!adminRole) {
+          adminRole = new RoleModel({
+            roleName: 'admin',
+            description: 'Admin Role Description',
+          });
+          await adminRole.save();
+        }
+
         let applicantRole = await RoleModel.findOne({ roleName: 'applicant' });
         if (!applicantRole) {
           applicantRole = new RoleModel({
@@ -145,8 +159,13 @@ export const loggedUserResolvers: any = {
         }
 
         const isSuperAdmin = email === superAdminEmail;
+        const isAdmin = email === adminEmail;
 
-        const role = isSuperAdmin ? superAdminRole : applicantRole;
+        const role = isSuperAdmin
+         ? superAdminRole 
+         : isAdmin
+         ? adminRole
+         : applicantRole;
 
         const createdUser = new LoggedUserModel({
           firstname,
