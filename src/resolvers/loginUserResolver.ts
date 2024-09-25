@@ -76,6 +76,12 @@ export const loggedUserResolvers: any = {
       if (existingUser) {
         throw new Error('Email already exists. Please use a different email.');
       }
+      const existingUserByPhone = await LoggedUserModel.findOne({ telephone });
+      if (existingUserByPhone) {
+        throw new Error(
+          "Telephone number already exists. Please use a different number."
+        );
+      }
       const userWithRole = await LoggedUserModel.findById(
         ctx.currentUser?._id,
       ).populate('role');
