@@ -13,9 +13,7 @@ sgMail.setApiKey(API_KEY);
 
 const sendBulkyEmail = async ({ params }: any) => {
   const { to, subject, html, cc, bcc } = params;
-
   const message: any = { from: { name, email }, to, subject, html, cc, bcc };
-
   try {
     await sgMail.send(message);
     return { status: "success", mail_res: "Email sent successfully!" };
@@ -26,9 +24,9 @@ const sendBulkyEmail = async ({ params }: any) => {
 
 export default sendBulkyEmail;
 
-export const sendUserCredentials = async (email:String, password:String) => {
+export const sendUserCredentials = async (email: String, password: String) => {
   const loginUrl = `${process.env.LOGIN}/#/login`;
-  const apikey:any = process.env.API_KEY;
+  const apikey: any = process.env.API_KEY;
   sgMail.setApiKey(apikey);
   const htmlContent = `
     <!DOCTYPE html>
@@ -96,7 +94,7 @@ export const sendUserCredentials = async (email:String, password:String) => {
     </html>
   `;
 
-  const message:any = {
+  const message: any = {
     to: email,
     from: {
       email: process.env.DEVPULSE_EMAIL,
@@ -108,7 +106,101 @@ export const sendUserCredentials = async (email:String, password:String) => {
   try {
     await sgMail.send(message);
     return { status: "success", mail_res: "Email sent successfully!" };
-  } catch (error:any) {
+  } catch (error: any) {
     return { status: "fail", mail_res: error.message };
   }
 };
+
+export const sendEmailTemplate = async (email: string, subject: string, title: string, body: string, button: any) => {
+  try {
+
+    const contents = `
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dev pulse template</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    padding: 30px;
+    color: #000;
+  }
+
+  .title {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .title h2 {
+    font-weight: bold;
+  }
+
+  .box p {
+    width: 400px;
+    font-size: 18px;
+    color: #000;
+  }
+  .box .button {
+    text-decoration: none;
+    background: #56C870;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+  <div class="title">
+    <h2>
+      ${title}
+    </h2>
+  </div>
+  <div class="box">
+    <p>
+     ${body}
+    </p>
+    <a href="${button.url}" class="button">
+     ${button.text}
+    </a>
+  </div>
+</div>
+</div>
+</body>
+</html>
+`
+    const message: any = {
+      to: email,
+      from: {
+        email: process.env.DEVPULSE_EMAIL
+      },
+      subject: `${subject} - Devpulse`,
+      html: contents
+    }
+    await sgMail.send(message);
+    return {
+      status: "success",
+      message: "Email sent successfully!"
+    }
+  }
+  catch (error: any) {
+    return {
+      status: "fail",
+      message: error.message
+    }
+  }
+}
+
+
+
+
+
+
+
