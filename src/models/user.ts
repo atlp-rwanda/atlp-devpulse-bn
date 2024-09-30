@@ -10,11 +10,17 @@ const userSchema = new Schema({
   },
   role: {
     type: String,
+    enum: ['applicant', 'trainee', 'graduate'],
     default: "applicant",
+
   },
   profile: String,
   password: String,
   status: Boolean,
+  cohort: {
+    type: Schema.Types.ObjectId,
+    ref: "Cohort",
+  }
 });
 
 export const userModel = model("LoggedUser", userSchema);

@@ -2,6 +2,10 @@ import mongoose, { model, Schema } from "mongoose";
 const TraineeApplicant = mongoose.model(
   "Trainee",
   new Schema({
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    },
     email: {
       type: String,
       required: true,
@@ -23,6 +27,11 @@ const TraineeApplicant = mongoose.model(
       type: mongoose.Schema.Types.ObjectId,
       ref: "applicationCycle",
       required: true,
+    },
+    applicationPhase: {
+      type: String,
+      enum: ["Applied", "Interviewed", "Accepted", "Enrolled"],
+      default: "Applied",
     },
     status: {
       type: String,
