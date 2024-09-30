@@ -211,7 +211,7 @@ export const loggedUserResolvers: any = {
 
         const savedSession = await newSession.save();
         await sendEmailTemplate(email, "New account verification",
-          `Hello ${email.split('@')[0]}, welcome to Devpulse`,
+          `Hello ${email.split('@')[0]},`,
           `Welcome to Devpulse, you are almost ready. <br> Click on the below button to verify you account.`
           ,
           {
