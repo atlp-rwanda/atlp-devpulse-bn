@@ -4,7 +4,7 @@ import { applicationCycle } from "../models/applicationCycle";
 import mongoose, { ObjectId } from "mongoose";
 import { sendEmailTemplate } from "../helpers/bulkyMails";
 
-const FrontendUrl = process.env.FRONTEND_URL
+const FrontendUrl = process.env.FRONTEND_URL || ""
 
 
 export const traineeApplicantResolver: any = {
@@ -134,8 +134,8 @@ export const traineeApplicantResolver: any = {
         `You are invited to join Devpulse application ${cycle.name} <br/> 
         Click on the button to continue.`,
         {
-          text: "Continue",
-          url: FrontendUrl
+          url: FrontendUrl,
+          text: "Continue"
         }
       )
       return traineeToCreate.populate("cycle_id");
