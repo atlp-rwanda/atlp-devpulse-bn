@@ -111,96 +111,120 @@ export const sendUserCredentials = async (email: String, password: String) => {
   }
 };
 
-export const sendEmailTemplate = async (email: string, subject: string, title: string, body: string, button: any) => {
+
+export const sendEmailTemplate = async (
+  email: string,
+  subject: string,
+  title: string,
+  body: string,
+  button?: { url: string, text: string }
+) => {
   try {
+    const logoText = "DevPulse";
+    const logoColor = "#374151";
+
+    const generateLogo = (logo: string, color: string) => {
+      return `
+        <div class="logo" style="font-size: 30px; font-weight: bold; color: ${color}; text-align: center; margin-bottom: 20px;">
+          ${logo}
+        </div>
+      `;
+    };
+
+    const generateTitle = (title: string) => {
+      return `<h2>${title}</h2>`;
+    };
+
+    const generateBody = (body: string) => {
+      return `<p>${body}</p>`;
+    };
+
+    const generateButton = (url: string, text: string) => {
+      return `
+        <a href="${url}" class="button" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #56C870; color: #fff; text-decoration: none; border-radius: 5px;">
+          ${text}
+        </a>
+      `;
+    };
 
     const contents = `
-<!DOCTYPE html>
-<html lang="en">
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${subject}</title>
+        <style>
+          body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          }
+          h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+          }
+          p {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 20px;
+          }
+          .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #56C870;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          ${generateLogo(logoText, logoColor)}
+          ${generateTitle(title)}
+          ${generateBody(body)}
+          ${button ? generateButton(button.url, button.text) : ''}
+        </div>
+      </body>
+    </html>
+    `;
 
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dev pulse template</title>
-<style>
-  body {
-    margin: 0;
-    padding: 0;
-    padding: 30px;
-    color: #000;
-  }
-
-  .title {
-    display: flex;
-    flex-direction: row;
-  }
-
-  .title h2 {
-    font-weight: bold;
-  }
-
-  .box p {
-    width: 400px;
-    font-size: 18px;
-    color: #000;
-  }
-  .box .button {
-    text-decoration: none;
-    background: #56C870;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-</style>
-</head>
-
-<body>
-<div class="container">
-  <div class="title">
-    <h2>
-      ${title}
-    </h2>
-  </div>
-  <div class="box">
-    <p>
-     ${body}
-    </p>
-    <a href="${button.url}" class="button">
-     ${button.text}
-    </a>
-  </div>
-</div>
-</div>
-</body>
-</html>
-`
     const message: any = {
       to: email,
       from: {
-        email: process.env.DEVPULSE_EMAIL
+        email: process.env.DEVPULSE_EMAIL,
       },
-      subject: `${subject} - Devpulse`,
-      html: contents
-    }
+      subject: `${subject} - DevPulse`,
+      html: contents,
+    };
+
     await sgMail.send(message);
+
     return {
       status: "success",
-      message: "Email sent successfully!"
-    }
-  }
-  catch (error: any) {
+      message: "Email sent successfully!",
+    };
+  } catch (error: any) {
     return {
       status: "fail",
-      message: error.message
-    }
+      message: error.message,
+    };
   }
-}
-
-
-
-
-
+};
 
 
