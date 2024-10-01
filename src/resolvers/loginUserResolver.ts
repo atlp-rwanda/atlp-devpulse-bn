@@ -210,12 +210,45 @@ export const loggedUserResolvers: any = {
         });
 
         const savedSession = await newSession.save();
-        await sendEmailTemplate(email, "New account verification",
-          `Hello ${email.split('@')[0]},`,
-          `Welcome to Devpulse, you are almost ready. <br> Click on the below button to verify you account.`
+        await sendEmailTemplate(email, " Welcome to Devpulse – Your Account is Ready!",
+          `Hello ${firstname || email.split('@')[0]},`,
+          `
+            Welcome to Devpulse! We’re excited to have you join our community of developers, creators, and innovators.
+            <br/>
+            <br/>
+            Your account has been successfully created, and you’re all set to start exploring everything Devpulse has to offer. Whether you’re here to build projects, collaborate with others, or enhance your skills, we’re here to support your journey.
+            <br/>
+            <br/>
+            <b>Here’s what you can do next:</b>
+            <br/>
+            <br/>
+            Explore Your Dashboard: Get started by customizing your profile and exploring our features.
+            Find Resources: Access tutorials, tools, and resources to accelerate your development.
+            Collaborate with Peers: Connect with like-minded developers, share projects, and collaborate on innovative ideas.
+            <br/>
+            <br/>
+            <b>Need Help?</b>
+            <br/>
+            <br/>
+            If you have any questions or need assistance, our support team is here to help. Feel free to reach out to us at [support email] or visit our [Help Center](link to Help Center).
+            <br/>
+            <br/>
+            <b>Stay Connected</b>
+            <br/>
+            <br/>
+            Stay up to date with the latest news, updates, and community events by following us on our social media.
+            <br/>
+            <br/>
+            Thank you for joining Devpulse – we can’t wait to see what you’ll create!
+            <br/>
+            <br/>
+            Best regards,
+            <br/>
+            The Devpulse Team
+            `
           ,
           {
-            text: "Verify account",
+            text: "Continue",
             url: FrontendUrl + '/#/verify-email/' + token
           }
         );
@@ -243,11 +276,45 @@ export const loggedUserResolvers: any = {
         token
       });
       await newSession.save();
-      await sendEmailTemplate(email, "New account verification",
-        `Hello ${email.split('@')[0]}, welcome to Devpulse`,
-        `Welcome to Devpulse, you are almost ready. <br> Click on the below button to verify you account.`,
+      await sendEmailTemplate(email, " Welcome to Devpulse – Your Account is Ready!",
+        `Hello ${email.split('@')[0]},`,
+        `
+          Welcome to Devpulse! We’re excited to have you join our community of developers, creators, and innovators.
+          <br/>
+          <br/>
+          Your account has been successfully created, and you’re all set to start exploring everything Devpulse has to offer. Whether you’re here to build projects, collaborate with others, or enhance your skills, we’re here to support your journey.
+          <br/>
+          <br/>
+          <b>Here’s what you can do next:</b>
+          <br/>
+          <br/>
+          Explore Your Dashboard: Get started by customizing your profile and exploring our features.
+          Find Resources: Access tutorials, tools, and resources to accelerate your development.
+          Collaborate with Peers: Connect with like-minded developers, share projects, and collaborate on innovative ideas.
+          <br/>
+          <br/>
+          <b>Need Help?</b>
+          <br/>
+          <br/>
+          If you have any questions or need assistance, our support team is here to help. Feel free to reach out to us at [support email] or visit our [Help Center](link to Help Center).
+          <br/>
+          <br/>
+          <b>Stay Connected</b>
+          <br/>
+          <br/>
+          Stay up to date with the latest news, updates, and community events by following us on our social media.
+          <br/>
+          <br/>
+          Thank you for joining Devpulse – we can’t wait to see what you’ll create!
+          <br/>
+          <br/>
+          Best regards,
+          <br/>
+          The Devpulse Team
+          `
+        ,
         {
-          text: "Verify account",
+          text: "Continue",
           url: FrontendUrl + '/#/verify-email/' + token
         }
       );
@@ -269,7 +336,7 @@ export const loggedUserResolvers: any = {
       }
       const wasDeleted = (await LoggedUserModel.deleteOne({ _id: ID }))
         .deletedCount;
-      return wasDeleted; //1 if something was deleted, 0 if nothing deleted
+      return wasDeleted;
     },
 
     async updateUser_Logged(
@@ -292,7 +359,7 @@ export const loggedUserResolvers: any = {
       const wasEdited = (
         await LoggedUserModel.updateOne({ _id: ID }, { firstname, lastname })
       ).modifiedCount;
-      return wasEdited; //1||true if something was Edited, 0||true if nothing Edited
+      return wasEdited;
     },
 
 
