@@ -4,9 +4,13 @@ import { formModel } from '../models/formsModel';
 const candidateViewOwnApplication = {
   Query: {
     viewAllOwnApplications: async (_:any, { filter, pagination }:any, context:any) => {
-      if (!context.currentUser) {
-        throw new AuthenticationError('You must be logged in to view your applications.');
+      if (context.sessionExpired) {
+        throw new AuthenticationError('Session expired. Please login again to continue.');
       }
+      if (!context.currentUser) {
+        throw new AuthenticationError('Oops! You must be logged in to proceed');
+      }
+
 
       try {
         const filterCriteria: any = {

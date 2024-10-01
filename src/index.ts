@@ -132,17 +132,20 @@ const server = new ApolloServer({
   formatError,
   context: async ({ req }) => {
     let authToken = null;
+    let token = null;
     let currentUser = null;
     try {
       authToken = req.headers.authorization;
-      if (authToken) {
-      
-        currentUser = await findOrCreateUser(authToken);
+      token = authToken ? authToken.split(' ')[1] : null;
+      if (token) {
+        //find or create User
+        currentUser = await findOrCreateUser(token);
       }
     } catch (error) {
-      console.error(`Unable to authenticate user with token ${authToken}`);
+      console.error(`Unable to authenticate user with token ${token}`, error);
+      return { currentUser: null, sessionExpired: true };
     }
-    return { currentUser };
+    return { currentUser, sessionExpired: false };
   },
   introspection: true,
   csrfPrevention: true,

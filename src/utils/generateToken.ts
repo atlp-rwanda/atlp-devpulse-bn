@@ -9,6 +9,7 @@ const verifyToken = (token: any) => {
     const obj = Jwt.verify(token, process.env.JWT_SECRET as string);
     return obj;
   } catch (error) {
+    console.error("OOps! Error verifying token :", error)
     return null;
   }
 };
