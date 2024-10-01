@@ -2,6 +2,8 @@ import TraineeApplicant from "../models/traineeApplicant";
 import { traineEAttributes } from "../models/traineeAttribute";
 import { applicationCycle } from "../models/applicationCycle";
 import mongoose, { ObjectId } from "mongoose";
+import { CustomGraphQLError } from "../utils/customErrorHandler";
+import { cohortModels } from "../models/cohortModel";
 
 export const traineeApplicantResolver: any = {
   Query: {
@@ -126,5 +128,37 @@ export const traineeApplicantResolver: any = {
       });
       return traineeToCreate.populate("cycle_id");
     },
+
+    async acceptTrainee(_: any, { traineeId, cohortId }: any){
+      try{
+        const trainee = await TraineeApplicant.findById(traineeId);
+        if(!trainee){
+          throw new CustomGraphQLError("Trainee not found");
+
+        }
+
+        const cohort = await cohortModels.findById(cohortId);
+        if (!cohort) {
+          throw new CustomGraphQLError("Cohort not found");
+        }
+
+        trainee.applicationPhase = "Enrolled";
+        trainee.status = "Assigned";
+        trainee.cohort = cohortId;
+        await trainee.save();
+
+        if (!cohort.trainees) {
+          cohort.trainees = [];
+        }
+
+        cohort.trainees.push(traineeId);
+        await cohort.save();
+
+        return { success: true, message: "Trainee accepted successfully" };
+
+      } catch (error) {
+        throw new CustomGraphQLError(`Failed to accept trainee: ${error}`);
+      }
+    }
   },
 };

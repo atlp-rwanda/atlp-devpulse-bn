@@ -13,7 +13,7 @@ export const attendanceSchema = new Schema({
     status: {
         type: String,
         required: true,
-        enum: ['Present', 'Absent', 'Late']
+        enum: ['Present', 'Absent']
     }
 })
 

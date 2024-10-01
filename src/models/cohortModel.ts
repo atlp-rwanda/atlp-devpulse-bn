@@ -17,7 +17,9 @@ export const cohortModels = mongoose.model('cohortModel',
             required: true 
         },
         phase:{
-            type:String
+            type:String,
+            enum: ['core', 'team', 'apprenticeship'],
+            default: 'core'
         },
         start:{
             type:String,
@@ -29,7 +31,7 @@ export const cohortModels = mongoose.model('cohortModel',
         },
         trainees: [{
             type: Schema.Types.ObjectId,
-            ref: "TraineeApplicant",
+            ref: "Trainee",
         }]
     })
 )

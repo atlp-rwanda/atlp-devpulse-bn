@@ -50,6 +50,11 @@ import { gradingTypeDefs } from "./schema/gradingSchema";
 import gradingResolver from "./resolvers/grading";
 import {adminViewApplicationsResolvers }from "./resolvers/adminViewApplications";
 import { adminViewAllApplicationsTypedefs} from "./schema/adminViewApplicationsSchema";
+import { attendanceResolver } from "./resolvers/attendanceResolver";
+import { attendanceSchema } from "./schema/attendanceSchema";
+import { performanceResolver } from "./resolvers/performanceResolver";
+import { performanceSchema } from "./schema/performanceSchema";
+
 const PORT = process.env.PORT || 3000;
 
 // const PORT = process.env.PORT || 4001;
@@ -77,6 +82,8 @@ const resolvers = mergeResolvers([
   candidateViewOwnApplication,
   gradingResolver,
   adminViewApplicationsResolvers,
+  attendanceResolver,
+  performanceResolver
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -103,6 +110,8 @@ const typeDefs = mergeTypeDefs([
   viewOwnApplicationTypeDefs,
   gradingTypeDefs,
   adminViewAllApplicationsTypedefs,
+  performanceSchema,
+  attendanceSchema
 ]);
 
 const server = new ApolloServer({

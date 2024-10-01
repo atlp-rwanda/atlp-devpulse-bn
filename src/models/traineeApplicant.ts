@@ -37,6 +37,10 @@ const TraineeApplicant = mongoose.model(
       type: String,
       default: "Not Assigned",
     },
+    cohort: {
+      type: Schema.Types.ObjectId,
+      ref: "cohortModel",
+    }
   })
 );
 

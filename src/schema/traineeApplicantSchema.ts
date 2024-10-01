@@ -19,6 +19,7 @@ export const typeDefsTrainee = gql`
       updateInput: traineeApplicantInputUpdate
     ): traineeApplicant
     deleteTraineeApplicant(email: String!): Boolean
+    acceptTrainee(traineeId: ID!, cohortId: ID!): AcceptTraineeResponse!
   }
   type traineeApplicant {
     lastName: String!
@@ -28,6 +29,20 @@ export const typeDefsTrainee = gql`
     cycle_id: applicationCycle
     delete_at: Boolean
     status: String!
+    applicationPhase: ApplicationPhase!
+    cohort: ID
+  }
+
+  type AcceptTraineeResponse {
+    success: Boolean!
+    message: String!
+  }
+
+  enum ApplicationPhase {
+    Applied
+    Interviewed
+    Accepted
+    Enrolled
   }
 
   input newTraineeApplicantInput {
