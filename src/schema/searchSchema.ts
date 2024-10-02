@@ -7,15 +7,33 @@ export const SearchSchema = gql`
     jobs: [JobPostApplication]
     cohorts: [cohort]
     programs: [Program]
+    trainees: [traineeApplicant]
+    applicationCycles: [applicationCycle]
     totalUsers: Int
-    totalPages: Int
+    totalRoles: Int
+    totalJobs: Int
+    totalCohorts: Int
+    totalPrograms: Int
+    totalTrainees: Int
+    totalApplicationCycles: Int
+    totalPages: SearchTotalPages
     currentPage: Int
+  }
+
+  type SearchTotalPages {
+    users: Int
+    roles: Int
+    jobs: Int
+    cohorts: Int
+    programs: Int
+    trainees: Int
+    applicationCycles: Int
   }
 
   input SearchInput {
     page: Int
     itemsPerPage: Int
-    All: Boolean
+    all: Boolean
     searchTerm: String
     filterAttribute: String
   }
