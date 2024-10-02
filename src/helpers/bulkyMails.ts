@@ -152,7 +152,7 @@ export const sendEmailTemplate = async (
 
     const generateSocialIcons = () => {
       return `
-        <div style="text-align: center; margin-top: 40px;">
+        <div style="margin-top: 40px;">
           <a href="https://facebook.com/yourpage" style="margin: 0 10px;">
             <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" style="width: 24px; height: 24px;">
           </a>
@@ -168,7 +168,7 @@ export const sendEmailTemplate = async (
 
     const generateFooterLogo = () => {
       return `
-        <div style="text-align: center; margin-top: 80px;">
+        <div style="margin-top: 80px;">
           <p style="color: #555; font-size: 14px;">
             If you received this email by mistake, simply ignore it. <br />
             For any questions, contact us at <a href="mailto: samuel.nishimwe@andela.com" style="color: ${secondaryColor};">samuel.nishimwe@andela.com</a>.
@@ -189,7 +189,7 @@ export const sendEmailTemplate = async (
 
     const generateFooter = () => {
       return `
-        <div style="margin-top: 40px; text-align: center; font-size: 12px; color: #999;">
+        <div style="margin-top: 40px;font-size: 12px; color: #999;">
           <p>&copy; 2024 DevPulse. All rights reserved.</p>
           <p><a href="https://devpulse.com/unsubscribe" style="color: #999; text-decoration: underline;">Unsubscribe</a></p>
         </div>
