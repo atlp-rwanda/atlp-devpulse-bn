@@ -86,7 +86,7 @@ const resolvers = mergeResolvers([
   gradingResolver,
   adminViewApplicationsResolvers,
   attendanceResolver,
-  performanceResolver
+  performanceResolver,
   filterJobResolver,
   filterProgramResolver,
   filterRoleResolver
