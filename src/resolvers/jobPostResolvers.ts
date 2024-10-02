@@ -1,161 +1,203 @@
 import { LoggedUserModel } from "../models/AuthUser";
+import { ApplicantNotificationsModel } from "../models/applicantNotifications";
 import { applicationCycle } from "../models/applicationCycle";
 import { cohortModels } from "../models/cohortModel";
 import { jobModels } from "../models/jobModels";
 import { ProgramModel } from "../models/programModel";
+import TraineeApplicant from "../models/traineeApplicant";
 import { CustomGraphQLError } from "../utils/customErrorHandler";
 
 export const jobPostResolver = {
-	Query: {
-		getAllJobApplication: async (_: any, args: any, context: any) => {
+  Query: {
+    getAllJobApplication: async (_: any, args: any, context: any) => {
+      const { page, itemsPerPage, All } = args.input;
 
+      const totalItems = args.filter
+        ? await jobModels.countDocuments({ ...args.filter })
+        : await jobModels.countDocuments({});
 
-			const { page, itemsPerPage, All } = args.input;
+      let pages;
+      if (!Number.isNaN(page) && page > 0) {
+        pages = page;
+      }
 
-			const totalItems = (args.filter) ? await jobModels.countDocuments({ ...args.filter }) :
-				await jobModels.countDocuments({});
+      let size = 10;
+      if (
+        !Number.isNaN(itemsPerPage) &&
+        !(itemsPerPage > 10) &&
+        !(itemsPerPage < 1)
+      ) {
+        size = itemsPerPage;
+      }
+      if (All) {
+        size = totalItems;
+      }
 
-			let pages;
-			if (!Number.isNaN(page) && page > 0) {
-				pages = page;
-			}
+      const itemsToSkip = (pages - 1) * size;
 
-			let size = 10;
-			if (
-				!Number.isNaN(itemsPerPage)
-				&& !(itemsPerPage > 10)
-				&& !(itemsPerPage < 1)
-			) {
-				size = itemsPerPage;
-			}
-			if (All) {
+      try {
+        const formsData = args.filter
+          ? await jobModels
+              .find({ ...args.filter })
+              .populate("program")
+              .populate("cycle")
+              .populate("cohort")
+              .skip(itemsToSkip)
+              .limit(size)
+          : await jobModels
+              .find()
+              .populate("program")
+              .populate("cycle")
+              .populate("cohort")
+              .skip(itemsToSkip)
+              .limit(size);
+        if (formsData.length === 0) {
+          throw new CustomGraphQLError("no job post found");
+        }
+        return formsData;
+      } catch (error) {
+        throw new CustomGraphQLError(`some thing went wrong ${error}`);
+      }
+    },
+    getJobApplication: async (_: any, args: any, context: any) => {
+      try {
+        const forms = await jobModels.findOne({ _id: args.id });
+        if (!forms) {
+          throw new Error("no job post found");
+        }
+        return (
+          await (await forms.populate("program")).populate("cycle")
+        ).populate("cohort");
+      } catch (error) {
+        throw new CustomGraphQLError(`some thing went wrong ${error}`);
+      }
+    },
+  },
+  Mutation: {
+    createJobApplication: async (_: any, args: any, context: any) => {
+      const userWithRole = await LoggedUserModel.findById(
+        context.currentUser?._id
+      ).populate("role");
 
-				size = totalItems;
-			}
+      if (
+        !userWithRole ||
+        ((userWithRole.role as any)?.roleName !== "admin" &&
+          (userWithRole.role as any)?.roleName !== "superAdmin")
+      ) {
+        throw new CustomGraphQLError(
+          "You do not have permission to perform this action"
+        );
+      }
+      try {
+        const existingRecord = await jobModels.findOne({
+          title: args.jobFields.title,
+        });
 
-			const itemsToSkip = (pages - 1) * size;
+        if (existingRecord) {
+          throw new CustomGraphQLError(
+            `A record with title ${args.jobFields.title} already exists.`
+          );
+        }
 
-			try {
-				const formsData = (args.filter) ? await jobModels.find({ ...args.filter }).populate('program').populate('cycle').populate('cohort').skip(itemsToSkip).limit(size) :
-					await jobModels.find().populate('program').populate('cycle').populate('cohort').skip(itemsToSkip).limit(size);
-				if (formsData.length === 0) {
-					throw new CustomGraphQLError(
-						"no job post found"
-					);
-				}
-				return formsData;
-			} catch (error) {
-				throw new CustomGraphQLError(`some thing went wrong ${error}`);
-			}
+        if (!args.jobFields.title) {
+          const programTitle = await ProgramModel.findById(
+            args.jobFields.program
+          );
+          const cycle = await applicationCycle.findById(args.jobFields.cycle);
+          const cohort = await cohortModels.findById(args.jobFields.cohort);
+          const newfields = args.jobFields.cohort
+            ? {
+                title: `${cycle?.name}-${programTitle?.title}-${cohort?.title}`,
+                ...args.jobFields,
+              }
+            : {
+                title: `${cycle?.name}-${programTitle?.title}`,
+                ...args.jobFields,
+              };
+          const userInputs = await jobModels.create(newfields);
 
-		},
-		getJobApplication: async (_: any, args: any, context: any) => {
+          return (
+            await (await userInputs.populate("program")).populate("cycle")
+          ).populate("cohort");
+        }
 
-			try {
-				const forms = await jobModels.findOne({ _id: args.id });
-				if (!forms) {
-					throw new Error("no job post found");
-				}
-				return (await (await forms.populate('program')).populate('cycle')).populate('cohort');
-			} catch (error) {
-				throw new CustomGraphQLError(`some thing went wrong ${error}`);
-			}
-		},
-	},
-	Mutation: {
-		createJobApplication: async (_: any, args: any, context: any) => {
-			const userWithRole = await LoggedUserModel.findById(
-				context.currentUser?._id
-			).populate("role");
+        const userInputs = await jobModels.create(args.jobFields);
+        const applicants = await TraineeApplicant.find({});
+        applicants.forEach(async (applicant) => {
+          const message = `A new job post"${args.jobFields.programTitle}" has been posted.`;
+          await ApplicantNotificationsModel.create({
+            userId: applicant._id,
+            message,
+            eventType: "jobPost",
+          });
+        });
 
-			if (
-				!userWithRole ||
-				((userWithRole.role as any)?.roleName !== "admin" &&
-					(userWithRole.role as any)?.roleName !== "superAdmin")
-			) {
-				throw new CustomGraphQLError(
-					"You do not have permission to perform this action"
-				);
-			}
-			try {
-				const existingRecord = await jobModels.findOne({ title: args.jobFields.title });
+        return (
+          await (await userInputs.populate("program")).populate("cycle")
+        ).populate("cohort");
+      } catch (error) {
+        throw new CustomGraphQLError(`Something went wrong: ${error}`);
+      }
+    },
+    deleteJobApplication: async (_: any, args: any, context: any) => {
+      const userWithRole = await LoggedUserModel.findById(
+        context.currentUser?._id
+      ).populate("role");
+      if (
+        !userWithRole ||
+        ((userWithRole.role as any)?.roleName !== "admin" &&
+          (userWithRole.role as any)?.roleName !== "superAdmin")
+      ) {
+        throw new CustomGraphQLError(
+          "You do not have permission to perform this action"
+        );
+      }
+      try {
+        const deleteJobApplication = await jobModels.findByIdAndDelete(args.id);
 
-				if (existingRecord) {
-					throw new CustomGraphQLError(
-						`A record with title ${args.jobFields.title} already exists.`
-					);
-				}
+        return deleteJobApplication === null
+          ? "No Job-Post to delete was found!!!"
+          : "Job-Post deleted successfully";
+      } catch (error) {
+        throw new CustomGraphQLError(
+          `Error deleting job application: ${error}`
+        );
+      }
+    },
+    updateJobApplication: async (_: any, args: any, context: any) => {
+      const userWithRole = await LoggedUserModel.findById(
+        context.currentUser?._id
+      ).populate("role");
 
-				if (!args.jobFields.title) {
-					const programTitle = await ProgramModel.findById(args.jobFields.program);
-					const cycle = await applicationCycle.findById(args.jobFields.cycle);
-					const cohort = await cohortModels.findById(args.jobFields.cohort)
-					const newfields = (args.jobFields.cohort) ?
-						{ title: `${cycle?.name}-${programTitle?.title}-${cohort?.title}`, ...args.jobFields } :
-						{ title: `${cycle?.name}-${programTitle?.title}`, ...args.jobFields };
-					const userInputs = await jobModels.create(newfields);
+      if (
+        !userWithRole ||
+        ((userWithRole.role as any)?.roleName !== "admin" &&
+          (userWithRole.role as any)?.roleName !== "superAdmin")
+      ) {
+        throw new CustomGraphQLError(
+          "You do not have permission to perform this action"
+        );
+      }
 
-					return (await (await userInputs.populate('program')).populate('cycle')).populate('cohort');
-				}
+      try {
+        const updateJobApplication = await jobModels.findByIdAndUpdate(
+          args.id,
+          { ...args.jobFields },
+          { new: true }
+        );
 
-				const userInputs = await jobModels.create(args.jobFields);
-				return (await (await userInputs.populate('program')).populate('cycle')).populate('cohort');
-			} catch (error) {
-				throw new CustomGraphQLError(`Something went wrong: ${error}`);
-			}
-		},
-		deleteJobApplication: async (_: any, args: any, context: any) => {
-			const userWithRole = await LoggedUserModel.findById(
-				context.currentUser?._id
-			).populate("role");
-			if (
-				!userWithRole ||
-				((userWithRole.role as any)?.roleName !== "admin" &&
-					(userWithRole.role as any)?.roleName !== "superAdmin")
-			) {
-				throw new CustomGraphQLError(
-					"You do not have permission to perform this action"
-				);
-			}
-			try {
-				const deleteJobApplication = await jobModels.findByIdAndDelete(args.id);
-
-				return (deleteJobApplication === null) ? "No Job-Post to delete was found!!!" : "Job-Post deleted successfully";
-			} catch (error) {
-				throw new CustomGraphQLError(`Error deleting job application: ${error}`);
-			}
-		},
-		updateJobApplication: async (_: any, args: any, context: any) => {
-			const userWithRole = await LoggedUserModel.findById(
-				context.currentUser?._id
-			).populate("role");
-
-			if (
-				!userWithRole ||
-				((userWithRole.role as any)?.roleName !== "admin" &&
-					(userWithRole.role as any)?.roleName !== "superAdmin")
-			) {
-				throw new CustomGraphQLError(
-					"You do not have permission to perform this action"
-				);
-			}
-
-			try {
-				const updateJobApplication = await jobModels.findByIdAndUpdate(
-					args.id,
-					{ ...args.jobFields },
-					{ new: true }
-				);
-
-				if (updateJobApplication !== null) {
-					return (await (await updateJobApplication.populate('program')).populate('cycle')).populate('cohort');
-				} else if (updateJobApplication === null || !updateJobApplication){
-					throw new CustomGraphQLError("No Job-Post to update was found!!! ");
-				}
-			} catch (error) {
-				throw new CustomGraphQLError(`Something went wrong: ${error}`);
-			}
-		},
-
-	},
+        if (updateJobApplication !== null) {
+          return (
+            await (
+              await updateJobApplication.populate("program")
+            ).populate("cycle")
+          ).populate("cohort");
+        } else if (updateJobApplication === null || !updateJobApplication) {
+          throw new CustomGraphQLError("No Job-Post to update was found!!! ");
+        }
+      } catch (error) {
+        throw new CustomGraphQLError(`Something went wrong: ${error}`);
+      }
+    },
+  },
 };

@@ -2,6 +2,7 @@ import TraineeApplicant from "../models/traineeApplicant";
 import { traineEAttributes } from "../models/traineeAttribute";
 import { applicationCycle } from "../models/applicationCycle";
 import mongoose, { ObjectId } from "mongoose";
+import { ApplicantNotificationsModel } from "../models/applicantNotifications";
 
 export const traineeApplicantResolver: any = {
   Query: {
@@ -73,6 +74,12 @@ export const traineeApplicantResolver: any = {
         },
         { new: true }
       ).populate("cycle_id");
+      const message = `Your application has been updated.`;
+        await ApplicantNotificationsModel.create({
+          userId: ID,
+          message,
+          eventType: "applicationUpdate",
+        });
 
       return updated;
     },
