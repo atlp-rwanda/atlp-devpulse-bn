@@ -55,6 +55,9 @@ import { attendanceSchema } from "./schema/attendanceSchema";
 import { performanceResolver } from "./resolvers/performanceResolver";
 import { performanceSchema } from "./schema/performanceSchema";
 
+import filterJobResolver from "./resolvers/filterJob";
+import filterProgramResolver from "./resolvers/filterPrograms";
+import filterRoleResolver from "./resolvers/filterRole";
 const PORT = process.env.PORT || 3000;
 
 // const PORT = process.env.PORT || 4001;
@@ -84,6 +87,9 @@ const resolvers = mergeResolvers([
   adminViewApplicationsResolvers,
   attendanceResolver,
   performanceResolver
+  filterJobResolver,
+  filterProgramResolver,
+  filterRoleResolver
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
