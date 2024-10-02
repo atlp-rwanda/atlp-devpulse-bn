@@ -24,10 +24,19 @@ const userSchema = new Schema(
       type: String,
       enum: ["male", "female", "other"],
     },
+    applicationPhase: {
+      type: String,
+      enum: ["Applied", "Interviewed", "Accepted", "Enrolled"],
+      default: "Applied",
+    },
     isActive: {
       type: Boolean,
       default: true,
     },
+    cohort: {
+      type: Schema.Types.ObjectId,
+      ref: "cohortModel",
+    }
   },
   { timestamps: true }
 );

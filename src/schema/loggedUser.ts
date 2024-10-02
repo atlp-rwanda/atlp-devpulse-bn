@@ -15,7 +15,10 @@ export const LoggedUserSchema = gql`
     telephone: String
     password: String
     token: String!
-    isActive: Boolean
+    isActive: Boolean,
+    applicationPhase: String,
+    cohort: Cohort
+
   }
 
   type Role {
@@ -24,6 +27,24 @@ export const LoggedUserSchema = gql`
     description: String!
     permissions: [Permission]
   }
+
+  type Cohort {
+    id: ID!
+    title: String
+		program: String
+		cycle: String
+		start: String
+		end: String
+		phase: CohortPhase
+		trainees:[User_Logged!]
+  }
+
+  enum CohortPhase {
+    core
+    team
+    apprenticeship
+  }
+
 
   input UserInput_Logged {
     firstname: String
@@ -35,16 +56,21 @@ export const LoggedUserSchema = gql`
     gender: String
     country: String
     role: String
+    applicationPhase: String
   }
   input EditUserInput_Logged {
     firstname: String
     lastname: String
+    applicationPhase: String
+    cohortId: ID
   }
 
   type Query {
     user_Logged(ID: ID!): User_Logged!
     getUsers_Logged(amount: Int): [User_Logged]
     checkUserRole(email: String): Role!
+    getCohort(id: ID!): cohort
+		getAllCohorts: [cohort!]!
   }
 
   type Mutation {
@@ -53,5 +79,6 @@ export const LoggedUserSchema = gql`
     updateUser_Logged(ID: ID!, editUserInput: EditUserInput_Logged): Boolean
     assignRoleToUser(ID: ID!, roleID: ID!): User_Logged
     updateUserStatus(ID: ID!): Boolean
+    updateApplicationPhase(userID: ID!, newPhase: String!, cohortID: ID): User_Logged
   }
 `;
