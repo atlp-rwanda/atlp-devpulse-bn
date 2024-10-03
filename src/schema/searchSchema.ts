@@ -33,7 +33,6 @@ export const SearchSchema = gql`
   input SearchInput {
     page: Int
     itemsPerPage: Int
-    all: Boolean
     searchTerm: String
     filterAttribute: String
   }

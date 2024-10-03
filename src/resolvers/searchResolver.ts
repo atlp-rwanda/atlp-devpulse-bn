@@ -11,7 +11,6 @@ interface SearchInput {
   searchTerm: string;
   page?: number;
   itemsPerPage?: number;
-  all?: boolean;
   filterAttribute?: string;
 }
 
@@ -22,7 +21,7 @@ interface Context {
 export const searchResolver: any = {
   Query: {
     async searchData(_: any, { input }: { input: SearchInput }, ctx: Context) {
-      const { searchTerm, page, itemsPerPage, all, filterAttribute } = input;
+      const { searchTerm, page, itemsPerPage, filterAttribute } = input;
 
       if (!ctx.currentUser) {
         throw new AuthenticationError('You must be logged in');
@@ -68,7 +67,7 @@ export const searchResolver: any = {
       }
 
       let currentPage = page || 1;
-      let items = all ? 0 : itemsPerPage || 10;
+      let items = itemsPerPage || 10;
       const itemsToSkip = (currentPage - 1) * items;
 
       let userQuery: any = {};
@@ -118,6 +117,7 @@ export const searchResolver: any = {
         } else if (!filterAttribute) {
           jobQuery['$or'] = [
             { title: { $regex: `\\b${searchTerm}\\b`, $options: 'i' } },
+            { description: { $regex: `\\b${searchTerm}\\b`, $options: 'i' } },
           ];
         } else {
           jobQuery = { _id: null };
@@ -141,6 +141,8 @@ export const searchResolver: any = {
         } else if (!filterAttribute) {
           programQuery['$or'] = [
             { title: { $regex: `\\b${searchTerm}\\b`, $options: 'i' } },
+            { description: { $regex: `\\b${searchTerm}\\b`, $options: 'i' } },
+            { mainObjective: { $regex: `\\b${searchTerm}\\b`, $options: 'i' } },
           ];
         } else {
           programQuery = { _id: null };
