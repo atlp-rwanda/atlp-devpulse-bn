@@ -2,6 +2,7 @@ import { applicationCycle } from "../models/applicationCycle";
 import { traineEAttributes } from "../models/traineeAttribute";
 import TraineeApplicant from "../models/traineeApplicant";
 import { ApplicantNotificationsModel } from "../models/applicantNotifications";
+import { LoggedUserModel } from "../models/AuthUser";
 
 const applicationCycleResolver: any = {
   Query: {
@@ -28,7 +29,7 @@ const applicationCycleResolver: any = {
         endDate: _args.input.endDate,
       });
 
-      const applicants = await TraineeApplicant.find({});
+      const applicants = await LoggedUserModel.find({});
       applicants.forEach(async (applicant) => {
         const message = `A new application cycle "${_args.input.name}" is open from ${_args.input.startDate} to ${_args.input.endDate}.`;
         await ApplicantNotificationsModel.create({ userId: applicant._id, message, eventType: "general" });
