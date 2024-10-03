@@ -1,8 +1,8 @@
 import { LoggedUserModel } from "../models/AuthUser";
-import { sendPasswordResetEmail } from '../utils/nodemailer'; 
 import BcryptUtil from '../utils/bcrypt'; 
 import { ApolloError } from 'apollo-server-express';
 import crypto from 'crypto';
+import { sendEmailTemplate } from '../helpers/bulkyMails';  
 
 export const passwordResolvers = {
   Mutation: {
@@ -15,13 +15,19 @@ export const passwordResolvers = {
         }
 
         const resetToken = crypto.randomBytes(32).toString('hex');
-
         user.resetToken = resetToken;
-        user.resetTokenExpiration = new Date(Date.now() + 3600000); // 1 hour expiry
+        user.resetTokenExpiration = new Date(Date.now() + 3600000); 
         await user.save();
 
         try {
-          await sendPasswordResetEmail(email, resetToken);
+       
+          await sendEmailTemplate(
+            email, 
+            "Password Reset Request", 
+            "Reset Your Password", 
+            `You have requested to reset your password. Click the button below to reset it. If you did not request this, please ignore this email.`,
+            { url: `${process.env.FRONTEND_URL}/#/reset-password?token=${resetToken}`, text: 'Reset Password' }
+          );
           console.log(`Password reset email sent to ${email}`);
           return true;
         } catch (emailError) {
