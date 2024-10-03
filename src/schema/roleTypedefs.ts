@@ -3,12 +3,12 @@ import { gql } from 'apollo-server';
 export const roleSchema = gql`
   input PermissionInput {
     entity: String!
-    permissions: [String!]!
+    permissions: [String!]
   }
 
   type Permission {
     entity: String!
-    permissions: [String!]!
+    permissions: [String!]
   }
 
   type Role {
