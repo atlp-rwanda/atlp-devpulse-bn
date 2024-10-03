@@ -28,12 +28,14 @@ const userSchema = new Schema(
       type: Boolean,
       default: true,
     },
-    resetToken: String,
-  resetTokenExpiration: Date,
     isEmailVerified: {
       type: Boolean,
       default: false,
     }
+
+    resetToken: String,
+  resetTokenExpiration: Date,
+
   },
   { timestamps: true }
 );
