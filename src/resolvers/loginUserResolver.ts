@@ -73,7 +73,6 @@ export const loggedUserResolvers: any = {
       }: any,
       ctx: any
     ) {
-      const existingUser = await LoggedUserModel.findOne({ email });
 
       if (!process.env.JWT_SECRET) {
         throw new Error(
@@ -261,7 +260,6 @@ export const loggedUserResolvers: any = {
           }
         );
         res.session = savedSession;
-        const token = generateToken(tokenData, { expiresIn: "1h" });
 
         const response = { user: res };
         res.token = token;
