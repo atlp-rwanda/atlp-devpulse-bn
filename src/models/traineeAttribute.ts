@@ -3,85 +3,80 @@ import mongoose, { model, Schema } from "mongoose";
 const traineeAttributeSchema = new Schema({
   gender: {
     type: String,
-    required: true,
-    default: "-",
+    enum: ['male', 'female', 'other'],
   },
   birth_date: {
     type: Date,
-    required: true,
-    default: "01/01/2000",
   },
   Address: {
     type: String,
-    required: true,
-    default: "-",
   },
   phone: {
     type: String,
-    required: true,
-    default: "-",
   },
   field_of_study: {
     type: String,
-    required: true,
-    default: "-",
   },
   education_level: {
     type: String,
-    required: true,
-    default: "-",
+    enum: ['high school', 'university', 'masters', 'tvt'],
+  },
+  currentEducationLevel: {
+    type: String,
+    enum: ['highschool', 'university', 'masters', 'tvt'],
   },
   province: {
     type: String,
-    required: true,
-    default: "-",
   },
   district: {
     type: String,
-    required: true,
-    default: "-",
   },
   sector: {
     type: String,
-    required: true,
-    default: "-",
   },
   isEmployed: {
     type: Boolean,
-    required: true,
-    default: true,
   },
   haveLaptop: {
     type: Boolean,
-    required: true,
-    default: true,
   },
   isStudent: {
     type: Boolean,
-    required: true,
-    default: true,
   },
   Hackerrank_score: {
     type: String,
-    required: true,
-    default: "-",
   },
   english_score: {
     type: String,
-    required: true,
-    default: "-",
   },
   interview: {
     type: Number,
   },
   interview_decision: {
     type: String,
-    required: true,
-    default: "-",
   },
   past_andela_programs: {
     type: String,
-    default: "none",
+  },
+  applicationPost: {
+    type: String,
+    enum: ['Andela Twitter Handle', 'Got an email from Andela', 'Referred by a friend', 'Other'],
+  },
+  otherApplication: {
+    type: String,
+  },
+  andelaPrograms: {
+    type: String,
+    enum: ['Web Development Crash Course', 'Andela Learning Community', 'Other'],
+  },
+  otherPrograms: {
+    type: String,
+  },
+  understandTraining: {
+    type: Boolean,
+  },
+  discipline: {
+    type: String,
   },
   trainee_id: {
     type: mongoose.Schema.Types.ObjectId,

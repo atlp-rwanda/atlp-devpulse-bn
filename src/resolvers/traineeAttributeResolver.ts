@@ -59,19 +59,32 @@ export const traineeAttributeResolver: any = {
   Mutation: {
     async createTraineeAttribute(_: any, args: any) {
       const { attributeInput } = args;
-      const search_id = args.attributeInput.trainee_id;
+      const search_id = attributeInput.trainee_id;
       const searchAttribute = await traineEAttributes
         .findOne({ trainee_id: search_id })
         .populate("trainee_id")
         .exec();
-      const traineeAvailble = await TraineeApplicant.findOne({
+      const traineeAvailable = await TraineeApplicant.findOne({
         _id: search_id,
       });
       if (searchAttribute)
         throw new Error("Attribute cannot be created multiple times");
-      else if (!traineeAvailble)
-        throw new Error(" Trainee with that Id is not found ");
+      else if (!traineeAvailable)
+        throw new Error("Trainee with that Id is not found");
       else {
+        if (attributeInput.birth_date) {
+          attributeInput.birth_date = new Date(attributeInput.birth_date);
+        }
+    
+      
+        const booleanFields = ['isEmployed', 'haveLaptop', 'isStudent', 'understandTraining'];
+        booleanFields.forEach(field => {
+          if (attributeInput[field] !== undefined) {
+            attributeInput[field] = attributeInput[field] === 'true' || attributeInput[field] === true;
+          }
+        });
+    
+        
         const traineeAttribute = await traineEAttributes.create(attributeInput);
         return traineeAttribute;
       }
@@ -80,7 +93,11 @@ export const traineeAttributeResolver: any = {
     async updateTraineeAttribute(parent: any, args: any, context: any) {
       const { ID, attributeUpdateInput } = args;
 
-      // const updated = await traineEAttributes.findByIdAndUpdate(
+      
+      if (attributeUpdateInput.birth_date) {
+        attributeUpdateInput.birth_date = new Date(attributeUpdateInput.birth_date);
+      }
+
       const updated = await traineEAttributes.findOneAndUpdate(
         { trainee_id: ID },
         {
@@ -90,6 +107,7 @@ export const traineeAttributeResolver: any = {
           phone: attributeUpdateInput.phone,
           field_of_study: attributeUpdateInput.field_of_study,
           education_level: attributeUpdateInput.education_level,
+          currentEducationLevel: attributeUpdateInput.currentEducationLevel,
           province: attributeUpdateInput.province,
           district: attributeUpdateInput.district,
           sector: attributeUpdateInput.sector,
@@ -100,6 +118,12 @@ export const traineeAttributeResolver: any = {
           english_score: attributeUpdateInput.english_score,
           interview_decision: attributeUpdateInput.interview_decision,
           past_andela_programs: attributeUpdateInput.past_andela_programs,
+          applicationPost: attributeUpdateInput.applicationPost,
+          otherApplication: attributeUpdateInput.otherApplication,
+          andelaPrograms: attributeUpdateInput.andelaPrograms,
+          otherPrograms: attributeUpdateInput.otherPrograms,
+          understandTraining: attributeUpdateInput.understandTraining,
+          discipline: attributeUpdateInput.discipline,
         },
         { new: true }
       );

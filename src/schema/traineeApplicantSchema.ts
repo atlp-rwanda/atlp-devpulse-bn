@@ -31,11 +31,12 @@ export const typeDefsTrainee = gql`
   }
 
   input newTraineeApplicantInput {
-    lastName: String!
-    firstName: String!
-    email: String!
-    cycle_id: String!
-  }
+  lastName: String!
+  firstName: String!
+  email: String!
+  cycle_id: String!
+  attributes: traineeAttributeInput
+}
 
   input traineeApplicantEmail {
     email: String!

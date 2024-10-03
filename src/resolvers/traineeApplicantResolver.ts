@@ -101,30 +101,55 @@ export const traineeApplicantResolver: any = {
       }
     },
     async createNewTraineeApplicant(parent: any, args: any, context: any) {
-      const newTrainee = args.input;
-      const emailTest = args.input.email;
-
-      const cycle = await applicationCycle.findById(args.input.cycle_id);
-      if (!cycle) {
-        throw new Error("the cycle provided does not exist");
-      }
-      const validateEmail = (email: any) => {
+      const { lastName, firstName, email, cycle_id, attributes } = args.input;
+    
+      // Validate email
+      const validateEmail = (email: string) => {
         return String(email)
           .toLowerCase()
           .match(
             /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
           );
       };
-      if (validateEmail(emailTest) == null)
-        throw new Error("This email is not valid please provide a valid email");
-
-      const traineeToCreate = await TraineeApplicant.create(newTrainee);
-      const trainee_id = traineeToCreate._id;
-
-      const newTraineeAttribute = await traineEAttributes.create({
-        trainee_id: trainee_id,
-      });
-      return traineeToCreate.populate("cycle_id");
-    },
+    
+      if (!validateEmail(email)) {
+        throw new Error("This email is not valid. Please provide a valid email.");
+      }
+    
+      // Check if cycle exists
+      const cycle = await applicationCycle.findById(cycle_id);
+      if (!cycle) {
+        throw new Error("The cycle provided does not exist");
+      }
+    
+      const session = await mongoose.startSession();
+      session.startTransaction();
+    
+      try {
+        // Create new trainee
+        const newTrainee = await TraineeApplicant.create([{
+          lastName,
+          firstName,
+          email,
+          cycle_id
+        }], { session });
+    
+        // Create trainee attributes (even if attributes is empty)
+        await traineEAttributes.create([{
+          ...(attributes || {}),  // Use empty object if attributes is not provided
+          trainee_id: newTrainee[0]._id
+        }], { session });
+    
+        await session.commitTransaction();
+    
+        // Return the created trainee with populated cycle_id
+        return (await newTrainee[0].populate("cycle_id")).toObject();
+      } catch (error) {
+        await session.abortTransaction();
+        throw error;
+      } finally {
+        session.endSession();
+      }
+    }
   },
 };
