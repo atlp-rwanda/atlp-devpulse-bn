@@ -1,4 +1,5 @@
 import { CustomGraphQLError } from "../utils/customErrorHandler";
+import { AuthenticationError } from "apollo-server-core";
 import { LoggedUserModel } from "../models/AuthUser";
 import { applicant_records } from '../models/candidateApplication';
 import { formModel } from '../models/formsModel';
@@ -8,10 +9,13 @@ import { jobModels } from '../models/jobModels';
 export const adminViewApplicationsResolvers = {
   Query: {
     adminViewSingleApplication: async (_: any, { applicationId }: any, context: any) => {
+      if (context.sessionExpired) {
+        throw new AuthenticationError('Session expired. Please login again to continue.');
+      }
+      if (!context.currentUser) {
+        throw new AuthenticationError('Oops! You must be logged in to proceed');
+      }
       try {
-        if (!context.currentUser) {
-          throw new CustomGraphQLError("You must be logged in to view applications.");
-        }
 
         const userWithRole = await LoggedUserModel.findById(context.currentUser?._id).populate("role");
 
@@ -71,10 +75,13 @@ export const adminViewApplicationsResolvers = {
       }
     },
     adminViewApplications: async (_: any, { page, pageSize, searchParams }: any, context: any) => {
+      if (context.sessionExpired) {
+        throw new AuthenticationError('Session expired. Please login again to continue.');
+      }
+      if (!context.currentUser) {
+        throw new AuthenticationError('Oops! You must be logged in to proceed');
+      }
       try {
-        if (!context.currentUser) {
-          throw new CustomGraphQLError("You must be logged in to view applications.");
-        }
 
         const userWithRole = await LoggedUserModel.findById(context.currentUser?._id).populate("role");
 

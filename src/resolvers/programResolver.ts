@@ -11,6 +11,12 @@ export const programResolvers = {
   Query: {
     getAll: async (_: any, { data }: any, context: any) => {
       console.log(context.currentUser);
+      if (context.sessionExpired) {
+        throw new AuthenticationError('Session expired. Please login again to continue.');
+      }
+      if (!context.currentUser) {
+        throw new AuthenticationError('Oops! You must be logged in to proceed');
+      }
       try {
         const { page, pageSize } = data;
         const response = await ProgramModel.find()
