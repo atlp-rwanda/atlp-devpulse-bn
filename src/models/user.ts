@@ -15,6 +15,10 @@ const userSchema = new Schema({
   },
   profile: String,
   password: String,
+  isEmailVerified: {
+    type: Boolean,
+    default: false,
+  },
   status: Boolean,
   resetToken: String,
   resetTokenExpiration: Date,
