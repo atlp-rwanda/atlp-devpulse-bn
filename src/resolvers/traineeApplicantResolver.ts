@@ -2,6 +2,10 @@ import TraineeApplicant from "../models/traineeApplicant";
 import { traineEAttributes } from "../models/traineeAttribute";
 import { applicationCycle } from "../models/applicationCycle";
 import mongoose, { ObjectId } from "mongoose";
+import { sendEmailTemplate } from "../helpers/bulkyMails";
+
+const FrontendUrl = process.env.FRONTEND_URL || ""
+
 import { CustomGraphQLError } from "../utils/customErrorHandler";
 import { cohortModels } from "../models/cohortModel";
 
@@ -31,7 +35,7 @@ export const traineeApplicantResolver: any = {
       }
       // define items per page
       const itemsToSkip = (pages - 1) * items;
-      const allTrainee = await TraineeApplicant.find({delete_at:false})
+      const allTrainee = await TraineeApplicant.find({ delete_at: false })
         .populate("cycle_id")
         // .populate("applicant_id")
         .skip(itemsToSkip)
@@ -126,6 +130,16 @@ export const traineeApplicantResolver: any = {
       const newTraineeAttribute = await traineEAttributes.create({
         trainee_id: trainee_id,
       });
+
+      await sendEmailTemplate(emailTest, "Applicant invitation",
+        `Hello ${emailTest.split("@")[0]}`,
+        `You are invited to join Devpulse application ${cycle.name} <br/> 
+        Click on the button to continue.`,
+        {
+          url: FrontendUrl,
+          text: "Continue"
+        }
+      )
       return traineeToCreate.populate("cycle_id");
     },
 

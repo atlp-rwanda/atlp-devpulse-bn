@@ -15,7 +15,7 @@ const userSchema = new Schema(
     },
     role: {
       type: Schema.Types.ObjectId,
-      ref: "Role", // Reference to the 'Role' model
+      ref: "Role",
     },
     password: String,
     country: String,
@@ -33,6 +33,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    }
     cohort: {
       type: Schema.Types.ObjectId,
       ref: "cohortModel",

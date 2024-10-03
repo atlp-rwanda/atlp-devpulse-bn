@@ -64,6 +64,9 @@ export const LoggedUserSchema = gql`
     applicationPhase: String
     cohortId: ID
   }
+  input EmailInput {
+    email: String
+  }
 
   type Query {
     user_Logged(ID: ID!): User_Logged!
@@ -75,6 +78,7 @@ export const LoggedUserSchema = gql`
 
   type Mutation {
     createUser_Logged(userInput: UserInput_Logged): User_Logged!
+    resendVerifcationEmail(userInput: EmailInput!): String
     deleteUser_Logged(ID: ID!): Boolean
     updateUser_Logged(ID: ID!, editUserInput: EditUserInput_Logged): Boolean
     assignRoleToUser(ID: ID!, roleID: ID!): User_Logged
