@@ -10,7 +10,7 @@ export const passwordResolvers = {
       try {
         const user = await LoggedUserModel.findOne({ email });
         if (!user) {
-          console.log(`User not found for email: ${email}`);
+         
           throw new ApolloError('User not found');
         }
 
@@ -28,7 +28,7 @@ export const passwordResolvers = {
             `You have requested to reset your password. Click the button below to reset it. If you did not request this, please ignore this email.`,
             { url: `${process.env.FRONTEND_URL}/#/reset-password?token=${resetToken}`, text: 'Reset Password' }
           );
-          console.log(`Password reset email sent to ${email}`);
+         
           return true;
         } catch (emailError) {
           console.error('Error sending reset email:', emailError);
@@ -48,7 +48,7 @@ export const passwordResolvers = {
         });
 
         if (!user) {
-          console.log(`Invalid or expired token: ${token}`);
+   
           throw new ApolloError('Invalid or expired token');
         }
 
@@ -57,7 +57,7 @@ export const passwordResolvers = {
         user.resetTokenExpiration = undefined; 
         await user.save();
 
-        console.log(`Password has been reset for user: ${user.email}`);
+        
         return { message: 'Password has been successfully reset.' };
       } catch (error) {
         console.error('Error in resetPassword resolver:', error);
