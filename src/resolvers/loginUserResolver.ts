@@ -13,6 +13,7 @@ import { sessionModel } from '../models/session';
 
 const FrontendUrl = process.env.FRONTEND_URL
 
+
 export const loggedUserResolvers: any = {
   Query: {
     async user_Logged(_: any, args: any, ctx: any) {
