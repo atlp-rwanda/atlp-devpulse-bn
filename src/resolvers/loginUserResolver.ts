@@ -2,7 +2,7 @@ import { AuthenticationError } from 'apollo-server';
 import { LoggedUserModel } from '../models/AuthUser';
 import { RoleModel } from '../models/roleModel';
 import { PermissionModel } from '../models/permissionModel';
-import { generateToken } from '../utils/generateToken';
+import { generateToken, verifyToken } from '../utils/generateToken';
 import BcryptUtil from '../utils/bcrypt';
 import { validateUserLogged } from '../validations/createUser.validation';
 import { validateLogin } from '../validations/login.validations';
@@ -210,46 +210,24 @@ export const loggedUserResolvers: any = {
         });
 
         const savedSession = await newSession.save();
-        await sendEmailTemplate(email, " Welcome to Devpulse – Your Account is Ready!",
+        await sendEmailTemplate(email, "Verify Account!",
           `Hello ${firstname || email.split('@')[0]},`,
-          `
-            Welcome to Devpulse! We’re excited to have you join our community of developers, creators, and innovators.
-            <br/>
-            <br/>
-            Your account has been successfully created, and you’re all set to start exploring everything Devpulse has to offer. Whether you’re here to build projects, collaborate with others, or enhance your skills, we’re here to support your journey.
-            <br/>
-            <br/>
-            <b>Here’s what you can do next:</b>
-            <br/>
-            <br/>
-            Explore Your Dashboard: Get started by customizing your profile and exploring our features.
-            Find Resources: Access tutorials, tools, and resources to accelerate your development.
-            Collaborate with Peers: Connect with like-minded developers, share projects, and collaborate on innovative ideas.
-            <br/>
-            <br/>
-            <b>Need Help?</b>
-            <br/>
-            <br/>
-            If you have any questions or need assistance, our support team is here to help. Feel free to reach out to us at [support email] or visit our [Help Center](link to Help Center).
-            <br/>
-            <br/>
-            <b>Stay Connected</b>
-            <br/>
-            <br/>
-            Stay up to date with the latest news, updates, and community events by following us on our social media.
-            <br/>
-            <br/>
-            Thank you for joining Devpulse – we can’t wait to see what you’ll create!
-            <br/>
-            <br/>
-            Best regards,
-            <br/>
-            The Devpulse Team
-            `
+          ` Welcome to Devpulse! We’re excited to have you join our community of
+          developers, creators, and innovators.
+          <br />
+          <br/>
+          Please verify your email in order to use the app.<br /><br />
+          <br />
+          Thank you for joining Devpulse – we can’t wait to see what you’ll create!
+          <br />
+          <br />
+          Best regards,
+          <br />
+          The Devpulse Team`
           ,
           {
-            text: "Continue",
-            url: FrontendUrl + '/#/verify-email/' + token
+            text: "Verify Email",
+            url: FrontendUrl + `/verifyEmail/?token=${token}`
           }
         );
         res.session = savedSession;
@@ -448,6 +426,10 @@ export const loggedUserResolvers: any = {
     login: async (_: any, { email, password }: any) => {
       const user = await LoggedUserModel.findOne({ email });
 
+      if (user?.isVerified===false){
+        throw new Error('User is not verified');
+      }
+
       if (!user) {
         throw new Error('User not found!');
       }
@@ -490,6 +472,17 @@ export const loggedUserResolvers: any = {
       });
 
       return { token };
+    },
+    async verifyUser(_:any,{ID}:any){
+      try{
+        let user = await LoggedUserModel.findOne({_id:ID })as any;
+        user.isVerified=true 
+        await user?.save(); 
+        return user
+      }
+      catch(error){
+        throw new Error("Error occured please try again")
+      }
     },
   },
 };
