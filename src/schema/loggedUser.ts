@@ -16,6 +16,7 @@ export const LoggedUserSchema = gql`
     password: String
     token: String!
     isActive: Boolean
+    isVerified:Boolean
   }
 
   type Role {
@@ -58,6 +59,7 @@ export const LoggedUserSchema = gql`
   type Mutation {
     createUser_Logged(userInput: UserInput_Logged): User_Logged!
     resendVerifcationEmail(userInput: EmailInput!): String
+    verifyUser(ID:ID!):User_Logged
     deleteUser_Logged(ID: ID!): Boolean
     updateUser_Logged(ID: ID!, editUserInput: EditUserInput_Logged): Boolean
     assignRoleToUser(ID: ID!, roleID: ID!): User_Logged
