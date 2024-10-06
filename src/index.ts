@@ -50,6 +50,9 @@ import { gradingTypeDefs } from "./schema/gradingSchema";
 import gradingResolver from "./resolvers/grading";
 import {adminViewApplicationsResolvers }from "./resolvers/adminViewApplications";
 import { adminViewAllApplicationsTypedefs} from "./schema/adminViewApplicationsSchema";
+import filterJobResolver from "./resolvers/filterJob";
+import filterProgramResolver from "./resolvers/filterPrograms";
+import filterRoleResolver from "./resolvers/filterRole";
 const PORT = process.env.PORT || 3000;
 
 // const PORT = process.env.PORT || 4001;
@@ -77,6 +80,9 @@ const resolvers = mergeResolvers([
   candidateViewOwnApplication,
   gradingResolver,
   adminViewApplicationsResolvers,
+  filterJobResolver,
+  filterProgramResolver,
+  filterRoleResolver
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,

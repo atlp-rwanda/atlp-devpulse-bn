@@ -2,6 +2,10 @@ import TraineeApplicant from "../models/traineeApplicant";
 import { traineEAttributes } from "../models/traineeAttribute";
 import { applicationCycle } from "../models/applicationCycle";
 import mongoose, { ObjectId } from "mongoose";
+import { sendEmailTemplate } from "../helpers/bulkyMails";
+
+const FrontendUrl = process.env.FRONTEND_URL || ""
+
 
 export const traineeApplicantResolver: any = {
   Query: {
@@ -27,7 +31,7 @@ export const traineeApplicantResolver: any = {
       }
       
       const itemsToSkip = (pages - 1) * items;
-      const allTrainee = await TraineeApplicant.find({delete_at:false})
+      const allTrainee = await TraineeApplicant.find({ delete_at: false })
         .populate("cycle_id")
         
         .skip(itemsToSkip)

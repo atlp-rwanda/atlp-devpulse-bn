@@ -13,9 +13,13 @@ const userSchema = new Schema(
       type: String,
       default: process.env.DEFAULT_AVATAR,
     },
+    isVerified:{
+      type:Boolean,
+      default:false
+    },
     role: {
       type: Schema.Types.ObjectId,
-      ref: "Role", // Reference to the 'Role' model
+      ref: "Role",
     },
     password: String,
     country: String,
@@ -28,8 +32,12 @@ const userSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    }
   },
   { timestamps: true }
 );
 
-export const LoggedUserModel = model("LoggedUserModel", userSchema);
+export const LoggedUserModel = model("LoggedUserModel", userSchema);  
