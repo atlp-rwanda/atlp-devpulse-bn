@@ -35,14 +35,8 @@ export const LoggedUserSchema = gql`
 		cycle: String
 		start: String
 		end: String
-		phase: CohortPhase
+		phase: Int
 		trainees:[User_Logged!]
-  }
-
-  enum CohortPhase {
-    core
-    team
-    apprenticeship
   }
 
 

@@ -3,6 +3,7 @@ export const typeDefsTrainee = gql`
   type Query {
     allTrainees(input: pagination): response
     getOneTrainee(ID: ID!): traineeApplicant
+    getTraineeByUserId(userId: ID!): ID!
   }
   type response {
     totalItems: Int!

@@ -8,16 +8,11 @@ export const cohortSchema = gql`
 		cycle: String
 		start: String
 		end: String
-		phase: CohortPhase
+		phase: Int
 		trainees:[ID!]
 		
 	}
 
-	enum CohortPhase {
-    core
-    team
-    apprenticeship
-  }
 
 	type Query {
 		getCohort(id: ID!): cohort
@@ -29,7 +24,7 @@ export const cohortSchema = gql`
 		cycle: String!
         start: String!
         end: String!
-		phase: CohortPhase
+		phase: Int
   }
 	type Mutation {
 		createCohort(cohortFields: cohortInput): cohort
@@ -38,7 +33,7 @@ export const cohortSchema = gql`
 			title: String
 			program: String
 		    cycle: String
-			phase: CohortPhase
+			phase: Int
             start: String
             end: String
 		): cohort!

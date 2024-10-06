@@ -57,6 +57,16 @@ export const traineeApplicantResolver: any = {
         throw new Error("No trainee is found, pleade provide the correct ID");
       return trainee;
     },
+
+    async getTraineeByUserId(_: any, { userId }: any){
+      const trainee = await TraineeApplicant.findOne({ user: userId })
+        
+        if (!trainee) {
+          throw new Error('Trainee not found');
+        }
+
+        return trainee._id;
+    }
   },
 
   Mutation: {
