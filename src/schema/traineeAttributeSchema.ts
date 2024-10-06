@@ -2,32 +2,33 @@ import { gql } from "apollo-server";
 
 export const typeDefsAttribute = gql`
   type Query {
-    allTraineesDetails(input: pagination): [traineeAttribute]
-    getOneTraineeAllDetails(input: one): traineeAttribute
+    allTraineesDetails(input: Pagination): [TraineeAttribute]
+    getOneTraineeAllDetails(input: One): TraineeAttribute
   }
 
   type Mutation {
     createTraineeAttribute(
-      attributeInput: traineeAttributeInput
-    ): traineeAttributeCreated
+      attributeInput: TraineeAttributeInput
+    ): TraineeAttributeCreated
     updateTraineeAttribute(
       ID: ID!
-      attributeUpdateInput: traineeUpdateAttributeInput
-    ): traineeAttributeCreated
+      attributeUpdateInput: TraineeUpdateAttributeInput
+    ): TraineeAttributeCreated
   }
 
-  input one {
+  input One {
     id: ID!
   }
 
-  input traineeAttributeInput {
+  input TraineeAttributeInput {
     gender: String
     birth_date: String
-    Address: String
+    address: String
     phone: String
-    field_of_study: String
+    study: Boolean
     education_level: String
     currentEducationLevel: String
+    nationality: String
     province: String
     district: String
     sector: String
@@ -36,31 +37,32 @@ export const typeDefsAttribute = gql`
     isStudent: Boolean
     Hackerrank_score: String
     english_score: String
+    interview: Int
     interview_decision: String
-    past_andela_programs: String
     applicationPost: String
     otherApplication: String
     andelaPrograms: String
     otherPrograms: String
     understandTraining: Boolean
     discipline: String
-    trainee_id: String!
+    trainee_id: ID!
   }
 
-  input pagination {
+  input Pagination {
     page: Int!
     itemsPerPage: Int
     All: Boolean
   }
 
-  input traineeUpdateAttributeInput {
+  input TraineeUpdateAttributeInput {
     gender: String
     birth_date: String
-    Address: String
+    address: String
     phone: String
-    field_of_study: String
+    study: Boolean
     education_level: String
     currentEducationLevel: String
+    nationality: String
     province: String
     district: String
     sector: String
@@ -69,8 +71,8 @@ export const typeDefsAttribute = gql`
     isStudent: Boolean
     Hackerrank_score: String
     english_score: String
+    interview: Int
     interview_decision: String
-    past_andela_programs: String
     applicationPost: String
     otherApplication: String
     andelaPrograms: String
@@ -79,15 +81,16 @@ export const typeDefsAttribute = gql`
     discipline: String
   }
 
-  type traineeAttribute {
+  type TraineeAttribute {
     _id: ID
     gender: String
     birth_date: String
-    Address: String
+    address: String
     phone: String
-    field_of_study: String
+    study: Boolean
     education_level: String
     currentEducationLevel: String
+    nationality: String
     province: String
     district: String
     sector: String
@@ -96,42 +99,58 @@ export const typeDefsAttribute = gql`
     isStudent: Boolean
     Hackerrank_score: String
     english_score: String
+    interview: Int
     interview_decision: String
-    past_andela_programs: String
     applicationPost: String
     otherApplication: String
     andelaPrograms: String
     otherPrograms: String
     understandTraining: Boolean
     discipline: String
-    trainee_id: traineeApplicant!
+    trainee: TraineeApplicant!
   }
 
-  type traineeAttributeCreated {
+  type TraineeAttributeCreated {
+    _id: ID
     gender: String
     birth_date: String
-    Address: String
+    address: String
     phone: String
-    field_of_study: String
+    study: Boolean
     education_level: String
     currentEducationLevel: String
+    nationality: String
     province: String
     district: String
     sector: String
+    discipline: String
     isEmployed: Boolean
     haveLaptop: Boolean
     isStudent: Boolean
     Hackerrank_score: String
     english_score: String
+    interview: Int
     interview_decision: String
-    past_andela_programs: String
     applicationPost: String
     otherApplication: String
     andelaPrograms: String
     otherPrograms: String
     understandTraining: Boolean
-    discipline: String
-    _id: ID
-    trainee_id: String!
+    trainee_id: ID!
+  }
+
+  type TraineeApplicant {
+    _id: ID!
+    lastName: String!
+    firstName: String!
+    email: String!
+    cycle_id: ApplicationCycle
+    delete_at: Boolean
+    status: String!
+  }
+
+  type ApplicationCycle {
+    _id: ID!
+    # Add other fields as needed
   }
 `;

@@ -6,7 +6,6 @@ import mongoose, { ObjectId } from "mongoose";
 export const traineeApplicantResolver: any = {
   Query: {
     async allTrainees(_: any, { input }: any) {
-      // define page
       const { page, itemsPerPage, All } = input;
       let pages;
       let items;
@@ -18,7 +17,6 @@ export const traineeApplicantResolver: any = {
         pages = 1;
       }
       if (All) {
-        // count total items inside the collections
         items = totalItems;
       } else {
         if (itemsPerPage && itemsPerPage > 0) {
@@ -27,11 +25,11 @@ export const traineeApplicantResolver: any = {
           items = 3;
         }
       }
-      // define items per page
+      
       const itemsToSkip = (pages - 1) * items;
       const allTrainee = await TraineeApplicant.find({delete_at:false})
         .populate("cycle_id")
-        // .populate("applicant_id")
+        
         .skip(itemsToSkip)
         .limit(items);
 
@@ -126,7 +124,7 @@ export const traineeApplicantResolver: any = {
       session.startTransaction();
     
       try {
-        // Create new trainee
+        
         const newTrainee = await TraineeApplicant.create([{
           lastName,
           firstName,
@@ -134,15 +132,8 @@ export const traineeApplicantResolver: any = {
           cycle_id
         }], { session });
     
-        // Create trainee attributes (even if attributes is empty)
-        await traineEAttributes.create([{
-          ...(attributes || {}),  // Use empty object if attributes is not provided
-          trainee_id: newTrainee[0]._id
-        }], { session });
-    
         await session.commitTransaction();
-    
-        // Return the created trainee with populated cycle_id
+  
         return (await newTrainee[0].populate("cycle_id")).toObject();
       } catch (error) {
         await session.abortTransaction();
