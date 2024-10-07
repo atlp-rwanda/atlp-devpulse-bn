@@ -9,6 +9,11 @@ export const programTypeDefs = gql`
       pageSize: Int
     ): [Program!]!
     geSingleProgram(id: ID!): Program!
+    filterProgramsDetails(input: FilterOptions): [Program]
+		getAllProgramAttributescount: Count!
+  }
+  type Count {
+    total: Int!
   }
   input ProgramFilter {
     title: String
@@ -45,6 +50,13 @@ export const programTypeDefs = gql`
     requirements: [String!]!
     modeOfExecution: String!
     duration: String!
+  }
+  input FilterOptions { 
+    page: Int!
+    itemsPerPage: Int
+    All: Boolean
+    wordEntered: String
+    filterAttribute: String
   }
   type Mutation {
     createProgram(programInput: ProgramInput!): Program!

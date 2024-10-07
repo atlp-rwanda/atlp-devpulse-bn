@@ -41,6 +41,9 @@ export const jobModels = mongoose.model('jobform',
             enum: labelValues,
             required: true
         },
+        published: {
+            type: Boolean,
+            default: false
+        }
     })
 )
-// mutsinzi isaac's changes
