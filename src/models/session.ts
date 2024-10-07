@@ -7,7 +7,10 @@ const sessionSchema = new Schema({
     token: {
         type:String,
         required: true
-    }
+    },
+    refreshToken: {
+        type:String,
+    },
 },{timestamps: true});
 
 export const sessionModel = model("session", sessionSchema)

@@ -53,6 +53,8 @@ import { adminViewAllApplicationsTypedefs} from "./schema/adminViewApplicationsS
 import filterJobResolver from "./resolvers/filterJob";
 import filterProgramResolver from "./resolvers/filterPrograms";
 import filterRoleResolver from "./resolvers/filterRole";
+import {appliedJobResolver} from "./resolvers/appliedJobResolver";
+import { appliedJobTypeDefs } from "./schema/appliedJobTypeDefs";
 const PORT = process.env.PORT || 3000;
 
 // const PORT = process.env.PORT || 4001;
@@ -82,7 +84,8 @@ const resolvers = mergeResolvers([
   adminViewApplicationsResolvers,
   filterJobResolver,
   filterProgramResolver,
-  filterRoleResolver
+  filterRoleResolver,
+  appliedJobResolver
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -109,6 +112,7 @@ const typeDefs = mergeTypeDefs([
   viewOwnApplicationTypeDefs,
   gradingTypeDefs,
   adminViewAllApplicationsTypedefs,
+  appliedJobTypeDefs
 ]);
 
 const server = new ApolloServer({
@@ -125,7 +129,7 @@ const server = new ApolloServer({
         currentUser = await findOrCreateUser(authToken);
       }
     } catch (error) {
-      console.error(`Unable to authenticate user with token ${authToken}`);
+      console.error(`Unable to authenticate user`);
     }
     return { currentUser };
   },
