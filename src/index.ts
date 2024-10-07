@@ -53,6 +53,8 @@ import { adminViewAllApplicationsTypedefs} from "./schema/adminViewApplicationsS
 import filterJobResolver from "./resolvers/filterJob";
 import filterProgramResolver from "./resolvers/filterPrograms";
 import filterRoleResolver from "./resolvers/filterRole";
+import { SearchSchema } from "./schema/searchSchema";
+import { searchResolver } from "./resolvers/searchResolver";
 const PORT = process.env.PORT || 3000;
 
 // const PORT = process.env.PORT || 4001;
@@ -82,7 +84,8 @@ const resolvers = mergeResolvers([
   adminViewApplicationsResolvers,
   filterJobResolver,
   filterProgramResolver,
-  filterRoleResolver
+  filterRoleResolver,
+  searchResolver
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -109,6 +112,7 @@ const typeDefs = mergeTypeDefs([
   viewOwnApplicationTypeDefs,
   gradingTypeDefs,
   adminViewAllApplicationsTypedefs,
+  SearchSchema
 ]);
 
 const server = new ApolloServer({
