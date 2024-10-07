@@ -476,8 +476,54 @@ export const loggedUserResolvers: any = {
     async verifyUser(_:any,{ID}:any){
       try{
         let user = await LoggedUserModel.findOne({_id:ID })as any;
+        if (user.isVerified===true){
+          return
+        }
+        const email=user.email
         user.isVerified=true 
         await user?.save(); 
+        const message=await sendEmailTemplate(email, " Welcome to Devpulse – Your Account is Ready!",
+          `Hello ${email.split('@')[0]},`,
+          `
+            Welcome to Devpulse! We’re excited to have you join our community of developers, creators, and innovators.
+            <br/>
+            <br/>
+            Your account has been successfully created, and you’re all set to start exploring everything Devpulse has to offer. Whether you’re here to build projects, collaborate with others, or enhance your skills, we’re here to support your journey.
+            <br/>
+            <br/>
+            <b>Here’s what you can do next:</b>
+            <br/>
+            <br/>
+            Explore Your Dashboard: Get started by customizing your profile and exploring our features.
+            Find Resources: Access tutorials, tools, and resources to accelerate your development.
+            Collaborate with Peers: Connect with like-minded developers, share projects, and collaborate on innovative ideas.
+            <br/>
+            <br/>
+            <b>Need Help?</b>
+            <br/>
+            <br/>
+            If you have any questions or need assistance, our support team is here to help. Feel free to reach out to us at [support email] or visit our [Help Center](link to Help Center).
+            <br/>
+            <br/>
+            <b>Stay Connected</b>
+            <br/>
+            <br/>
+            Stay up to date with the latest news, updates, and community events by following us on our social media.
+            <br/>
+            <br/>
+            Thank you for joining Devpulse – we can’t wait to see what you’ll create!
+            <br/>
+            <br/>
+            Best regards,
+            <br/>
+            The Devpulse Team
+            `
+          ,
+          {
+            text: "Continue",
+            url: FrontendUrl + '/#/login/'
+          }
+        );
         return user
       }
       catch(error){
