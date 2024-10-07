@@ -119,7 +119,7 @@ const typeDefs = mergeTypeDefs([
   viewOwnApplicationTypeDefs,
   gradingTypeDefs,
   adminViewAllApplicationsTypedefs,
-  SearchSchema
+  SearchSchema,
   performanceSchema,
   attendanceSchema
 ]);
