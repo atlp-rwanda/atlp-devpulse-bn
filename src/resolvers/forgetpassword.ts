@@ -10,7 +10,6 @@ export const passwordResolvers = {
       try {
         const user = await LoggedUserModel.findOne({ email });
         if (!user) {
-         
           throw new ApolloError('User not found');
         }
 
@@ -20,7 +19,6 @@ export const passwordResolvers = {
         await user.save();
 
         try {
-       
           await sendEmailTemplate(
             email, 
             "Password Reset Request", 
@@ -36,6 +34,9 @@ export const passwordResolvers = {
         }
       } catch (error) {
         console.error('Error in forgetPassword resolver:', error);
+        if (error instanceof ApolloError) {
+          throw error;
+        }
         throw new ApolloError('Failed to process request');
       }
     },
@@ -48,7 +49,6 @@ export const passwordResolvers = {
         });
 
         if (!user) {
-   
           throw new ApolloError('Invalid or expired token');
         }
 
@@ -57,11 +57,13 @@ export const passwordResolvers = {
         user.resetTokenExpiration = undefined; 
         await user.save();
 
-        
         return { message: 'Password has been successfully reset.' };
       } catch (error) {
         console.error('Error in resetPassword resolver:', error);
-        throw new ApolloError('Failed to reset password');
+        if (error instanceof ApolloError) {
+          throw error;
+        }
+        throw new ApolloError('Failed to process request');
       }
     },
   },
