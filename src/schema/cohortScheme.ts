@@ -4,8 +4,8 @@ export const cohortSchema = gql`
 	type cohort {
 		id: ID!
         title: String
-		program: String
-		cycle: String
+		program: Program
+		cycle: applicationCycle
 		start: String
 		end: String
 		phase: Int

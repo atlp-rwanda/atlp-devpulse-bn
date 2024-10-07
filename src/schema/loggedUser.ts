@@ -56,6 +56,11 @@ export const LoggedUserSchema = gql`
   input EditUserInput_Logged {
     firstname: String
     lastname: String
+    email: String
+    password: String
+    telephone: String
+    code: String
+    picture:String
     applicationPhase: String
     cohortId: ID
   }
