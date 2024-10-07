@@ -232,8 +232,7 @@ export const loggedUserResolvers: any = {
           ,
           {
             text: "Verify Email",
-            url: FrontendUrl + `/verifyEmail/?token=${token}`
-
+            url: FrontendUrl + `/#/verifyEmail/?token=${token}`
           }
         );
         res.session = savedSession;
