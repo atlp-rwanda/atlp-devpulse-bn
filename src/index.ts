@@ -53,6 +53,8 @@ import { adminViewAllApplicationsTypedefs} from "./schema/adminViewApplicationsS
 import filterJobResolver from "./resolvers/filterJob";
 import filterProgramResolver from "./resolvers/filterPrograms";
 import filterRoleResolver from "./resolvers/filterRole";
+import { SearchSchema } from "./schema/searchSchema";
+import { searchResolver } from "./resolvers/searchResolver";
 import {appliedJobResolver} from "./resolvers/appliedJobResolver";
 import { appliedJobTypeDefs } from "./schema/appliedJobTypeDefs";
 const PORT = process.env.PORT || 3000;
@@ -85,6 +87,7 @@ const resolvers = mergeResolvers([
   filterJobResolver,
   filterProgramResolver,
   filterRoleResolver,
+  searchResolver,
   appliedJobResolver
 ]);
 const typeDefs = mergeTypeDefs([
@@ -112,6 +115,7 @@ const typeDefs = mergeTypeDefs([
   viewOwnApplicationTypeDefs,
   gradingTypeDefs,
   adminViewAllApplicationsTypedefs,
+  SearchSchema,
   appliedJobTypeDefs
 ]);
 
