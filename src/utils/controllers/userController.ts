@@ -14,7 +14,6 @@ export const findOrCreateUser = async (token: any) => {
     }
   }
   const googleUser = await verifyAuthToken(token);
-  //check existance of user
   user = await checkIfUserExists(googleUser?.email);
 
   return user ? user : createNewUser(googleUser);
@@ -37,7 +36,7 @@ const checkIfUserExists = async (email: any) =>
   await LoggedUserModel.findOne({ email }).exec();
 
 const createNewUser = async (googleUser: any) => {
-  const { given_name, family_name, email, picture, isActive } = googleUser;
+  const { given_name, family_name, email, picture } = googleUser;
   const superAdminEmail = process.env.SUPER_ADMIN_EMAIL;
   const adminEmail = process.env.ADMIN_EMAIL;
   const applicantRole = await RoleModel.findOne({ roleName: 'applicant' });
@@ -78,15 +77,25 @@ const createNewUser = async (googleUser: any) => {
       ? adminRole?._id || createAdminRole()
       : applicantRole?._id || createApplicantRole();
 
+  // Fallback values for fields missing in Google data
   const user = {
     firstname: given_name,
     lastname: family_name,
     email,
-    picture,
+    picture: picture || process.env.DEFAULT_AVATAR,  
     role: roleId,
-    isActive,
+    code: '+250', 
+    password: 'GOOGLE_SIGN_IN',  
+    country: ' ',           
+    telephone: '',                
+    gender: 'other',
+    authMethod: 'google',            
+    isActive: true,
+    isVerified: false,
+    isEmailVerified: true,        
     createdAt: new Date().toISOString(),
   };
+
   const newUser = await new LoggedUserModel(user).save();
   const userWithRole = await LoggedUserModel.findById(newUser._id).populate(
     'role',

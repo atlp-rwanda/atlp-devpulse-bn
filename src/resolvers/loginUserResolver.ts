@@ -340,6 +340,36 @@ export const loggedUserResolvers: any = {
       return wasEdited;
     },
 
+    async updateUserSelf(
+      _: any,
+      { ID, editUserInput: { firstname, lastname, gender, code, country, telephone, picture } }: any,
+      ctx: any
+    ) {
+      if (!ctx.currentUser) {
+        throw new AuthenticationError('You must be logged in');
+      }
+      if (ctx.currentUser._id !== ID) {
+        throw new AuthenticationError('You are only authorized to update your own account.');
+      }
+    
+      const updateFields: any = {};
+      if (firstname) updateFields.firstname = firstname;
+      if (lastname) updateFields.lastname = lastname;
+      if (gender) updateFields.gender = gender;
+      if (code) updateFields.code = code;
+      if (country) updateFields.country = country;
+      if (telephone) updateFields.telephone = telephone;
+      if (picture) updateFields.picture = picture;
+    
+      const wasEdited = (
+        await LoggedUserModel.updateOne(
+          { _id: ctx.currentUser._id },
+          { $set: updateFields } 
+        )
+      ).modifiedCount;
+    
+      return wasEdited > 0; 
+    },       
 
     assignRoleToUser: async (
       _: any,
