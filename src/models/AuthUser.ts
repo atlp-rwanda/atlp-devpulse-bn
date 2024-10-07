@@ -13,6 +13,10 @@ const userSchema = new Schema(
       type: String,
       default: process.env.DEFAULT_AVATAR,
     },
+    isVerified:{
+      type:Boolean,
+      default:false
+    },
     role: {
       type: Schema.Types.ObjectId,
       ref: "Role",
@@ -40,4 +44,4 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-export const LoggedUserModel = model("LoggedUserModel", userSchema);
+export const LoggedUserModel = model("LoggedUserModel", userSchema);  
