@@ -3,40 +3,78 @@ import { AppliedJobModel } from "../models/appliedJob";
 import { TrackSheet } from "../models/trackAppliedJob";
 import { CustomGraphQLError } from "../utils/customErrorHandler";
 
+// Extract sheet ID from Google Sheet URL
 function extractSheetId(sheetUrl: string): string | null {
   const regex = /\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/;
   const match = sheetUrl.match(regex);
   return match ? match[1] : null;
 }
 
-async function fetchSheetData(sheetLink: string, sheetName: string) {
-  const sheetId = extractSheetId(sheetLink);
-  if (!sheetId) {
-    throw new Error("Invalid sheet link provided");
-  }
+// Get all sheet names from the spreadsheet
+async function getAllSheets(sheetId: string) {
   const googleSheets = google.sheets({ version: "v4" });
+  const response = await googleSheets.spreadsheets.get({
+    spreadsheetId: sheetId,
+    key: process.env.API_KEYS,
+  });
 
+  // Extract sheet names from response
+  const sheets = response.data.sheets?.map(sheet => sheet.properties?.title);
+  return sheets || [];
+}
+
+// Fetch data from a specific sheet
+async function fetchSheetData(sheetId: string, sheetName: string) {
+  const googleSheets = google.sheets({ version: "v4" });
   const response = await googleSheets.spreadsheets.values.get({
     spreadsheetId: sheetId,
-    range: sheetName,
+    range: sheetName, // Get all data for the sheet
     key: process.env.API_KEYS,
   });
 
   return response.data.values;
 }
 
-async function getLastProcessedRow(sheetId: string): Promise<number> {
-  const sheetTracker = await TrackSheet.findOne({ sheetId });
-  return sheetTracker ? sheetTracker.lastProcessedRow : 0;
+// Fetch all data from all sheets in a spreadsheet
+async function fetchAllSheetData(sheetLink: string) {
+  const sheetId = extractSheetId(sheetLink);
+  if (!sheetId) {
+    throw new Error("Invalid sheet link provided");
+  }
+
+  // Get all sheet names
+  const sheets = await getAllSheets(sheetId);
+
+  // Fetch data from each sheet
+  const allSheetData = await Promise.all(
+    sheets.map(async (sheetName: any) => {
+      const data = await fetchSheetData(sheetId, sheetName);
+      return {
+        sheetName,
+        data,
+      };
+    })
+  );
+
+  return allSheetData;
 }
 
-async function updateLastProcessedRow(
+// Get the last processed timestamp from MongoDB
+async function getLastProcessedTimestamp(sheetId: string): Promise<string> {
+  const sheetTracker = await TrackSheet.findOne({ sheetId });
+  return sheetTracker 
+    ? sheetTracker.lastProcessedTimestamp.toISOString()
+    : new Date("2024-01-01T00:00:00Z").toISOString();
+}
+
+// Update the last processed timestamp in MongoDB
+async function updateLastProcessedTimestamp(
   sheetId: string,
-  lastRow: number
+  lastTimestamp: string
 ): Promise<number> {
   const updatedSheetTracker = await TrackSheet.updateOne(
     { sheetId },
-    { $set: { lastProcessedRow: lastRow } },
+    { $set: { lastProcessedTimestamp: lastTimestamp } },
     { upsert: true, new: true }
   );
   return updatedSheetTracker.upsertedCount || 0;
@@ -46,52 +84,44 @@ export const appliedJobResolver = {
   Query: {
     getAllAppliedJobs: async (_: any, __: any, context: any) => {
       try {
-        // Ensure the user is authenticated
         if (!context.currentUser) {
           throw new CustomGraphQLError(
             "You must be logged in to view applications."
           );
         }
 
-        // Fetch all applied jobs from the MongoDB collection
         const appliedJobs = await AppliedJobModel.find({}).lean();
 
-        // If no jobs found, throw an error
         if (appliedJobs.length === 0) {
           throw new Error("No applications found.");
         }
 
-        // Map each job document to the required GraphQL structure
         return appliedJobs.map((job: any) => {
-          // Convert the document fields to key-value pairs
           const fieldData = Object.keys(job.data).map((key) => ({
             key,
-            value: job.data[key] ? String(job.data[key]) : null, // Ensure values are strings or null
+            value: job.data[key] ? String(job.data[key]) : null,
           }));
 
-          // Return the mapped object with an ID and key-value pair data
           return {
-            id: job._id.toString(), // Convert MongoDB ObjectId to string
-            data: fieldData, // Field data as key-value pairs
+            id: job._id.toString(),
+            data: fieldData,
           };
         });
       } catch (error: any) {
         throw new Error(`Error retrieving applications: ${error.message}`);
       }
     },
+
     getAppliedJob: async (_: any, { id }: any, context: any) => {
       try {
-        // Ensure the user is authenticated
         if (!context.currentUser) {
           throw new CustomGraphQLError(
             "You must be logged in to view your application."
           );
         }
 
-        // Fetch the applied job from the MongoDB collection by ID
         const appliedJob = await AppliedJobModel.findById(id).lean();
 
-        // If no job found, throw an error
         if (!appliedJob) {
           throw new Error("Application not found or you are unauthorized.");
         }
@@ -101,16 +131,14 @@ export const appliedJobResolver = {
             ? Object.fromEntries(appliedJob.data)
             : appliedJob.data;
 
-        // Map through all key-value pairs in the plain object
         const fieldData = Object.entries(data as any).map(([key, value]) => ({
           key,
-          value: value ? String(value) : null, // Convert to string or null
+          value: value ? String(value) : null,
         }));
 
-        // Return the mapped object with an ID and key-value pair data
         return {
           id: appliedJob._id.toString(),
-          data: fieldData, // Return all field data as an array of FieldData
+          data: fieldData,
         };
       } catch (error: any) {
         throw new Error(`Error retrieving application: ${error.message}`);
@@ -119,46 +147,54 @@ export const appliedJobResolver = {
   },
 
   Mutation: {
-    saveSheetData: async (_: any, { sheetLink, range }: any, context: any) => {
+    saveSheetData: async (_: any, { sheetLink }: any, context: any) => {
       try {
         if (!context.currentUser) {
           throw new CustomGraphQLError(
             "You must be logged in to view applications."
           );
         }
-        const data: any = await fetchSheetData(sheetLink, range);
-        if (!data || data.length === 0) {
-          throw new Error("No data found in the provided range");
-        }
+
+        // Fetch all data from all sheets
+        const allSheetData = await fetchAllSheetData(sheetLink);
+
         const sheetId = extractSheetId(sheetLink);
         if (!sheetId) {
           throw new Error("Invalid sheet link provided");
         }
-        const headers = data[0];
-        const lastRow = await getLastProcessedRow(sheetId);
 
-        const newRows = data.slice(lastRow);
+        // Get the last processed timestamp
+        const lastProcessedTimestamp = await getLastProcessedTimestamp(sheetId);
 
-        const filteredRows = newRows.filter((row: any) =>
-          row.some((cell: any) => cell)
-        );
+        for (const { sheetName, data } of allSheetData) {
+          if (!data || data.length === 0) continue; // Skip empty sheets
 
-        if (filteredRows.length === 0) {
-          throw new Error("No valid data rows to process.");
-        }
+          const headers = data[0];
+          const timestampIndex = headers.indexOf("Timestamp");
+          if (timestampIndex === -1) {
+            throw new Error(`Timestamp column not found in sheet: ${sheetName}`);
+          }
 
-        const documents = filteredRows.map((row: any) => {
-          const document: { [key: string]: any } = {};
-          headers.forEach((header: string, index: number) => {
-            document[header] = row[index] || null;
+          const newRows = data.slice(1).filter((row: any) => {
+            const rowTimestamp = row[timestampIndex];
+            return rowTimestamp && new Date(rowTimestamp) > new Date(lastProcessedTimestamp);
           });
-          return { data: document };
-        });
 
-        await AppliedJobModel.insertMany(documents);
+          if (newRows.length === 0) continue;
 
-        const newLastRow = lastRow + filteredRows.length;
-        await updateLastProcessedRow(sheetId, newLastRow);
+          const documents = newRows.map((row: any) => {
+            const document: { [key: string]: any } = {};
+            headers.forEach((header: string, index: number) => {
+              document[header] = row[index] || null;
+            });
+            return { data: document };
+          });
+
+          await AppliedJobModel.insertMany(documents);
+
+          const latestTimestamp = newRows[newRows.length - 1][timestampIndex];
+          await updateLastProcessedTimestamp(sheetId, latestTimestamp);
+        }
 
         return true;
       } catch (error: any) {

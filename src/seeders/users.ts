@@ -25,6 +25,20 @@ const seedUsers = async() => {
                 gender: "female",
                 isVerified:true,
 
+            },
+            {
+                firstname: "applicant",
+                lastname: "user",
+                email: "applicant@example.com",
+                password: await BcryptUtil.hash("password123"),
+                role: applicantRole._id,
+                country: "Rwanda",
+                code: "+250",
+                telephone: "0788888888",
+                isActive: true,
+                gender: "female",
+                isVerified:true,
+
             }
         ]
         await LoggedUserModel.deleteMany({users});

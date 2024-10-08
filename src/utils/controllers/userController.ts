@@ -6,7 +6,7 @@ const client = new OAuth2Client(process.env.OAUTH_CLIENT_ID);
 
 export const findOrCreateUser = async (token: any) => {
   let user = null;
-  const payload = verifyToken(token && token.split(' ')[1]);
+  const payload = verifyToken(token);
   if (typeof payload === 'object' && payload !== null && 'data' in payload) {
     if (payload.data.source === 'dev-pulse') {
       user = await LoggedUserModel.findById({ _id: payload.data.userId });
