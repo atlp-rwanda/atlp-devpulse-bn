@@ -35,7 +35,11 @@ const userSchema = new Schema(
     isEmailVerified: {
       type: Boolean,
       default: false,
-    }
+
+    },
+    resetToken: String,
+    resetTokenExpiration:Date
+
   },
   { timestamps: true }
 );

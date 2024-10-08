@@ -1,4 +1,5 @@
 import { model, Schema } from "mongoose";
+
 const userSchema = new Schema({
   createdAt: String,
   firstName: String,
@@ -19,6 +20,8 @@ const userSchema = new Schema({
     default: false,
   },
   status: Boolean,
+  resetToken: String,
+  resetTokenExpiration: Date,
 });
 
 export const userModel = model("LoggedUser", userSchema);

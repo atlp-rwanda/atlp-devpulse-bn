@@ -53,8 +53,14 @@ import { adminViewAllApplicationsTypedefs} from "./schema/adminViewApplicationsS
 import filterJobResolver from "./resolvers/filterJob";
 import filterProgramResolver from "./resolvers/filterPrograms";
 import filterRoleResolver from "./resolvers/filterRole";
+
+// import {forgetPassword } from "./resolvers/forgetpassword";
+import { passwordResolvers } from './resolvers/forgetpassword';
+import { passwordSchema } from "./schema/forgetpassword";
+
 import { SearchSchema } from "./schema/searchSchema";
 import { searchResolver } from "./resolvers/searchResolver";
+
 const PORT = process.env.PORT || 3000;
 
 // const PORT = process.env.PORT || 4001;
@@ -85,13 +91,18 @@ const resolvers = mergeResolvers([
   filterJobResolver,
   filterProgramResolver,
   filterRoleResolver,
+
+  passwordResolvers
+
   searchResolver
+
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
   typeDefsAttribute,
   typeDefsTrainee,
   updateUserTypeDefs,
+  passwordSchema,
   deleteTraineTypeDefs,
   filterTraineetypeDefs,
   recyclebinempty,
@@ -125,7 +136,7 @@ const server = new ApolloServer({
     try {
       authToken = req.headers.authorization;
       if (authToken) {
-        //find or create User
+      
         currentUser = await findOrCreateUser(authToken);
       }
     } catch (error) {
