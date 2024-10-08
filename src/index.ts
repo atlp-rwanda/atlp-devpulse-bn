@@ -60,6 +60,8 @@ import { passwordSchema } from "./schema/forgetpassword";
 
 import { SearchSchema } from "./schema/searchSchema";
 import { searchResolver } from "./resolvers/searchResolver";
+import {appliedJobResolver} from "./resolvers/appliedJobResolver";
+import { appliedJobTypeDefs } from "./schema/appliedJobTypeDefs";
 
 const PORT = process.env.PORT || 3000;
 
@@ -91,10 +93,9 @@ const resolvers = mergeResolvers([
   filterJobResolver,
   filterProgramResolver,
   filterRoleResolver,
-
-  passwordResolvers
-
-  searchResolver
+  passwordResolvers,
+  searchResolver,
+  appliedJobResolver,
 
 ]);
 const typeDefs = mergeTypeDefs([
@@ -123,7 +124,8 @@ const typeDefs = mergeTypeDefs([
   viewOwnApplicationTypeDefs,
   gradingTypeDefs,
   adminViewAllApplicationsTypedefs,
-  SearchSchema
+  SearchSchema,
+  appliedJobTypeDefs
 ]);
 
 const server = new ApolloServer({
@@ -140,7 +142,7 @@ const server = new ApolloServer({
         currentUser = await findOrCreateUser(authToken);
       }
     } catch (error) {
-      console.error(`Unable to authenticate user with token ${authToken}`);
+      console.error(`Unable to authenticate user`);
     }
     return { currentUser };
   },
