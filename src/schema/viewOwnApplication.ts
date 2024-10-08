@@ -27,6 +27,7 @@ export const viewOwnApplicationTypeDefs = gql`
   }
 
   type ApplicationsResponse {
+    message: String!
     applications: [Application!]!
     totalCount: Int!
   }
