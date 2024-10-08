@@ -157,7 +157,7 @@ export const traineeApplicantResolver: any = {
       } finally {
         session.endSession();
       }
-    }
+    },
 
     async acceptTrainee(_: any, { traineeId, cohortId }: any){
       try{
