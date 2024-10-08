@@ -28,7 +28,6 @@ export const updateUserTypeDefs = gql`
     createUser(userInput: UserInput): User!
     deleteUser(ID: ID!): Boolean
     updateUser(ID:ID!, editUserInput:EditUserInput): Boolean
-    updateUserSelf(ID:ID!, editUserInput: EditUserInput): Boolean
   }
 `;
 

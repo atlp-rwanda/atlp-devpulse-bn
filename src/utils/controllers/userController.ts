@@ -86,7 +86,7 @@ const createNewUser = async (googleUser: any) => {
     role: roleId,
     code: '+250', 
     password: 'GOOGLE_SIGN_IN',  
-    country: ' ',           
+    country: '',           
     telephone: '',                
     gender: 'other',
     authMethod: 'google',            

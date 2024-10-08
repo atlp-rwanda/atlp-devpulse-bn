@@ -51,6 +51,19 @@ export const loggedUserResolvers: any = {
       const role = await RoleModel.findOne({ _id: user?.role });
       return role;
     },
+    getByFilter: async (_: any, { filter }: { filter: any }) => {
+      const filterQuery: any = {};
+      for (const key in filter) {
+        if (filter[key] !== undefined && filter[key] !== null) {
+          filterQuery[key] = filter[key];
+        }
+      }
+      if (Object.keys(filterQuery).length === 0) {
+        throw new Error("No filter criteria provided.");
+      }
+      const users = await LoggedUserModel.find(filterQuery);
+      return users;
+    }    
   },
   Mutation: {
     async createUser_Logged(
