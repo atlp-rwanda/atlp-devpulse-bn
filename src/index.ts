@@ -92,7 +92,7 @@ const resolvers = mergeResolvers([
   filterProgramResolver,
   filterRoleResolver,
 
-  passwordResolvers
+  passwordResolvers,
 
   searchResolver
 
