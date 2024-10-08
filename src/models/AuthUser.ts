@@ -40,11 +40,15 @@ const userSchema = new Schema(
     isEmailVerified: {
       type: Boolean,
       default: false,
+
     },
     cohort: {
       type: Schema.Types.ObjectId,
       ref: "cohortModel",
-    }
+    },
+    resetToken: String,
+    resetTokenExpiration:Date
+
   },
   { timestamps: true }
 );
