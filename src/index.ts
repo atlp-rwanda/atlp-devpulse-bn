@@ -29,7 +29,7 @@ import { LoggedUserSchema } from "./schema/loggedUser";
 import { loggedUserResolvers } from "./resolvers/loginUserResolver";
 import sendBulkyEmailResolver from "./resolvers/bulkyEmailResolver";
 import sendBulkyEmailTypeDefs from "./schema/bulkyEmailTypeDefs";
-import {roleSchema} from "./schema/roleTypedefs";
+import { roleSchema } from "./schema/roleTypedefs";
 import { roleResolvers } from "./resolvers/roleResolver";
 import { permissionResolvers } from "./resolvers/permissionResolver";
 import { permissionSchemaTypeDef } from "./schema/permissionTypeSchema";
@@ -39,17 +39,19 @@ import { formSchema } from "./schema/formSchema";
 import { formsResolver } from "./resolvers/forms.resolver";
 import { formatError } from "./utils/customErrorHandler";
 import { formJobSchema } from "./schema/formJobSchema";
-import { jobPostResolver } from  "./resolvers/jobPostResolvers"
+import { jobPostResolver } from "./resolvers/jobPostResolvers";
 import { programTypeDefs } from "./schema/programSchema";
 import { programResolvers } from "./resolvers/programResolver";
 import { cohortSchema } from "./schema/cohortScheme";
 import { cohortResolver } from "./resolvers/cohortResolver";
-import { viewOwnApplicationTypeDefs }  from "./schema/viewOwnApplication";
+import { viewOwnApplicationTypeDefs } from "./schema/viewOwnApplication";
 import candidateViewOwnApplication from "./resolvers/viewOwnApplicationResolver";
 import { gradingTypeDefs } from "./schema/gradingSchema";
 import gradingResolver from "./resolvers/grading";
-import {adminViewApplicationsResolvers }from "./resolvers/adminViewApplications";
-import { adminViewAllApplicationsTypedefs} from "./schema/adminViewApplicationsSchema";
+import { adminViewApplicationsResolvers } from "./resolvers/adminViewApplications";
+import { adminViewAllApplicationsTypedefs } from "./schema/adminViewApplicationsSchema";
+import { notificationResolvers } from "./resolvers/Adminnotification";
+import { notificationTypedefs } from "./schema/adminNotification";
 const PORT = process.env.PORT || 3000;
 
 // const PORT = process.env.PORT || 4001;
@@ -77,6 +79,7 @@ const resolvers = mergeResolvers([
   candidateViewOwnApplication,
   gradingResolver,
   adminViewApplicationsResolvers,
+  notificationResolvers,
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -103,6 +106,7 @@ const typeDefs = mergeTypeDefs([
   viewOwnApplicationTypeDefs,
   gradingTypeDefs,
   adminViewAllApplicationsTypedefs,
+  notificationTypedefs,
 ]);
 
 const server = new ApolloServer({
@@ -130,5 +134,5 @@ const server = new ApolloServer({
 
 connect().then(() => {
   console.log("Database connected!");
-  server.listen(PORT).then(({ url }) =>   console.info(`App on ${url}`));
+  server.listen(PORT).then(({ url }) => console.info(`App on ${url}`));
 });
