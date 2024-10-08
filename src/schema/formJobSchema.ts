@@ -10,6 +10,7 @@ export const formJobSchema = gql`
         title: String!
 		description: String!
 		label: String
+		published: Boolean
 	}
 	type Count {
     total: Int!
@@ -42,6 +43,7 @@ export const formJobSchema = gql`
         link: String
 		description: String
 		label: String
+		published: Boolean
     }
 	input FilterOptions { 
     page: Int!
