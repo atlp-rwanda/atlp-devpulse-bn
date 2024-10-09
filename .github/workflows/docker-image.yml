@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - develop
-  pull_request: # Add this line to trigger on PRs
+  pull_request:
     branches:
-      - develop # or specify branches from which you want to allow PRs
+      - develop
 
 jobs:
   build-and-deploy:
@@ -25,7 +25,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build and push Docker image
+      - name: Log in to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_HUB_PASSWORD2 }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME2 }}" --password-stdin
+
+      - name: Check if Docker image exists
+        id: image-check
+        run: |
+          IMAGE_EXISTS=$(docker manifest inspect ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn:latest > /dev/null 2>&1 && echo true || echo false)
+          echo "Image exists: $IMAGE_EXISTS"
+          echo "::set-output name=exists::$IMAGE_EXISTS"
+
+      - name: Build and push Docker image (if not exists)
+        if: steps.image-check.outputs.exists == 'false'
         uses: mr-smithers-excellent/docker-build-push@v6
         with:
           image: ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn
@@ -40,7 +52,7 @@ jobs:
             MONGO_PROD_DB=${{ secrets.MONGO_PROD_DB }}
 
       - name: Deploy to DigitalOcean
-        uses: appleboy/ssh-action@v0.1.0 # Specify a version
+        uses: appleboy/ssh-action@v0.1.0
         with:
           host: ${{ secrets.DO_HOST }}
           username: ${{ secrets.DO_USERNAME }}
