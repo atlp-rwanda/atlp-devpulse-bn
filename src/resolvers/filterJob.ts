@@ -8,7 +8,7 @@ const filterJobResolver: any = {
     async filterJobDetails(_: any, { input }: any) {
       const { page, itemsPerPage, All, wordEntered, filterAttribute } = input;
       let pages = page || 1;
-      let items = All ? await jobModels.countDocuments({}) : (itemsPerPage || 10);
+      let items = All ? await jobModels.countDocuments({}) : itemsPerPage || 10;
 
       const itemsToSkip = (pages - 1) * items;
 
@@ -16,33 +16,44 @@ const filterJobResolver: any = {
 
       if (wordEntered && filterAttribute) {
         const allowedAttributes = [
-          'title', 'description', 'label', 'link',
-          'program.name', 'cycle.name', 'cohort.name'
+          "title",
+          "description",
+          "label",
+          "link",
+          "program.name",
+          "cycle.name",
+          "cohort.name",
+          "spreadsheetlink",
+          "formrange",
         ];
 
         if (allowedAttributes.includes(filterAttribute)) {
-          if (['program.name', 'cycle.name', 'cohort.name'].includes(filterAttribute)) {
-            const [model, field] = filterAttribute.split('.');
+          if (
+            ["program.name", "cycle.name", "cohort.name"].includes(
+              filterAttribute
+            )
+          ) {
+            const [model, field] = filterAttribute.split(".");
             query[model] = { $ne: null };
-            query[`${model}.${field}`] = { $regex: wordEntered, $options: 'i' };
+            query[`${model}.${field}`] = { $regex: wordEntered, $options: "i" };
           } else {
-            query[filterAttribute] = { $regex: wordEntered, $options: 'i' };
+            query[filterAttribute] = { $regex: wordEntered, $options: "i" };
           }
         }
       }
 
       try {
-        const allJobApplications = await jobModels.find(query)
-          .populate('program')
-          .populate('cycle')
-          .populate('cohort')
+        const allJobApplications = await jobModels
+          .find(query)
+          .populate("program")
+          .populate("cycle")
+          .populate("cohort")
           .skip(itemsToSkip)
           .limit(items);
 
-          if(allJobApplications===null){
-            return "There was an error"
-          }
-        console.log(allJobApplications)
+        if (allJobApplications === null) {
+          return "There was an error";
+        }
         return allJobApplications;
       } catch (error) {
         console.error("Error filtering job applications:", error);

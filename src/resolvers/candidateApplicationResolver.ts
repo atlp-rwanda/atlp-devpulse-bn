@@ -4,7 +4,6 @@ const candidateApplicationResolver = {
   Mutation: {
     async deleteCandidateApplication(_: any, { id }: any, context: any) {
       try {
-        console.log(context.currentUser);
         if (!context.currentUser) {
           return { message: "Anauthorized." };
         }
