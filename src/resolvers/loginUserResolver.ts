@@ -514,7 +514,7 @@ export const loggedUserResolvers: any = {
         expiresIn: "1h",
       });
 
-      return { token };
+      return { token, userId: user._id };
     },
 
     async updateApplicationPhase(
