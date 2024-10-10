@@ -42,7 +42,6 @@ export const LoggedUserSchema = gql`
     firstname: String
     lastname: String
     email: String
-    password: String
     code: String
     telephone: String
     gender: String
