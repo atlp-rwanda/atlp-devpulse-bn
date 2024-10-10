@@ -6,40 +6,44 @@ export const jobModels = mongoose.model('jobform',
     new mongoose.Schema({
         title:{
             type:String,
-            
+
         },
         program:{
-            type: Schema.Types.ObjectId,
+            type:Schema.Types.ObjectId,
             ref: "ProgramModel",
-            required:true
+            required: true
         },
         cohort:{
-            type: Schema.Types.ObjectId,
+            type:Schema.Types.ObjectId,
             ref: "cohortModel",
-            required:true
+            required: true
         },
-        cycle: {
-            type: Schema.Types.ObjectId,
+        cycle:{
+            type:Schema.Types.ObjectId,
             ref: "applicationCycle",
-            required: true 
+            required: true
         },
         link:{
             type:String,
         },
         description:{
             type:String,
-            required:true
+            required: true
         },
         status:{
             type:String,
             enum: statusValues,
             default: 'due',
-            required:true
+            required: true
         },
         label:{
             type:String,
             enum: labelValues,
-            required:true
+            required: true
         },
+        published:{
+            type:Boolean,
+            default: false
+        }
     })
 )

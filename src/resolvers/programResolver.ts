@@ -12,18 +12,6 @@ export const programResolvers = {
     getAll: async (_: any, { data }: any, context: any) => {
       console.log(context.currentUser);
       try {
-        const userWithRole = await LoggedUserModel.findById(
-          context.currentUser?._id,
-        ).populate('role');
-
-        if (
-          !userWithRole ||
-          !['admin', 'superAdmin'].includes(
-            (userWithRole.role as any)?.roleName,
-          )
-        ) {
-          throw new CustomGraphQLError('Only superAdmin can get all programs.');
-        }
         const { page, pageSize } = data;
         const response = await ProgramModel.find()
           .skip((page - 1) * pageSize)
