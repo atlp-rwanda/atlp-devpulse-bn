@@ -6,6 +6,8 @@ import { sendEmailTemplate } from "../helpers/bulkyMails";
 
 const FrontendUrl = process.env.FRONTEND_URL || ""
 
+import { CustomGraphQLError } from "../utils/customErrorHandler";
+import { cohortModels } from "../models/cohortModel";
 
 export const traineeApplicantResolver: any = {
   Query: {
@@ -53,6 +55,16 @@ export const traineeApplicantResolver: any = {
         throw new Error("No trainee is found, pleade provide the correct ID");
       return trainee;
     },
+
+    async getTraineeByUserId(_: any, { userId }: any){
+      const trainee = await TraineeApplicant.findOne({ user: userId })
+        
+        if (!trainee) {
+          throw new Error('Trainee not found');
+        }
+
+        return trainee._id;
+    }
   },
 
   Mutation: {
@@ -144,6 +156,38 @@ export const traineeApplicantResolver: any = {
         throw error;
       } finally {
         session.endSession();
+      }
+    },
+
+    async acceptTrainee(_: any, { traineeId, cohortId }: any){
+      try{
+        const trainee = await TraineeApplicant.findById(traineeId);
+        if(!trainee){
+          throw new CustomGraphQLError("Trainee not found");
+
+        }
+
+        const cohort = await cohortModels.findById(cohortId);
+        if (!cohort) {
+          throw new CustomGraphQLError("Cohort not found");
+        }
+
+        trainee.applicationPhase = "Enrolled";
+        trainee.status = "Assigned";
+        trainee.cohort = cohortId;
+        await trainee.save();
+
+        if (!cohort.trainees) {
+          cohort.trainees = [];
+        }
+
+        cohort.trainees.push(traineeId);
+        await cohort.save();
+
+        return { success: true, message: "Trainee accepted successfully" };
+
+      } catch (error) {
+        throw new CustomGraphQLError(`Failed to accept trainee: ${error}`);
       }
     }
   },
