@@ -1,4 +1,5 @@
-import { ApolloServer } from "apollo-server";
+import { ApolloServer } from "apollo-server-express"; // Use express version
+import express from "express";
 import { mergeResolvers, mergeTypeDefs } from "@graphql-tools/merge";
 import { connect } from "./database/db.config";
 import { typeDefsTrainee } from "./schema/traineeApplicantSchema";
@@ -52,9 +53,13 @@ import { adminViewApplicationsResolvers } from "./resolvers/adminViewApplication
 import { adminViewAllApplicationsTypedefs } from "./schema/adminViewApplicationsSchema";
 import { notificationResolvers } from "./resolvers/Adminnotification";
 import { notificationTypedefs } from "./schema/adminNotification";
-const PORT = process.env.PORT || 3000;
-
-// const PORT = process.env.PORT || 4001;
+import { WebSocketServer } from "ws";
+import { useServer } from "graphql-ws/lib/use/ws";
+import { execute, subscribe } from "graphql";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import cors from "cors";
+import { createServer } from "http";
+import { ApolloServerPluginDrainHttpServer } from "apollo-server-core/dist/plugin/drainHttpServer";
 
 const resolvers = mergeResolvers([
   applicationCycleResolver,
@@ -81,6 +86,7 @@ const resolvers = mergeResolvers([
   adminViewApplicationsResolvers,
   notificationResolvers,
 ]);
+
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
   typeDefsAttribute,
@@ -109,9 +115,19 @@ const typeDefs = mergeTypeDefs([
   notificationTypedefs,
 ]);
 
+const PORT = process.env.PORT || 5000;
+const schema = makeExecutableSchema({ typeDefs, resolvers });
+
+const app = express();
+const httpServer = createServer(app);
+const wsServer = new WebSocketServer({
+  server: httpServer,
+  path: "/graphql",
+});
+const serverCleanup = useServer({ schema }, wsServer);
+
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
+  schema,
   formatError,
   context: async ({ req }) => {
     let authToken = null;
@@ -119,7 +135,6 @@ const server = new ApolloServer({
     try {
       authToken = req.headers.authorization;
       if (authToken) {
-        //find or create User
         currentUser = await findOrCreateUser(authToken);
       }
     } catch (error) {
@@ -129,10 +144,40 @@ const server = new ApolloServer({
   },
   introspection: true,
   csrfPrevention: true,
-  plugins: [ApolloServerPluginInlineTrace()],
+  plugins: [
+    ApolloServerPluginDrainHttpServer({ httpServer }),
+
+    {
+      async serverWillStart() {
+        return {
+          async drainServer() {
+            await serverCleanup.dispose();
+          },
+        };
+      },
+    },
+  ],
 });
 
-connect().then(() => {
-  console.log("Database connected!");
-  server.listen(PORT).then(({ url }) => console.info(`App on ${url}`));
-});
+async function startServer() {
+  await server.start();
+
+  server.applyMiddleware({ app });
+
+  httpServer.listen(PORT, () => {
+    console.log(
+      `🚀 Server is running at http://localhost:${PORT}${server.graphqlPath}`
+    );
+  });
+
+  useServer({ schema, execute, subscribe }, wsServer);
+}
+
+connect()
+  .then(() => {
+    console.log("Database connected!");
+    startServer();
+  })
+  .catch((error) => {
+    console.error("Error connecting to the database:", error);
+  });

@@ -1,6 +1,5 @@
 import Notification from "../models/adminNotification";
-import { LoggedUserModel } from "../models/AuthUser";
-import { AuthenticationError } from "apollo-server-express";
+
 import { PubSub } from "graphql-subscriptions";
 const pubsub = new PubSub();
 const NOTIFICATION_RECEIVED = "NOTIFICATION_RECEIVED";
@@ -22,7 +21,6 @@ export const notificationResolvers = {
       notification.read = true;
       const updatedNotification = await notification.save();
 
-      // Return the updated notification instead of all notifications
       return updatedNotification;
     },
     async deleteNotification(_: any, { id }: { id: string }) {
@@ -32,12 +30,14 @@ export const notificationResolvers = {
       }
 
       await Notification.deleteOne({ _id: id });
-      return true; // Return true to indicate success
+      return true;
     },
   },
   Subscription: {
     notificationReceived: {
-      subscribe: () => pubsub.asyncIterator([NOTIFICATION_RECEIVED]),
+      subscribe: () => {
+        return pubsub.asyncIterator([NOTIFICATION_RECEIVED]);
+      },
     },
   },
 };

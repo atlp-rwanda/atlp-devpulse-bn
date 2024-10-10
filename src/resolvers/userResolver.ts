@@ -34,7 +34,7 @@ export const usersResolvers: any = {
         createdAt: new Date().toISOString(),
       });
 
-      const res = await createdUser.save(); // MongoDB saving
+      const res = await createdUser.save();
       await publishNotification(
         `${firstName} ${lastName} has registered as a new applicant.`,
         "new_application"
