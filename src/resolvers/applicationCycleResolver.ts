@@ -3,6 +3,8 @@ import { traineEAttributes } from "../models/traineeAttribute";
 import TraineeApplicant from "../models/traineeApplicant";
 import { ApplicantNotificationsModel } from "../models/applicantNotifications";
 import { LoggedUserModel } from "../models/AuthUser";
+import { pusher } from "../helpers/pusher";
+import { RoleModel } from "../models/roleModel";
 
 const applicationCycleResolver: any = {
   Query: {
@@ -18,23 +20,53 @@ const applicationCycleResolver: any = {
   },
   Mutation: {
     async createApplicationCycle(_parent: any, _args: any) {
-      const applicationCycleExists = await applicationCycle.findOne({
-        name: _args.name,
-      });
-      if (applicationCycleExists)
-        throw new Error("applicationCycle already exists");
-      const newapplicationCycle = await applicationCycle.create({
-        name: _args.input.name,
-        startDate: _args.input.startDate,
-        endDate: _args.input.endDate,
-      });
+      try {
+        const applicationCycleExists = await applicationCycle.findOne({
+          name: _args.input.name,
+        });
+        if (applicationCycleExists) {
+          throw new Error("Application cycle already exists");
+        }
 
-      const applicants = await LoggedUserModel.find({});
-      applicants.forEach(async (applicant) => {
-        const message = `A new application cycle "${_args.input.name}" is open from ${_args.input.startDate} to ${_args.input.endDate}.`;
-        await ApplicantNotificationsModel.create({ userId: applicant._id, message, eventType: "general" });
-      });
-      return newapplicationCycle;
+        const newApplicationCycle = await applicationCycle.create({
+          name: _args.input.name,
+          startDate: _args.input.startDate,
+          endDate: _args.input.endDate,
+        });
+
+        const applicantRole = await RoleModel.findOne({ roleName: "applicant" });
+        const applicants = await LoggedUserModel.find({ role: applicantRole!._id }).populate('role');
+
+        const notificationPromises = applicants.map(async (applicant) => {
+          const message = `A new application cycle "${_args.input.name}" is open from ${_args.input.startDate} to ${_args.input.endDate}.`;
+
+          const notification = await ApplicantNotificationsModel.create({
+            userId: applicant._id,
+            message,
+            eventType: "general",
+          });
+
+          await pusher
+            .trigger(`notifications-${applicant._id}`, "new-notification", {
+              message: notification.message,
+              id: notification._id,
+              createdAt: notification.createdAt,
+              read: notification.read,
+            })
+            .catch((error) => {
+              console.error("Error with Pusher trigger:", error);
+            });
+
+          return notification;
+        });
+
+        await Promise.all(notificationPromises);
+
+        return newApplicationCycle;
+      } catch (error) {
+        console.error("Error in createApplicationCycle:", error);
+        throw new Error("Failed to create application cycle");
+      }
     },
     async deleteApplicationCycle(_parent: any, _args: any) {
       const applicationCycleToDelete = await applicationCycle.findById(
@@ -64,15 +96,15 @@ const applicationCycleResolver: any = {
         { new: true }
       );
 
-        const applicants = await TraineeApplicant.find({});
-        applicants.forEach(async (applicant) => {
-          const message = `An update on the application cycle "${_args.input.name}" has been made.`;
-          await ApplicantNotificationsModel.create({
-            userId: applicant._id,
-            message,
-            eventType: "general",
-          });
+      const applicants = await TraineeApplicant.find({});
+      applicants.forEach(async (applicant) => {
+        const message = `An update on the application cycle "${_args.input.name}" has been made.`;
+        await ApplicantNotificationsModel.create({
+          userId: applicant._id,
+          message,
+          eventType: "general",
         });
+      });
       return newapplicationCycle;
     },
   },

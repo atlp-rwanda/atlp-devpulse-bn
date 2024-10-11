@@ -20,9 +20,12 @@ const applicantNotificationsSchema = new Schema({
     default: false,
   },
   createdAt: {
-    type: Date,
-    default: Date.now,
+    type: String,
+    default: () => new Date().toISOString(),
   },
 });
 
-export const ApplicantNotificationsModel = model("ApplicantNotifications", applicantNotificationsSchema);
+export const ApplicantNotificationsModel = model(
+  "ApplicantNotifications",
+  applicantNotificationsSchema
+);

@@ -1,5 +1,4 @@
 import { ApplicantNotificationsModel } from "../models/applicantNotifications";
-import io from "../helpers/webSocketServer"
 
 const notificationResolver: any = {
   Query: {
@@ -12,22 +11,33 @@ const notificationResolver: any = {
       _parent: any,
       args: { userId: string; message: string; eventType: string }
     ) {
-      const newNotification = new ApplicantNotificationsModel({
-        userId: args.userId,
-        message: args.message,
-        eventType: args.eventType,
-      });
-      const savedNotification = newNotification.save();
+      try {
+        const newNotification = new ApplicantNotificationsModel({
+          userId: args.userId,
+          message: args.message,
+          eventType: args.eventType,
+        });
+        const savedNotification = await newNotification.save();
 
-      io.to(args.userId).emit('newNotification', savedNotification)
-      return savedNotification
+        return savedNotification;
+      } catch (error) {
+        console.error("Error in createNotification:", error);
+        throw new Error("Failed to create notification");
+      }
     },
     async markNotificationAsRead(_parent: any, args: { id: string }) {
-      return await ApplicantNotificationsModel.findByIdAndUpdate(
-        args.id,
-        { read: true },
-        { new: true }
-      );
+      const notification = await ApplicantNotificationsModel.findById(args.id);
+      if (!notification) {
+        throw new Error("Notification not found");
+      }
+      const updatedNotification =
+        await ApplicantNotificationsModel.findByIdAndUpdate(
+          args.id,
+          { read: !notification.read },
+          { new: true }
+        );
+
+      return updatedNotification;
     },
   },
 };
