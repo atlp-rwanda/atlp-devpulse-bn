@@ -9,7 +9,6 @@ const FrontendUrl = process.env.FRONTEND_URL || ""
 import { CustomGraphQLError } from "../utils/customErrorHandler";
 import { cohortModels } from "../models/cohortModel";
 
-
 export const traineeApplicantResolver: any = {
   Query: {
     async allTrainees(_: any, { input }: any) {
