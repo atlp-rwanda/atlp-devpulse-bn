@@ -9,6 +9,16 @@ const userLoginSchema = gql`
   type Mutation {
     login(email: String!, password: String!): AuthPayload
   }
-`;
 
+  type LoginHistory {
+    userId: ID!
+    loginTime: String!
+    ipAddress: String
+  }
+
+  type Query {
+    getLoginHistory(userId: ID!): [LoginHistory!]!
+  }
+`;
+ 
 export default userLoginSchema;

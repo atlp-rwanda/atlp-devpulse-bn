@@ -12,6 +12,7 @@ import { userModel } from '../models/user';
 import { sessionModel } from '../models/session';
 import { cohortModels } from '../models/cohortModel';
 import TraineeApplicant from '../models/traineeApplicant';
+import { LoginHistoryModel } from "../models/LoginHistoryModel";
 
 const FrontendUrl = process.env.FRONTEND_URL
 
@@ -48,6 +49,17 @@ export const loggedUserResolvers: any = {
         });
       return users;
     },
+
+    async getLoginHistory(_: any, { userId }: any, ctx: any) {
+      if (!ctx.currentUser || ctx.currentUser._id !== userId) {
+        throw new AuthenticationError("Unauthorized");
+      }
+  
+      const loginHistory = await LoginHistoryModel.find({ userId }).sort({ loginTime: -1 });
+      return loginHistory;
+    },
+
+
     checkUserRole: async (_: any, email: any) => {
       const user = await LoggedUserModel.findOne(email);
       const role = await RoleModel.findOne({ _id: user?.role });
@@ -466,7 +478,8 @@ export const loggedUserResolvers: any = {
       return user.isActive;
     },
 
-    login: async (_: any, { email, password }: any) => {
+    login: async (_: any, { email, password }: any, ctx: any) => {
+      const { req } = ctx;
       const user = await LoggedUserModel.findOne({ email });
 
       if (user?.isVerified===false){
@@ -513,6 +526,14 @@ export const loggedUserResolvers: any = {
       const token = generateToken(payload, {
         expiresIn: "1h",
       });
+
+      //Save login history 
+      const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+      const loginHistory = new LoginHistoryModel({
+        userId: user._id,
+        ipAddress,
+      });
+      await loginHistory.save(); 
 
       return { token, userId: user._id };
     },
