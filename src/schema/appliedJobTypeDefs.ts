@@ -22,6 +22,6 @@ type Query {
 }
 
   type Mutation {
-    saveSheetData(sheetLink: String!, range: String!): Boolean
+    saveSheetData(sheetLink: String!): Boolean
   }
 `;
