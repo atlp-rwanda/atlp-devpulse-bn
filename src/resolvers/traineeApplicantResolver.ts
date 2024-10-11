@@ -88,12 +88,6 @@ export const traineeApplicantResolver: any = {
         },
         { new: true }
       ).populate("cycle_id");
-      const message = `Your application has been updated.`;
-        await ApplicantNotificationsModel.create({
-          userId: ID,
-          message,
-          eventType: "applicationUpdate",
-        });
 
       return updated;
     },
