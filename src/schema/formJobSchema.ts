@@ -8,7 +8,6 @@ export const formJobSchema = gql`
     cohort: cohort
     link: String!
     spreadsheetlink: String
-    formrange: String
     title: String!
     description: String!
     label: String
@@ -47,7 +46,6 @@ export const formJobSchema = gql`
     cycle: String
     link: String
     spreadsheetlink: String
-    formrange: String
     description: String
     label: String
     published: Boolean

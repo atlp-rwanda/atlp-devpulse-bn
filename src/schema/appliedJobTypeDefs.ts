@@ -12,16 +12,17 @@ type SheetData {
 
 type AppliedJobData {
   id:ID!
-  data:[FieldData]!
+  appliedJob:[FieldData!]!
+  status:String
 }
 
 type Query {
-  getSheetData(sheetLink: String!, range: String!): [SheetData]
   getAllAppliedJobs:[AppliedJobData!]
   getAppliedJob(id: ID!): AppliedJobData!
-}
+  getMyOwnAppliedJob:[AppliedJobData!]
+  }
 
   type Mutation {
-    saveSheetData(sheetLink: String!, range: String!): Boolean
+    saveSheetData(sheetLink: String!): Boolean
   }
 `;

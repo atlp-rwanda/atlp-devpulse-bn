@@ -3,6 +3,11 @@ import { formModel } from "../models/formsModel";
 import { jobModels } from "../models/jobModels";
 import { CustomGraphQLError } from "../utils/customErrorHandler";
 
+// Regular expressions to match USERID and USEREMAIL placeholders
+const userIdPattern = /entry\.\d+=USERID/;
+const userEmailPattern = /entry\.\d+=USEREMAIL/;
+const jobTitlePatten = /entry\.\d+=JOBTITLE/;
+
 export const formsResolver = {
   Query: {
     getAllApplications: async (_: any, args: any, context: any) => {
@@ -68,6 +73,18 @@ export const formsResolver = {
           "You do not have permission to perform this action"
         );
       }
+
+      // Validate the Google Form link to check for USERID and USEREMAIL
+      const isValidUserId = userIdPattern.test(args.link);
+      const isValidUserEmail = userEmailPattern.test(args.link);
+      const isValidJobTitle = jobTitlePatten.test(args.link);
+
+      if (!isValidUserId || !isValidUserEmail || !isValidJobTitle) {
+        throw new CustomGraphQLError(
+          "Invalid Google Form link. It must contain USERID , USEREMAIL and JOBTITLE placeholders."
+        );
+      }
+
       try {
         const existingRecord = await formModel.findOne({ link: args.link });
 
@@ -82,12 +99,13 @@ export const formsResolver = {
           throw new CustomGraphQLError("job post does not exist");
         }
 
-        // const updateJobPost = await jobModels.findByIdAndUpdate(args.jobpost, { link: args.link,  });
-        const updateJobPost = await jobModels.findByIdAndUpdate(args.jobpost, {
-          link: args.link,
-          spreadsheetlink: args.spreadsheetlink,
-          formrange: args.formrange,
-        });
+        await jobModels.findByIdAndUpdate(
+          {_id:args.jobpost},
+          {
+            link: args.link,
+            spreadsheetlink: args.spreadsheetlink,
+          }
+        );
 
         const userInputs = await formModel.create(args);
 
@@ -130,6 +148,17 @@ export const formsResolver = {
       ) {
         throw new CustomGraphQLError(
           "You do not have permission to perform this action"
+        );
+      }
+
+      // Validate the Google Form link to check for USERID and USEREMAIL
+      const isValidUserId = userIdPattern.test(args.link);
+      const isValidUserEmail = userEmailPattern.test(args.link);
+      const isValidJobTitle = jobTitlePatten.test(args.link);
+
+      if (!isValidUserId || !isValidUserEmail || !isValidJobTitle) {
+        throw new CustomGraphQLError(
+          "Invalid Google Form link. It must contain USERID , USEREMAIL and JOBTITLE placeholders."
         );
       }
 

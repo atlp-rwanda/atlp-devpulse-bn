@@ -81,7 +81,7 @@ export const searchResolver: any = {
       const allowedUserAttributes = ['firstname', 'lastname', 'email'];
       const allowedRoleAttributes = ['roleName'];
       const allowedJobAttributes = ['title'];
-      const allowedCohortAttributes = ['title', 'phase'];
+      const allowedCohortAttributes = ['title'];
       const allowedProgramAttributes = ['title'];
       const allowedTraineeAttributes = ['firstName', 'lastName', 'email'];
       const allowedApplicationCycleAttributes = ['name'];
@@ -129,7 +129,6 @@ export const searchResolver: any = {
         } else if (!filterAttribute) {
           cohortQuery['$or'] = [
             { title: { $regex: `\\b${searchTerm}\\b`, $options: 'i' } },
-            { phase: { $regex: `\\b${searchTerm}\\b`, $options: 'i' } },
           ];
         } else {
           cohortQuery = { _id: null };

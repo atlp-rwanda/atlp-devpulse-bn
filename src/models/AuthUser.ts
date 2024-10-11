@@ -28,6 +28,11 @@ const userSchema = new Schema(
       type: String,
       enum: ["male", "female", "other"],
     },
+    applicationPhase: {
+      type: String,
+      enum: ["Applied", "Interviewed", "Accepted", "Enrolled"],
+      default: "Applied",
+    },
     isActive: {
       type: Boolean,
       default: true,
@@ -36,6 +41,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
 
+    },
+    cohort: {
+      type: Schema.Types.ObjectId,
+      ref: "cohortModel",
     },
     resetToken: String,
     resetTokenExpiration:Date

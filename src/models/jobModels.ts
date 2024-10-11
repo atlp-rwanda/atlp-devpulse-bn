@@ -29,9 +29,6 @@ export const jobModels = mongoose.model(
     spreadsheetlink: {
       type: String,
     },
-    formrange: {
-      type: String,
-    },
     description: {
       type: String,
       required: true,

@@ -8,7 +8,6 @@ export const formSchema = gql`
     jobpost: String!
     description: String!
     spreadsheetlink: String!
-    formrange: String!
   }
 
   type Query {
@@ -23,7 +22,6 @@ export const formSchema = gql`
       jobpost: String!
       description: String!
       spreadsheetlink: String!
-      formrange: String!
     ): Application
     deleteApplication(id: ID!): Application
     updateApplication(
@@ -33,7 +31,6 @@ export const formSchema = gql`
       jobpost: String!
       description: String!
       spreadsheetlink: String!
-      formrange: String!
     ): Application!
   }
 `;

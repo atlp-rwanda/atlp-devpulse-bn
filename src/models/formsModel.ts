@@ -24,9 +24,5 @@ export const formModel = mongoose.model(
       type: String,
       required: true,
     },
-    formrange: {
-      type: String,
-      required: true,
-    },
   })
 );

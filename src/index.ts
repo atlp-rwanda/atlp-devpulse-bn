@@ -1,6 +1,7 @@
 import { ApolloServer } from "apollo-server";
 import { mergeResolvers, mergeTypeDefs } from "@graphql-tools/merge";
 import { connect } from "./database/db.config";
+import './utils/cronJob';
 import { typeDefsTrainee } from "./schema/traineeApplicantSchema";
 import { typeDefsAttribute } from "./schema/traineeAttributeSchema";
 import { traineeApplicantResolver } from "./resolvers/traineeApplicantResolver";
@@ -50,6 +51,11 @@ import { gradingTypeDefs } from "./schema/gradingSchema";
 import gradingResolver from "./resolvers/grading";
 import {adminViewApplicationsResolvers }from "./resolvers/adminViewApplications";
 import { adminViewAllApplicationsTypedefs} from "./schema/adminViewApplicationsSchema";
+import { attendanceResolver } from "./resolvers/attendanceResolver";
+import { attendanceSchema } from "./schema/attendanceSchema";
+import { performanceResolver } from "./resolvers/performanceResolver";
+import { performanceSchema } from "./schema/performanceSchema";
+
 import filterJobResolver from "./resolvers/filterJob";
 import filterProgramResolver from "./resolvers/filterPrograms";
 import filterRoleResolver from "./resolvers/filterRole";
@@ -90,6 +96,8 @@ const resolvers = mergeResolvers([
   candidateViewOwnApplication,
   gradingResolver,
   adminViewApplicationsResolvers,
+  attendanceResolver,
+  performanceResolver,
   filterJobResolver,
   filterProgramResolver,
   filterRoleResolver,
@@ -125,7 +133,9 @@ const typeDefs = mergeTypeDefs([
   gradingTypeDefs,
   adminViewAllApplicationsTypedefs,
   SearchSchema,
-  appliedJobTypeDefs
+  appliedJobTypeDefs,
+  performanceSchema,
+  attendanceSchema
 ]);
 
 const server = new ApolloServer({

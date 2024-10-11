@@ -24,7 +24,6 @@ const filterJobResolver: any = {
           "cycle.name",
           "cohort.name",
           "spreadsheetlink",
-          "formrange",
         ];
 
         if (allowedAttributes.includes(filterAttribute)) {
