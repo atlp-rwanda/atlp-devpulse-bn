@@ -16,7 +16,10 @@ export const LoggedUserSchema = gql`
     telephone: String
     password: String
     token: String!
-    isActive: Boolean
+    isActive: Boolean,
+    applicationPhase: String,
+    cohort: Cohort
+
     isVerified:Boolean
   }
 
@@ -26,6 +29,18 @@ export const LoggedUserSchema = gql`
     description: String!
     permissions: [Permission]
   }
+
+  type Cohort {
+    id: ID!
+    title: String
+		program: String
+		cycle: String
+		start: String
+		end: String
+		phase: Int
+		trainees:[User_Logged!]
+  }
+
 
   input UserInput_Logged {
     firstname: String
@@ -37,6 +52,7 @@ export const LoggedUserSchema = gql`
     gender: String
     country: String
     role: String
+    applicationPhase: String
   }
   input EditUserSelfInput_Logged {
     firstname: String
@@ -50,6 +66,13 @@ export const LoggedUserSchema = gql`
   input EditUserInput_Logged {
     firstname: String
     lastname: String
+    email: String
+    password: String
+    telephone: String
+    code: String
+    picture:String
+    applicationPhase: String
+    cohortId: ID
   }
   input EmailInput {
     email: String
@@ -70,6 +93,8 @@ export const LoggedUserSchema = gql`
     getUsers_Logged(amount: Int): [User_Logged]
     checkUserRole(email: String): Role!
     getByFilter(filter: UserFilterInput!): [User_Logged]!
+    getCohort(id: ID!): cohort
+		getAllCohorts: [cohort!]!
   }
 
   type Mutation {
@@ -81,5 +106,6 @@ export const LoggedUserSchema = gql`
     assignRoleToUser(ID: ID!, roleID: ID!): User_Logged
     updateUserStatus(ID: ID!): Boolean
     updateUserSelf(ID: ID!, editUserInput: EditUserSelfInput_Logged): Boolean
+    updateApplicationPhase(userID: ID!, newPhase: String!, cohortID: ID): User_Logged
   }
 `;

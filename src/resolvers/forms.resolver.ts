@@ -35,7 +35,7 @@ export const formsResolver = {
 			if (
 				!userWithRole ||
 				((userWithRole.role as any)?.roleName !== "managers" &&
-					(userWithRole.role as any)?.roleName !== "superAdmin")
+					(userWithRole.role as any)?.roleName !== "superAdmin" && (userWithRole.role as any)?.roleName !== "admin")
 			) {
 				throw new CustomGraphQLError(
 					"You do not have permission to perform this action"
@@ -60,7 +60,7 @@ export const formsResolver = {
 			if (
 				!userWithRole ||
 				((userWithRole.role as any)?.roleName !== "managers" &&
-					(userWithRole.role as any)?.roleName !== "superAdmin")
+					(userWithRole.role as any)?.roleName !== "superAdmin" && (userWithRole.role as any)?.roleName !== "admin"  )
 			) {
 				throw new CustomGraphQLError(
 					"You do not have permission to perform this action"
@@ -98,7 +98,7 @@ export const formsResolver = {
 			if (
 				!userWithRole ||
 				((userWithRole.role as any)?.roleName !== "managers" &&
-					(userWithRole.role as any)?.roleName !== "superAdmin")
+					(userWithRole.role as any)?.roleName !== "superAdmin" && (userWithRole.role as any)?.roleName !== "admin")
 			) {
 				throw new CustomGraphQLError(
 					"You do not have permission to perform this action"
@@ -119,7 +119,7 @@ export const formsResolver = {
 			if (
 				!userWithRole ||
 				((userWithRole.role as any)?.roleName !== "managers" &&
-					(userWithRole.role as any)?.roleName !== "superAdmin")
+					(userWithRole.role as any)?.roleName !== "superAdmin" && (userWithRole.role as any)?.roleName !== "admin")
 			) {
 				throw new CustomGraphQLError(
 					"You do not have permission to perform this action"

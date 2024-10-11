@@ -1,4 +1,5 @@
 import { model, Schema } from "mongoose";
+
 const userSchema = new Schema({
   createdAt: String,
   firstName: String,
@@ -10,7 +11,9 @@ const userSchema = new Schema({
   },
   role: {
     type: String,
+    enum: ['applicant', 'trainee', 'graduate'],
     default: "applicant",
+
   },
   profile: String,
   password: String,
@@ -19,6 +22,12 @@ const userSchema = new Schema({
     default: false,
   },
   status: Boolean,
+  resetToken: String,
+  resetTokenExpiration: Date,
+  cohort: {
+    type: Schema.Types.ObjectId,
+    ref: "Cohort",
+  }
 });
 
 export const userModel = model("LoggedUser", userSchema);
