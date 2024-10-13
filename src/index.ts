@@ -153,7 +153,7 @@ const server = new ApolloServer({
     } catch (error) {
       console.error(`Unable to authenticate user`);
     }
-    return { currentUser };
+    return { currentUser, req };
   },
   introspection: true,
   csrfPrevention: true,

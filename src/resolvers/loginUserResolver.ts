@@ -51,12 +51,17 @@ export const loggedUserResolvers: any = {
     },
 
     async getLoginHistory(_: any, { userId }: any, ctx: any) {
-      if (!ctx.currentUser || ctx.currentUser._id !== userId) {
+      if (!ctx.currentUser.toString() || ctx.currentUser._id.toString() !== userId) {
         throw new AuthenticationError("Unauthorized");
       }
   
       const loginHistory = await LoginHistoryModel.find({ userId }).sort({ loginTime: -1 });
-      return loginHistory;
+      const formattedHistory = loginHistory.map(entry => ({
+        ...entry.toObject(),
+        loginTime: new Date(entry.loginTime).toISOString(),
+      }));
+      
+      return formattedHistory;
     },
 
 
