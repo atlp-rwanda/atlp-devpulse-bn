@@ -50,6 +50,24 @@ import { gradingTypeDefs } from "./schema/gradingSchema";
 import gradingResolver from "./resolvers/grading";
 import {adminViewApplicationsResolvers }from "./resolvers/adminViewApplications";
 import { adminViewAllApplicationsTypedefs} from "./schema/adminViewApplicationsSchema";
+import { attendanceResolver } from "./resolvers/attendanceResolver";
+import { attendanceSchema } from "./schema/attendanceSchema";
+import { performanceResolver } from "./resolvers/performanceResolver";
+import { performanceSchema } from "./schema/performanceSchema";
+
+import filterJobResolver from "./resolvers/filterJob";
+import filterProgramResolver from "./resolvers/filterPrograms";
+import filterRoleResolver from "./resolvers/filterRole";
+
+// import {forgetPassword } from "./resolvers/forgetpassword";
+import { passwordResolvers } from './resolvers/forgetpassword';
+import { passwordSchema } from "./schema/forgetpassword";
+
+import { SearchSchema } from "./schema/searchSchema";
+import { searchResolver } from "./resolvers/searchResolver";
+import {appliedJobResolver} from "./resolvers/appliedJobResolver";
+import { appliedJobTypeDefs } from "./schema/appliedJobTypeDefs";
+
 const PORT = process.env.PORT || 3000;
 
 // const PORT = process.env.PORT || 4001;
@@ -77,12 +95,22 @@ const resolvers = mergeResolvers([
   candidateViewOwnApplication,
   gradingResolver,
   adminViewApplicationsResolvers,
+  attendanceResolver,
+  performanceResolver,
+  filterJobResolver,
+  filterProgramResolver,
+  filterRoleResolver,
+  passwordResolvers,
+  searchResolver,
+  appliedJobResolver,
+
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
   typeDefsAttribute,
   typeDefsTrainee,
   updateUserTypeDefs,
+  passwordSchema,
   deleteTraineTypeDefs,
   filterTraineetypeDefs,
   recyclebinempty,
@@ -103,6 +131,10 @@ const typeDefs = mergeTypeDefs([
   viewOwnApplicationTypeDefs,
   gradingTypeDefs,
   adminViewAllApplicationsTypedefs,
+  SearchSchema,
+  appliedJobTypeDefs,
+  performanceSchema,
+  attendanceSchema
 ]);
 
 const server = new ApolloServer({
@@ -115,11 +147,11 @@ const server = new ApolloServer({
     try {
       authToken = req.headers.authorization;
       if (authToken) {
-        //find or create User
+      
         currentUser = await findOrCreateUser(authToken);
       }
     } catch (error) {
-      console.error(`Unable to authenticate user with token ${authToken}`);
+      console.error(`Unable to authenticate user`);
     }
     return { currentUser };
   },

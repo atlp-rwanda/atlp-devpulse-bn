@@ -10,7 +10,12 @@ export const formJobSchema = gql`
         title: String!
 		description: String!
 		label: String
+		published: Boolean
 	}
+	type Count {
+    total: Int!
+  }
+
 	input PostFilter {
         program: String
         cycle: String
@@ -19,6 +24,8 @@ export const formJobSchema = gql`
 	type Query {
 		getJobApplication(id: ID!): JobPostApplication
 		getAllJobApplication(input: pagination, filter:PostFilter): [JobPostApplication!]!
+		filterJobDetails(input: FilterOptions): [JobPostApplication]
+		getAllJobAttributescount: Count!
 	}
 	input jobInput {
 		title: String
@@ -36,7 +43,15 @@ export const formJobSchema = gql`
         link: String
 		description: String
 		label: String
+		published: Boolean
     }
+	input FilterOptions { 
+    page: Int!
+    itemsPerPage: Int
+    All: Boolean
+    wordEntered: String
+    filterAttribute: String
+  }
 	type Mutation {
 		createJobApplication(jobFields: jobInput): JobPostApplication
 		deleteJobApplication(id: ID!): String!
