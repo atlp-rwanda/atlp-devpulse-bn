@@ -53,6 +53,17 @@ export const loggedUserResolvers: any = {
       const role = await RoleModel.findOne({ _id: user?.role });
       return role;
     },
+    currentUser: async (_: unknown, __: unknown, context: any) => {
+      if (!context.currentUser) {
+        return null;  
+      }
+
+      return {
+        firstName: context.currentUser.firstname, 
+        lastName: context.currentUser.lastname, 
+        email: context.currentUser.email
+      };
+    },
   },
   Mutation: {
     async createUser_Logged(
