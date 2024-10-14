@@ -5,7 +5,7 @@ import { CustomGraphQLError } from "../utils/customErrorHandler.js";
 export const cohortResolver =  {
     Query: {
         getAllCohorts: async (_: any, args: any, context: any) => {
-			
+
 			try {
 				const cohorts = await cohortModels.find();
 				if (cohorts.length === 0) {

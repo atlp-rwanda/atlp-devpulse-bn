@@ -130,10 +130,14 @@ export const jobPostResolver = {
 				context.currentUser?._id
 			).populate("role");
 
+			if (!userWithRole) {
+				throw new CustomGraphQLError("User not found");
+			}			
+
 			if (
 				!userWithRole ||
-				((userWithRole.role as any)?.roleName !== "admin" &&
-					(userWithRole.role as any)?.roleName !== "superAdmin")
+					(userWithRole.role as any)?.roleName !== "admin" &&
+					(userWithRole.role as any)?.roleName !== "superAdmin"
 			) {
 				throw new CustomGraphQLError(
 					"You do not have permission to perform this action"
