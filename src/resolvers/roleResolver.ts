@@ -138,16 +138,28 @@ export const roleResolvers = {
               });
             }
 
-            if (existingPermission) {
-              for (const field of permissionFields) {
-                if (typeof (existingPermission as any)[field] === 'boolean') {
-                  (existingPermission as any)[field] = !(existingPermission as any)[field]; 
-                }
-              }
-              await existingPermission.save();
+            const permissionData: { [key: string]: boolean } = {
+              create: false,
+              viewOwn: false,
+              viewMultiple: false,
+              viewOne: false,
+              updateOwn: false,
+              updateMultiple: false,
+              updateOne: false,
+              deleteOwn: false,
+              deleteMultiple: false,
+              deleteOne: false,
+            };
 
-              existingRole.permissions.push(existingPermission._id);
+            for (const field of permissionFields) {
+              if (field in permissionData) {
+                permissionData[field] = true;
+              }
             }
+
+            Object.assign(existingPermission, permissionData);
+            await existingPermission.save();
+            existingRole.permissions.push(existingPermission._id);
           }
         }
 
