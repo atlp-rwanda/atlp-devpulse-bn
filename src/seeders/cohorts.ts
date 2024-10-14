@@ -1,6 +1,6 @@
 import { cohortModels } from "../models/cohortModel";
 import { ProgramModel } from "../models/programModel";
-import { applicationCycle } from "../models/applicationCycle";
+import  applicationCycle  from "../models/applicationCycle";
 
 const seedCohorts = async () => {
     const program = await ProgramModel.findOne();

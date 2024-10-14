@@ -1,5 +1,5 @@
 import  TraineeApplicant from '../models/traineeApplicant';
-import { applicationCycle } from '../models/applicationCycle';
+import  applicationCycle  from '../models/applicationCycle';
 
 
 const seedDeleteTrainee = async () => {

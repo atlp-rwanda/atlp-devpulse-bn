@@ -1,7 +1,7 @@
 import TraineeApplicant from "../models/traineeApplicant";
 import { traineEAttributes } from "../models/traineeAttribute";
 import { google } from "googleapis";
-import { applicationCycle } from "../models/applicationCycle";
+import  applicationCycle  from "../models/applicationCycle";
 
 // some of the data received from the table contains the yes or no values while as in the database schema
 // it is declared as booleans; either true or false. So this function is there to loop through them
