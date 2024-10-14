@@ -1,11 +1,11 @@
 import { AuthenticationError } from "apollo-server-core";
-import { LoggedUserModel } from "../models/AuthUser";
-import { ProgramModel } from "../models/programModel";
-import { CustomGraphQLError } from "../utils/customErrorHandler";
+import { LoggedUserModel } from "../models/AuthUser.js";
+import { ProgramModel } from "../models/programModel.js";
+import { CustomGraphQLError } from "../utils/customErrorHandler.js";
 import {
   validateProgram,
   validateUpdateProgram,
-} from '../validations/program.validation';
+} from '../validations/program.validation.js';
 
 export const programResolvers = {
   Query: {

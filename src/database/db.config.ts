@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import mongoose from 'mongoose'
 
-// add your own uri below
+
 const uri =
     process.env.NODE_ENV === 'production'
         ? process.env.MONGO_PROD_DB

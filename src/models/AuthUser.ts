@@ -1,4 +1,6 @@
 import { model, Schema } from "mongoose";
+import 'dotenv/config'
+
 const userSchema = new Schema(
   {
     firstname: String,

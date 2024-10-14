@@ -1,8 +1,9 @@
-const { genSaltSync, hashSync, compareSync } = require('bcryptjs');
+import pkg from 'bcryptjs';
+const { genSaltSync, hashSync, compareSync } = pkg;
 
 export default class BcryptUtil {
   static hash(string:any) {
-    const pasSalt = genSaltSync(10, 'b');
+    const pasSalt = genSaltSync(10);
     const pasHash = hashSync(string, pasSalt);
     return pasHash;
   }

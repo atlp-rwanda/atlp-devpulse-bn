@@ -1,6 +1,6 @@
-import scoreValuesModel from "../models/scoreValueModel";
-import { traineEAttributes } from "../models/traineeAttribute";
-import scoreTypesModel from "../models/scoreTypesModel";
+import scoreValuesModel from "../models/scoreValueModel.js";
+import { traineEAttributes } from "../models/traineeAttribute.js";
+import scoreTypesModel from "../models/scoreTypesModel.js";
 
 const scoreTypeResolver: any = {
   Query: {

@@ -1,5 +1,5 @@
 import { gql } from 'apollo-server-express';
-import { programTypeDefs } from '../schema/programSchema';
+import { programTypeDefs } from '../schema/programSchema.js';
 
 test('check types', () => {
   expect(programTypeDefs).toBe(gql`

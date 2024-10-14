@@ -1,6 +1,6 @@
 import { AuthenticationError } from 'apollo-server';
-import { LoggedUserModel } from '../models/AuthUser';
-import { PermissionModel } from '../models/permissionModel';
+import { LoggedUserModel } from '../models/AuthUser.js';
+import { PermissionModel } from '../models/permissionModel.js';
 
 export const permissionResolvers = {
   Query: {

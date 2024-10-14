@@ -1,9 +1,9 @@
-import { LoggedUserModel } from "../models/AuthUser";
-import { applicationCycle } from "../models/applicationCycle";
-import { cohortModels } from "../models/cohortModel";
-import { jobModels } from "../models/jobModels";
-import { ProgramModel } from "../models/programModel";
-import { CustomGraphQLError } from "../utils/customErrorHandler";
+import { LoggedUserModel } from "../models/AuthUser.js";
+import { applicationCycle } from "../models/applicationCycle.js";
+import { cohortModels } from "../models/cohortModel.js";
+import { jobModels } from "../models/jobModels.js";
+import { ProgramModel } from "../models/programModel.js";
+import { CustomGraphQLError } from "../utils/customErrorHandler.js";
 
 export const jobPostResolver = {
 	Query: {

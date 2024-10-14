@@ -1,7 +1,7 @@
-import { gradingModel } from "../models/grading";
-import { LoggedUserModel } from "../models/AuthUser";
+import { gradingModel } from "../models/grading.js";
+import { LoggedUserModel } from "../models/AuthUser.js";
 import { AuthenticationError } from "apollo-server-core";
-import scoreTypesModel from "../models/scoreTypesModel";
+import scoreTypesModel from "../models/scoreTypesModel.js";
 
 
 const gradingResolver = {

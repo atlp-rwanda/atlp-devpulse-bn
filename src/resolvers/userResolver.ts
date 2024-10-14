@@ -1,4 +1,4 @@
-import { userModel } from "../models/user";
+import { userModel } from "../models/user.js";
 export const usersResolvers:any = {
   Query: {
     async user(_:any,  args:any, context:any ) {
