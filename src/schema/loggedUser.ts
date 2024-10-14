@@ -12,6 +12,7 @@ export const LoggedUserSchema = gql`
     picture: String
     country: String
     gender: String
+    authMethod: String
     telephone: String
     password: String
     token: String!
@@ -53,6 +54,15 @@ export const LoggedUserSchema = gql`
     role: String
     applicationPhase: String
   }
+  input EditUserSelfInput_Logged {
+    firstname: String
+    lastname: String
+    email: String
+    code: String
+    telephone: String
+    gender: String
+    country: String
+  }
   input EditUserInput_Logged {
     firstname: String
     lastname: String
@@ -68,10 +78,21 @@ export const LoggedUserSchema = gql`
     email: String
   }
 
+  input UserFilterInput {
+  email: String
+  firstName: String
+  lastName: String
+  country: String
+  telephone: String
+  gender: String
+  authMethod: String
+  isActive: Boolean
+ }
   type Query {
     user_Logged(ID: ID!): User_Logged!
     getUsers_Logged(amount: Int): [User_Logged]
     checkUserRole(email: String): Role!
+    getByFilter(filter: UserFilterInput!): [User_Logged]!
     getCohort(id: ID!): cohort
 		getAllCohorts: [cohort!]!
   }
@@ -84,6 +105,7 @@ export const LoggedUserSchema = gql`
     updateUser_Logged(ID: ID!, editUserInput: EditUserInput_Logged): Boolean
     assignRoleToUser(ID: ID!, roleID: ID!): User_Logged
     updateUserStatus(ID: ID!): Boolean
+    updateUserSelf(ID: ID!, editUserInput: EditUserSelfInput_Logged): Boolean
     updateApplicationPhase(userID: ID!, newPhase: String!, cohortID: ID): User_Logged
   }
 `;

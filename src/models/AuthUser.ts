@@ -28,6 +28,11 @@ const userSchema = new Schema(
       type: String,
       enum: ["male", "female", "other"],
     },
+    authMethod: {
+      type: String,
+      enum: ["google", "local"],
+      default: "local",
+    },
     applicationPhase: {
       type: String,
       enum: ["Applied", "Interviewed", "Accepted", "Enrolled"],
