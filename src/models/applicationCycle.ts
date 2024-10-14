@@ -1,7 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-const applicationCycle = mongoose.model(
-    "applicationCycle",
-    new Schema({
+const applicationCycleSchema = new Schema({
       name: {
         type: String,
         required: true,
@@ -15,6 +13,7 @@ const applicationCycle = mongoose.model(
         type:String,
         required:true,
       }
-    })
-  );
-  export {applicationCycle};
+    });
+
+export const applicationCycle = mongoose.model('ApplicationCycle', applicationCycleSchema);
+

@@ -40,6 +40,12 @@ export const LoggedUserSchema = gql`
 		trainees:[User_Logged!]
   }
 
+  type CurrentUser{
+    firstName: String!
+    lastName: String!
+    email: String!
+  }
+
 
   input UserInput_Logged {
     firstname: String
@@ -74,6 +80,7 @@ export const LoggedUserSchema = gql`
     checkUserRole(email: String): Role!
     getCohort(id: ID!): cohort
 		getAllCohorts: [cohort!]!
+    currentUser: CurrentUser
   }
 
   type Mutation {
