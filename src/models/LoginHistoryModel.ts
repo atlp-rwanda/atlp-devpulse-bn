@@ -6,6 +6,10 @@ const loginHistorySchema = new mongoose.Schema({
     ref: 'LoggedUserModel',
     required: true,
   },
+  email: {
+    type: String,
+    required: true,
+  },
   loginTime: {
     type: Date,
     default: Date.now,
@@ -13,6 +17,10 @@ const loginHistorySchema = new mongoose.Schema({
   },
   ipAddress: {
     type: String,
+  },
+  browser: {
+    type: String,
+    required: true,
   },
 });
 

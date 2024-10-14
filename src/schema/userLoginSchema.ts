@@ -12,8 +12,10 @@ const userLoginSchema = gql`
 
   type LoginHistory {
     userId: ID!
+    email: String!
     loginTime: String!
     ipAddress: String
+    browser: String!
   }
 
   type Query {

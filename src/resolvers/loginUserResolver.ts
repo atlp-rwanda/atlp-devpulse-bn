@@ -58,7 +58,10 @@ export const loggedUserResolvers: any = {
       const loginHistory = await LoginHistoryModel.find({ userId }).sort({ loginTime: -1 });
       const formattedHistory = loginHistory.map(entry => ({
         ...entry.toObject(),
+        email: entry.email,
         loginTime: new Date(entry.loginTime).toISOString(),
+        ipAddress: entry.ipAddress,
+        browser: entry.browser,
       }));
       
       return formattedHistory;
@@ -534,9 +537,13 @@ export const loggedUserResolvers: any = {
 
       //Save login history 
       const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+      const browser = req.headers['user-agent'];
+
       const loginHistory = new LoginHistoryModel({
         userId: user._id,
+        email: user.email,
         ipAddress,
+        browser,
       });
       await loginHistory.save(); 
 
