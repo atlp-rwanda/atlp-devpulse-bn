@@ -1,8 +1,11 @@
+import { pusher } from "../helpers/pusher";
 import { LoggedUserModel } from "../models/AuthUser";
+import { ApplicantNotificationsModel } from "../models/applicantNotifications";
 import { applicationCycle } from "../models/applicationCycle";
 import { cohortModels } from "../models/cohortModel";
 import { jobModels } from "../models/jobModels";
 import { ProgramModel } from "../models/programModel";
+import { RoleModel } from "../models/roleModel";
 import { CustomGraphQLError } from "../utils/customErrorHandler";
 
 export const jobPostResolver = {
@@ -99,6 +102,33 @@ export const jobPostResolver = {
 				}
 
 				const userInputs = await jobModels.create(args.jobFields);
+        const applicantRole = await RoleModel.findOne({ roleName: "applicant" });
+        const applicants = await LoggedUserModel.find({ role: applicantRole!._id }).populate('role');
+       
+        const notificationPromises = applicants.map(async (applicant) => {
+          const message = `A new job post"${args.jobFields.title}" has been posted..`;
+
+          const notification = await ApplicantNotificationsModel.create({
+            userId: applicant._id,
+            message,
+            eventType: "jobPost",
+          });
+          
+          await pusher
+            .trigger(`notifications-${applicant._id}`, "new-notification", {
+              message: notification.message,
+              id: notification._id,
+              createdAt: notification.createdAt,
+              read: notification.read,
+            })
+            .catch((error) => {
+              console.error("Error with Pusher trigger:", error);
+            });
+          
+          return notification;
+        });
+
+        await Promise.all(notificationPromises);
 				return (await (await userInputs.populate('program')).populate('cycle')).populate('cohort');
 			} catch (error) {
 				throw new CustomGraphQLError(`Something went wrong: ${error}`);
