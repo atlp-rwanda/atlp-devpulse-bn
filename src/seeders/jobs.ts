@@ -18,7 +18,7 @@ const seedJobs = async () => {
             program: program._id,
             cohort: cohort._id,
             cycle: cycle._id,
-            link: 'https://www.linkedin.com/jobs/view/senior-software-engineer-nodejs-mongodb-5f999c06282d9c1811789615/',
+            link: 'https://docs.google.com/forms/d/e/1FAIpQLSezLekXcCODUmxadn2rqNSU_izVpLGLXS7SW02-_tXoq4wgOA/viewform?usp=sf_link',
             description: 'You will be working on cutting-edge software solutions that enhance the productivity and efficiency of our clients.',
             label: 'public'
         },
@@ -27,7 +27,7 @@ const seedJobs = async () => {
             program: program._id,
             cohort: cohort._id,
             cycle: cycle._id,
-            link: 'https://www.linkedin.com/jobs/view/senior-frontend-developer-react-nodejs-5f999c06282d9c1811789615/',
+            link: 'https://docs.google.com/forms/d/e/1FAIpQLSezLekXcCODUmxadn2rqNSU_izVpLGLXS7SW02-_tXoq4wgOA/viewform?usp=sf_link',
             description: 'This role requires a strong background in React, Node.js, and software development best practices.',
             label: 'public'
         },
@@ -36,7 +36,7 @@ const seedJobs = async () => {
             program: program._id,
             cohort: cohort._id,
             cycle: cycle._id,
-            link: 'https://www.linkedin.com/jobs/view/senior-backend-developer-python-django-5f999c06282d9c1811789615/',
+            link: 'https://docs.google.com/forms/d/e/1FAIpQLSezLekXcCODUmxadn2rqNSU_izVpLGLXS7SW02-_tXoq4wgOA/viewform?usp=sf_link',
             description: ' This role requires a strong background in Python, Django, and software development best practices.',
             label: 'public'
         }

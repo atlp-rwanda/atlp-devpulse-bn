@@ -71,7 +71,6 @@ const filterTraineeResolver: any = {
 
       }
       if (filterAttribute in traineeAttribute && wordEntered!=='') {
-        console.log(wordEntered,filterAttribute)
         try {
         const allTraineeAttribute = await traineEAttributes
         .find({[filterAttribute]:{$regex: wordEntered,$options: 'i'}})
@@ -84,11 +83,10 @@ const filterTraineeResolver: any = {
         })
         .skip(itemsToSkip)
         .limit(items);
-        console.log(allTraineeAttribute)
         return allTraineeAttribute
           
         } catch (error) {
-          console.log(error)
+          console.error(error)
           return []
         }
   

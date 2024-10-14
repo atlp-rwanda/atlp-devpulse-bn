@@ -10,7 +10,6 @@ import {
 export const programResolvers = {
   Query: {
     getAll: async (_: any, { data }: any, context: any) => {
-      console.log(context.currentUser);
       try {
         const { page, pageSize } = data;
         const response = await ProgramModel.find()
