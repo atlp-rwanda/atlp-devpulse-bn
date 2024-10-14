@@ -1,4 +1,4 @@
-import { ApolloServer } from "apollo-server-express"; // Use express version
+import { ApolloServer } from "apollo-server-express";
 import express from "express";
 import { mergeResolvers, mergeTypeDefs } from "@graphql-tools/merge";
 import { connect } from "./database/db.config";
@@ -49,9 +49,6 @@ import { viewOwnApplicationTypeDefs } from "./schema/viewOwnApplication";
 import candidateViewOwnApplication from "./resolvers/viewOwnApplicationResolver";
 import { gradingTypeDefs } from "./schema/gradingSchema";
 import gradingResolver from "./resolvers/grading";
-
-import { adminViewApplicationsResolvers } from "./resolvers/adminViewApplications";
-import { adminViewAllApplicationsTypedefs } from "./schema/adminViewApplicationsSchema";
 import { notificationResolvers } from "./resolvers/Adminnotification";
 import { notificationTypedefs } from "./schema/adminNotification";
 import { WebSocketServer } from "ws";
@@ -61,31 +58,23 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import cors from "cors";
 import { createServer } from "http";
 import { ApolloServerPluginDrainHttpServer } from "apollo-server-core/dist/plugin/drainHttpServer";
-
-import {adminViewApplicationsResolvers }from "./resolvers/adminViewApplications";
-import { adminViewAllApplicationsTypedefs} from "./schema/adminViewApplicationsSchema";
+import { adminViewApplicationsResolvers } from "./resolvers/adminViewApplications";
+import { adminViewAllApplicationsTypedefs } from "./schema/adminViewApplicationsSchema";
 import { attendanceResolver } from "./resolvers/attendanceResolver";
 import { attendanceSchema } from "./schema/attendanceSchema";
 import { performanceResolver } from "./resolvers/performanceResolver";
 import { performanceSchema } from "./schema/performanceSchema";
-
 import filterJobResolver from "./resolvers/filterJob";
 import filterProgramResolver from "./resolvers/filterPrograms";
 import filterRoleResolver from "./resolvers/filterRole";
-
-// import {forgetPassword } from "./resolvers/forgetpassword";
-import { passwordResolvers } from './resolvers/forgetpassword';
+import { passwordResolvers } from "./resolvers/forgetpassword";
 import { passwordSchema } from "./schema/forgetpassword";
-
 import { SearchSchema } from "./schema/searchSchema";
 import { searchResolver } from "./resolvers/searchResolver";
-import {appliedJobResolver} from "./resolvers/appliedJobResolver";
+import { appliedJobResolver } from "./resolvers/appliedJobResolver";
 import { appliedJobTypeDefs } from "./schema/appliedJobTypeDefs";
 
 const PORT = process.env.PORT || 3000;
-
-// const PORT = process.env.PORT || 4001;
-
 
 const resolvers = mergeResolvers([
   applicationCycleResolver,
@@ -110,9 +99,7 @@ const resolvers = mergeResolvers([
   candidateViewOwnApplication,
   gradingResolver,
   adminViewApplicationsResolvers,
-
   notificationResolvers,
-
   attendanceResolver,
   performanceResolver,
   filterJobResolver,
@@ -121,8 +108,6 @@ const resolvers = mergeResolvers([
   passwordResolvers,
   searchResolver,
   appliedJobResolver,
-
-
 ]);
 
 const typeDefs = mergeTypeDefs([
@@ -151,17 +136,13 @@ const typeDefs = mergeTypeDefs([
   viewOwnApplicationTypeDefs,
   gradingTypeDefs,
   adminViewAllApplicationsTypedefs,
-
   notificationTypedefs,
-
   SearchSchema,
   appliedJobTypeDefs,
   performanceSchema,
-  attendanceSchema
-
+  attendanceSchema,
 ]);
 
-const PORT = process.env.PORT || 5000;
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 const app = express();
