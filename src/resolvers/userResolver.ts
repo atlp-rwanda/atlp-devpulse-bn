@@ -36,13 +36,20 @@ export const usersResolvers: any = {
 
       const res = await createdUser.save();
       await publishNotification(
-        `${firstName} ${lastName} has registered as a new applicant.`,
-        "new_application"
+        `${firstName} ${lastName} has registered as a new User.`,
+        "user_registration"
       );
       return res;
     },
     // @ts-ignore
     async deleteUser(_, { ID }) {
+      const user = await userModel.findById(ID);
+      if (user) {
+        await publishNotification(
+          `${user.firstName} ${user.lastName} has been deleted`,
+          "user_deletion"
+        );
+      }
       const wasDeleted = (await userModel.deleteOne({ _id: ID })).deletedCount;
       return wasDeleted; //1 if something was deleted, 0 if nothing deleted
     },
@@ -55,6 +62,10 @@ export const usersResolvers: any = {
           { firstName, lastName }
         )
       ).modifiedCount;
+      await publishNotification(
+        `${firstName} ${lastName} 's information has been updated.`,
+        "user_update"
+      );
       return wasEdited; //1||true if something was Edited, 0||true if nothing Edited
     },
   },
