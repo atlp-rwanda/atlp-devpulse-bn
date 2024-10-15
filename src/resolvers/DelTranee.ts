@@ -169,7 +169,7 @@ const traineeResolvers: any = {
       const updated = await traineEAttributes
         .findOneAndDelete({ trainee_id: args.id }, (err: any, res: any) => {
           if (err) {
-            console.log(err);
+            console.error(err);
           }
         })
         .clone();
