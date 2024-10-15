@@ -123,10 +123,18 @@ export const jobPostResolver = {
           ).populate("cohort");
         }
 
-				const userInputs = await jobModels.create(args.jobFields);
-        const applicantRole = await RoleModel.findOne({ roleName: "applicant" });
-        const applicants = await LoggedUserModel.find({ role: applicantRole!._id }).populate('role');
-       
+        const userInputs = await jobModels.create(args.jobFields);
+        await publishNotification(
+          `Job  ${args.jobFields.title} has been Added successfully`,
+          "Job Created"
+        );
+        const applicantRole = await RoleModel.findOne({
+          roleName: "applicant",
+        });
+        const applicants = await LoggedUserModel.find({
+          role: applicantRole!._id,
+        }).populate("role");
+
         const notificationPromises = applicants.map(async (applicant) => {
           const message = `A new job post"${args.jobFields.title}" has been posted..`;
 
@@ -135,7 +143,7 @@ export const jobPostResolver = {
             message,
             eventType: "jobPost",
           });
-          
+
           await pusher
             .trigger(`notifications-${applicant._id}`, "new-notification", {
               message: notification.message,
@@ -146,36 +154,11 @@ export const jobPostResolver = {
             .catch((error) => {
               console.error("Error with Pusher trigger:", error);
             });
-          
+
           return notification;
         });
 
         await Promise.all(notificationPromises);
-				return (await (await userInputs.populate('program')).populate('cycle')).populate('cohort');
-			} catch (error) {
-				throw new CustomGraphQLError(`Something went wrong: ${error}`);
-			}
-		},
-		deleteJobApplication: async (_: any, args: any, context: any) => {
-			const userWithRole = await LoggedUserModel.findById(
-				context.currentUser?._id
-			).populate("role");
-			if (
-				!userWithRole ||
-				((userWithRole.role as any)?.roleName !== "admin" &&
-					(userWithRole.role as any)?.roleName !== "superAdmin")
-			) {
-				throw new CustomGraphQLError(
-					"You do not have permission to perform this action"
-				);
-			}
-			try {
-				const deleteJobApplication = await jobModels.findByIdAndDelete(args.id);
-        const userInputs = await jobModels.create(args.jobFields);
-        await publishNotification(
-          `Job  ${args.jobFields.title} has been Added successfully`,
-          "Job Created"
-        );
         return (
           await (await userInputs.populate("program")).populate("cycle")
         ).populate("cohort");
@@ -198,14 +181,12 @@ export const jobPostResolver = {
       }
       try {
         const existingRecord = await jobModels.findById(args.id);
-
         if (existingRecord) {
           await publishNotification(
             `Job  ${existingRecord.title} Deleted`,
             "Job Deleted"
           );
         }
-
         const deleteJobApplication = await jobModels.findByIdAndDelete(args.id);
 
         return deleteJobApplication === null

@@ -14,7 +14,7 @@ export const notificationTypedefs = gql`
   }
 
   type Mutation {
-    markNotificationAsRead(id: ID!): Notification
+    markAdminNotificationAsRead(id: ID!): Notification
     deleteNotification(id: ID!): Boolean
   }
   type Subscription {

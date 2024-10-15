@@ -12,7 +12,7 @@ export const notificationResolvers = {
     },
   },
   Mutation: {
-    async markNotificationAsRead(_: any, { id }: { id: string }) {
+    async markAdminNotificationAsRead(_: any, { id }: { id: string }) {
       const notification = await Notification.findById(id);
       if (!notification) {
         throw new Error("Notification not found");
@@ -21,7 +21,13 @@ export const notificationResolvers = {
       notification.read = true;
       const updatedNotification = await notification.save();
 
-      return updatedNotification;
+      return {
+        _id: updatedNotification._id,
+        message: updatedNotification.message,
+        type: updatedNotification.type,
+        createdAt: updatedNotification.createdAt,
+        read: updatedNotification.read,
+      };
     },
     async deleteNotification(_: any, { id }: { id: string }) {
       const notification = await Notification.findById(id);
