@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const AppliedJobSchema = new mongoose.Schema({
-  data: {
+  appliedJob: {
     type: Map,
     of: mongoose.Schema.Types.Mixed,
   },
