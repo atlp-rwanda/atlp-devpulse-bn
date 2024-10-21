@@ -45,7 +45,7 @@ export const typeDefsAttribute = gql`
     otherPrograms: String
     understandTraining: Boolean
     discipline: String
-    trainee_id: ID!
+    trainee_id: String!
   }
 
   input Pagination {
@@ -76,6 +76,7 @@ export const typeDefsAttribute = gql`
     applicationPost: String
     otherApplication: String
     andelaPrograms: String
+    past_andela_programs: String
     otherPrograms: String
     understandTraining: Boolean
     discipline: String
@@ -107,7 +108,9 @@ export const typeDefsAttribute = gql`
     otherPrograms: String
     understandTraining: Boolean
     discipline: String
-    trainee: TraineeApplicant!
+    past_andela_programs: String
+    field_of_study: String
+    trainee_id: TraineeApplicant!
   }
 
   type TraineeAttributeCreated {

@@ -25,13 +25,15 @@ interface ITraineeAttribute extends Document {
   otherPrograms?: string;
   understandTraining?: boolean;
   discipline?: string;
+  past_andela_programs?: string;
+  field_of_study?: string;
   trainee_id: mongoose.Types.ObjectId;
 }
 
 const traineeAttributeSchema = new Schema<ITraineeAttribute>({
   gender: {
     type: String,
-    enum: ['male', 'female', 'other'],
+    enum: ["male", "female", "other"],
   },
   birth_date: {
     type: Date,
@@ -47,11 +49,14 @@ const traineeAttributeSchema = new Schema<ITraineeAttribute>({
   },
   education_level: {
     type: String,
-    enum: ['high school', 'university', 'masters', 'phd'],
+    enum: ["high school", "university", "masters", "phd"],
+  },
+  field_of_study: {
+    type: String,
   },
   currentEducationLevel: {
     type: String,
-    enum: ['highschool', 'university', 'masters', 'phd'],
+    enum: ["highschool", "university", "masters", "phd"],
   },
   nationality: {
     type: String,
@@ -88,22 +93,31 @@ const traineeAttributeSchema = new Schema<ITraineeAttribute>({
   },
   applicationPost: {
     type: String,
-    enum: ['Andela Twitter Handle', 'Got an email from Andela', 'Referred by a friend', 'Other'],
+    enum: [
+      "Andela Twitter Handle",
+      "Got an email from Andela",
+      "Referred by a friend",
+      "Other",
+    ],
   },
   otherApplication: {
     type: String,
-    required: function(this: ITraineeAttribute) {
-      return this.applicationPost === 'Other';
+    required: function (this: ITraineeAttribute) {
+      return this.applicationPost === "Other";
     },
   },
-  andelaPrograms: { 
+  andelaPrograms: {
     type: String,
-    enum: ['Web Development Crash Course', 'Andela Learning Community', 'Other'],
+    enum: [
+      "Web Development Crash Course",
+      "Andela Learning Community",
+      "Other",
+    ],
   },
   otherPrograms: {
     type: String,
-    required: function(this: ITraineeAttribute) {
-      return this.andelaPrograms === 'Other';
+    required: function (this: ITraineeAttribute) {
+      return this.andelaPrograms === "Other";
     },
   },
   understandTraining: {
@@ -112,6 +126,11 @@ const traineeAttributeSchema = new Schema<ITraineeAttribute>({
   discipline: {
     type: String,
   },
+  past_andela_programs: {
+    type: String,
+    default: "none",
+  },
+
   trainee_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Trainee",
