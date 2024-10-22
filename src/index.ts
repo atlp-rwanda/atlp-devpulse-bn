@@ -68,7 +68,8 @@ import { SearchSchema } from "./schema/searchSchema";
 import { searchResolver } from "./resolvers/searchResolver";
 import {appliedJobResolver} from "./resolvers/appliedJobResolver";
 import { appliedJobTypeDefs } from "./schema/appliedJobTypeDefs";
-
+import { ticketResolver } from "./resolvers/ticketResolver";
+import { ticketSchema } from "./schema/ticketSchema";
 
 const PORT = process.env.PORT || 3000;
 
@@ -105,7 +106,8 @@ const resolvers = mergeResolvers([
   applicantNotificationResolver,
   passwordResolvers,
   searchResolver,
-  appliedJobResolver
+  appliedJobResolver,
+  ticketResolver
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -137,7 +139,8 @@ const typeDefs = mergeTypeDefs([
   SearchSchema,
   appliedJobTypeDefs,
   performanceSchema,
-  attendanceSchema
+  attendanceSchema,
+  ticketSchema
 ]);
 
 const server = new ApolloServer({
