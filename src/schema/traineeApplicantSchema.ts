@@ -35,7 +35,7 @@ export const typeDefsTrainee = gql`
     cycleApplied: [CycleApplied!]!
     delete_at: Boolean
     status: String!
-    applicationPhase: String!
+    applicationPhase: ApplicationPhase!
     cohort: ID
     createdAt: String!
     user: User
