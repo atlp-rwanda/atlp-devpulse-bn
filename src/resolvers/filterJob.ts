@@ -1,6 +1,6 @@
 import { jobModels } from "../models/jobModels";
 import { ProgramModel } from "../models/programModel";
-import  applicationCycle  from "../models/applicationCycle";
+import  {applicationCycle}  from "../models/applicationCycle";
 import { cohortModels } from "../models/cohortModel";
 
 const filterJobResolver: any = {

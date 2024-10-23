@@ -1,6 +1,6 @@
 import TraineeApplicant from "../models/traineeApplicant";
 import { traineEAttributes } from "../models/traineeAttribute";
-import  applicationCycle  from "../models/applicationCycle";
+import  {applicationCycle}  from "../models/applicationCycle";
 import mongoose, { ObjectId } from "mongoose";
 import { sendEmailTemplate } from "../helpers/bulkyMails";
 import { Types } from 'mongoose';
