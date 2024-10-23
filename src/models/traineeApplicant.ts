@@ -30,7 +30,7 @@ const TraineeApplicant = mongoose.model(
     },
     applicationPhase: {
       type: String,
-      enum: ["Applied", "Interviewed", "Accepted", "Enrolled"],
+      enum: ["Applied", 'Shortlisted', 'Technical Assessment', 'Interview Assessment', 'Admitted', 'Dismissed', "Enrolled"],
       default: "Applied",
     },
     status: {
