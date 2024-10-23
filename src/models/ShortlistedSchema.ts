@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 interface IShortlisted extends Document {
   applicantId: mongoose.Schema.Types.ObjectId;
-  status: "No action" | "Invited" | "Moved" | "Rejected" | "Admitted";
+  status: "No action" | "Moved" | "Rejected" | "Admitted";
   comments?: string;
 }
 
