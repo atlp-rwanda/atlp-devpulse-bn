@@ -1,68 +1,54 @@
 import { gql } from "apollo-server";
-
 export const typeDefsAttribute = gql`
   type Query {
-    allTraineesDetails(input: Pagination): [TraineeAttribute]
-    getOneTraineeAllDetails(input: One): TraineeAttribute
+    allTraineesDetails(input: pagination): [traineeAttribute]
+    getOneTraineeAllDetails(input: one): traineeAttribute
   }
-
   type Mutation {
     createTraineeAttribute(
-      attributeInput: TraineeAttributeInput
-    ): TraineeAttributeCreated
+      attributeInput: traineeAttributeInput
+    ): traineeAttributeCreated
     updateTraineeAttribute(
       ID: ID!
-      attributeUpdateInput: TraineeUpdateAttributeInput
-    ): TraineeAttributeCreated
+      attributeUpdateInput: traineeUpdateAttributeInput
+    ): traineeAttributeCreated
   }
-
-  input One {
+  input one {
     id: ID!
   }
-
-  input TraineeAttributeInput {
-    gender: String
-    birth_date: String
-    address: String
-    phone: String
-    study: Boolean
-    education_level: String
-    currentEducationLevel: String
-    nationality: String
-    province: String
-    district: String
-    sector: String
-    isEmployed: Boolean
-    haveLaptop: Boolean
-    isStudent: Boolean
-    Hackerrank_score: String
-    english_score: String
-    interview: Int
-    interview_decision: String
-    applicationPost: String
-    otherApplication: String
-    andelaPrograms: String
-    otherPrograms: String
+  input traineeAttributeInput {
+    gender: String!
+    birth_date: String!
+    Address: String!
+    phone: String!
+    field_of_study: String!
+    education_level: String!
+    province: String!
+    district: String!
+    sector: String!
+    isEmployed: Boolean!
+    haveLaptop: Boolean!
+    isStudent: Boolean!
+    Hackerrank_score: String!
+    english_score: String!
+    interview_decision: String!
+    past_andela_programs: String!
     understandTraining: Boolean
-    discipline: String
-    trainee_id: ID!
+    trainee_id: String!
   }
-
-  input Pagination {
+  input pagination {
     page: Int!
     itemsPerPage: Int
     All: Boolean
   }
 
-  input TraineeUpdateAttributeInput {
+  input traineeUpdateAttributeInput {
     gender: String
     birth_date: String
-    address: String
+    Address: String
     phone: String
-    study: Boolean
+    field_of_study: String
     education_level: String
-    currentEducationLevel: String
-    nationality: String
     province: String
     district: String
     sector: String
@@ -71,74 +57,55 @@ export const typeDefsAttribute = gql`
     isStudent: Boolean
     Hackerrank_score: String
     english_score: String
-    interview: Int
     interview_decision: String
-    applicationPost: String
-    otherApplication: String
-    andelaPrograms: String
-    otherPrograms: String
+    past_andela_programs: String
     understandTraining: Boolean
-    discipline: String
   }
 
-  type TraineeAttribute {
+  type traineeAttribute {
+    gender: String!
+    birth_date: String!
+    Address: String!
+    phone: String!
+    field_of_study: String!
+    education_level: String!
+    province: String!
+    district: String!
+    sector: String!
+    isEmployed: Boolean!
+    haveLaptop: Boolean!
+    isStudent: Boolean!
+    Hackerrank_score: String!
+    english_score: String!
+    interview_decision: String!
+    past_andela_programs: String!
+    understandTraining: Boolean
     _id: ID
-    gender: String
-    birth_date: String
-    address: String
-    phone: String
-    study: Boolean
-    education_level: String
-    currentEducationLevel: String
-    nationality: String
-    province: String
-    district: String
-    sector: String
-    isEmployed: Boolean
-    haveLaptop: Boolean
-    isStudent: Boolean
-    Hackerrank_score: String
-    english_score: String
-    interview: Int
-    interview_decision: String
-    applicationPost: String
-    otherApplication: String
-    andelaPrograms: String
-    otherPrograms: String
-    understandTraining: Boolean
-    discipline: String
-    trainee: TraineeApplicant!
+    trainee_id: traineeApplicant!
   }
 
-  type TraineeAttributeCreated {
+  type traineeAttributeCreated {
+    gender: String!
+    birth_date: String!
+    Address: String!
+    phone: String!
+    field_of_study: String!
+    education_level: String!
+    province: String!
+    district: String!
+    sector: String!
+    isEmployed: Boolean!
+    haveLaptop: Boolean!
+    isStudent: Boolean!
+    Hackerrank_score: String!
+    english_score: String!
+    interview_decision: String!
+    past_andela_programs: String!
+    understandTraining: Boolean
     _id: ID
-    gender: String
-    birth_date: String
-    address: String
-    phone: String
-    study: Boolean
-    education_level: String
-    currentEducationLevel: String
-    nationality: String
-    province: String
-    district: String
-    sector: String
-    discipline: String
-    isEmployed: Boolean
-    haveLaptop: Boolean
-    isStudent: Boolean
-    Hackerrank_score: String
-    english_score: String
-    interview: Int
-    interview_decision: String
-    applicationPost: String
-    otherApplication: String
-    andelaPrograms: String
-    otherPrograms: String
-    understandTraining: Boolean
-    trainee_id: ID!
+    trainee_id: String!
   }
-
+  
   type TraineeApplicant {
     _id: ID!
     lastName: String!

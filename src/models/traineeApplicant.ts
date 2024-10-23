@@ -1,7 +1,14 @@
-import mongoose, { model, Schema } from "mongoose";
-const TraineeApplicant = mongoose.model(
-  "Trainee",
-  new Schema({
+import mongoose, { Schema } from "mongoose";
+
+const CycleAppliedSchema = new Schema({
+  cycle: {
+    type: Schema.Types.ObjectId,
+    ref: 'ApplicationCycle',
+    required: true
+  },
+})
+
+const TraineeApplicantSchema = new Schema({
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User'
@@ -23,11 +30,7 @@ const TraineeApplicant = mongoose.model(
       type: Boolean,
       default: false,
     },
-    cycle_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "applicationCycle",
-      required: true,
-    },
+    cycleApplied: [CycleAppliedSchema],
     applicationPhase: {
       type: String,
       enum: ["Applied", "Interviewed", "Accepted", "Enrolled"],
@@ -41,7 +44,8 @@ const TraineeApplicant = mongoose.model(
       type: Schema.Types.ObjectId,
       ref: "cohortModel",
     }
-  })
-);
+  });
 
-export default TraineeApplicant;
+const TraineeApplicant = mongoose.model('Trainees', TraineeApplicantSchema);
+
+  export default TraineeApplicant;

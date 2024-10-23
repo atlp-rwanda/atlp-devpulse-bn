@@ -5,7 +5,7 @@ import { jobModels } from '../models/jobModels';
 import { cohortModels } from '../models/cohortModel';
 import { ProgramModel } from '../models/programModel';
 import TraineeApplicant from '../models/traineeApplicant';
-import { applicationCycle } from '../models/applicationCycle';
+import  {applicationCycle}  from '../models/applicationCycle';
 
 interface SearchInput {
   searchTerm: string;

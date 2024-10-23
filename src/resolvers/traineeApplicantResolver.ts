@@ -1,13 +1,15 @@
 import TraineeApplicant from "../models/traineeApplicant";
 import { traineEAttributes } from "../models/traineeAttribute";
-import { applicationCycle } from "../models/applicationCycle";
+import  {applicationCycle}  from "../models/applicationCycle";
 import mongoose, { ObjectId } from "mongoose";
 import { sendEmailTemplate } from "../helpers/bulkyMails";
+import { Types } from 'mongoose';
 
 const FrontendUrl = process.env.FRONTEND_URL || ""
 
 import { CustomGraphQLError } from "../utils/customErrorHandler";
 import { cohortModels } from "../models/cohortModel";
+import { any } from "joi";
 
 export const traineeApplicantResolver: any = {
   Query: {
@@ -114,8 +116,8 @@ export const traineeApplicantResolver: any = {
         return false;
       }
     },
-    async createNewTraineeApplicant(parent: any, args: any, context: any) {
-      const { lastName, firstName, email, cycle_id, attributes } = args.input;
+    async createNewTraineeApplicant(_:any, { input }:any) {
+      const { lastName, firstName, email, cycle_id, attributes } = input;
     
       // Validate email
       const validateEmail = (email: string) => {
@@ -130,27 +132,44 @@ export const traineeApplicantResolver: any = {
         throw new Error("This email is not valid. Please provide a valid email.");
       }
     
-      // Check if cycle exists
-      const cycle = await applicationCycle.findById(cycle_id);
-      if (!cycle) {
-        throw new Error("The cycle provided does not exist");
-      }
-    
       const session = await mongoose.startSession();
       session.startTransaction();
-    
+
       try {
-        
-        const newTrainee = await TraineeApplicant.create([{
+        const cycle = await applicationCycle.findById(cycle_id).session(session);
+        if (!cycle) {
+          throw new Error("Application cycle not found");
+        }
+
+        const existingTrainee = await TraineeApplicant.findOne({ email }).session(session);
+        if (existingTrainee) {
+          const existingApplication = existingTrainee.cycleApplied.find(
+           ( app: any) => app.cycle.toString() === cycle_id
+          );
+          if (existingApplication) {
+            throw new Error("You have already applied to this application cycle");
+          }
+
+          existingTrainee.cycleApplied.push({
+            cycle: cycle_id,
+          });
+          await existingTrainee.save({ session });
+          await session.commitTransaction();
+          return existingTrainee;
+        }
+
+        const newTrainee = new TraineeApplicant({
           lastName,
           firstName,
           email,
-          cycle_id
-        }], { session });
-    
+          cycleApplied: [{
+            cycle: cycle_id,
+          }]
+        });
+
+        await newTrainee.save({ session });
         await session.commitTransaction();
-  
-        return (await newTrainee[0].populate("cycle_id")).toObject();
+        return newTrainee;
       } catch (error) {
         await session.abortTransaction();
         throw error;

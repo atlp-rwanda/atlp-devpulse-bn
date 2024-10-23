@@ -4,15 +4,27 @@ import TraineeApplicant from "../models/traineeApplicant";
 export const traineeAttributeResolver: any = {
   Query: {
     async allTraineesDetails(_: any, { input }: any) {
+      // define page
       const { page, itemsPerPage, All } = input;
-      let pages = page || 1;
-      let items = itemsPerPage || 3;
-
+      let pages;
+      let items;
+      if (page) {
+        pages = page;
+      } else {
+        pages = 1;
+      }
       if (All) {
+        // count total items inside the Attributes
         const totalItems = await traineEAttributes.countDocuments({});
         items = totalItems;
+      } else {
+        if (itemsPerPage) {
+          items = itemsPerPage;
+        } else {
+          items = 3;
+        }
       }
-
+      // define items per page
       const itemsToSkip = (pages - 1) * items;
       const allTraineeAttribute = await traineEAttributes
         .find({})
@@ -91,22 +103,19 @@ export const traineeAttributeResolver: any = {
       }
     },
 
-    async updateTraineeAttribute(_: any, args: any) {
+    async updateTraineeAttribute(parent: any, args: any, context: any) {
       const { ID, attributeUpdateInput } = args;
 
-      if (attributeUpdateInput.birth_date) {
-        attributeUpdateInput.birth_date = new Date(attributeUpdateInput.birth_date);
-      }
-
+      // const updated = await traineEAttributes.findByIdAndUpdate(
       const updated = await traineEAttributes.findOneAndUpdate(
         { trainee_id: ID },
         {
           gender: attributeUpdateInput.gender,
           birth_date: attributeUpdateInput.birth_date,
-          address: attributeUpdateInput.address,
+          Address: attributeUpdateInput.Address,
           phone: attributeUpdateInput.phone,
+          field_of_study: attributeUpdateInput.field_of_study,
           education_level: attributeUpdateInput.education_level,
-          currentEducationLevel: attributeUpdateInput.currentEducationLevel,
           province: attributeUpdateInput.province,
           district: attributeUpdateInput.district,
           sector: attributeUpdateInput.sector,
@@ -117,18 +126,13 @@ export const traineeAttributeResolver: any = {
           english_score: attributeUpdateInput.english_score,
           interview_decision: attributeUpdateInput.interview_decision,
           past_andela_programs: attributeUpdateInput.past_andela_programs,
-          applicationPost: attributeUpdateInput.applicationPost,
-          otherApplication: attributeUpdateInput.otherApplication,
-          andelaPrograms: attributeUpdateInput.andelaPrograms,
-          otherPrograms: attributeUpdateInput.otherPrograms,
-          understandTraining: attributeUpdateInput.understandTraining,
-          discipline: attributeUpdateInput.discipline,
         },
         { new: true }
       );
       if (!updated)
-        throw new Error("No Trainee is found, please provide the correct trainee_id");
-
+        throw new Error(
+          "No Trainee is found, please provide the correct trainee_id"
+        );
       return updated;
     },
   },

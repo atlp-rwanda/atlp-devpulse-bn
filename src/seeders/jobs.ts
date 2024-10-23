@@ -1,7 +1,7 @@
 import { jobModels } from "../models/jobModels";
 import { ProgramModel } from "../models/programModel";
 import { cohortModels } from "../models/cohortModel";
-import { applicationCycle } from "../models/applicationCycle";
+import  {applicationCycle}  from "../models/applicationCycle";
 
 const seedJobs = async () => {
     const program = await ProgramModel.findOne();
