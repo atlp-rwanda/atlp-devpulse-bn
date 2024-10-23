@@ -180,69 +180,70 @@ export const applicationStageResolvers: any = {
     //   }
     // },
 
-    getInterviewStages: async (_: any, __: any, context: any) => {
-      try {
-        if (!context.currentUser) {
-          throw new CustomGraphQLError(
-            "You must be logged in to view your applications"
-          );
-        }
+    // getInterviewStages: async (_: any, __: any, context: any) => {
+    //   try {
+    //     if (!validStages.includes(stage)) {
+    //       throw new Error("Invalid stage. Please choose a valid stage.");
+    //     }
+    //     const stageIndex = validStages.indexOf(stage);
+    //     const selectedModel = models[stageIndex];
+    //     const allApplicantInStage = await getApplicantsByModel(selectedModel);
 
-        const applicants = await InterviewAssessment.find()
-          .populate({
-            path: "applicantId",
-            model: "Trainees",
-            populate: [
-              {
-                path: "technicalInterviews",
-                model: "TechnicalInterview",
-                populate: {
-                  path: "coordinatorId",
-                  model: LoggedUserModel,
-                  select: "firstname lastname email role",
-                },
-              },
-            ],
-          })
-          .exec();
+    //     const applicants = await InterviewAssessment.find()
+    //       .populate({
+    //         path: "applicantId",
+    //         model: "Trainees",
+    //         populate: [
+    //           {
+    //             path: "technicalInterviews",
+    //             model: "TechnicalInterview",
+    //             populate: {
+    //               path: "coordinatorId",
+    //               model: LoggedUserModel,
+    //               select: "firstname lastname email role",
+    //             },
+    //           },
+    //         ],
+    //       })
+    //       .exec();
 
-        return applicants
-          .filter((tracking: any) => tracking.applicantId !== null)
-          .map((tracking: any) => {
-            const interviews = tracking.applicantId.technicalInterviews || [];
-            return {
-              applicant: {
-                _id: tracking.applicantId._id,
-                firstName: tracking.applicantId.firstName,
-                lastName: tracking.applicantId.lastName,
-                email: tracking.applicantId.email,
-                applicationPhase: tracking.applicantId.applicationPhase,
-                status: tracking.applicantId.status,
-              },
-              interviews: interviews.map((interview: any) => ({
-                _id: interview._id,
-                meetingLink: interview.meetingLink,
-                meetingPlatform: interview.meetingPlatform,
-                coordinator: interview.coordinatorId || null,
-                scheduledDate: interview.scheduledDate?.toISOString(),
-                status: interview.status,
-                emailSent: interview.emailSent,
-                createdAt: interview.createdAt?.toISOString(),
-                updatedAt: interview.updatedAt?.toISOString(),
-              })),
-              status: tracking.status,
-              score: tracking.interviewScore,
-              comments: tracking.comments,
-              createdAt: tracking.createdAt.toLocaleString(),
-              updatedAt: tracking.updatedAt.toLocaleString(),
-            };
-          });
-      } catch (err: any) {
-        throw new CustomGraphQLError(
-          `Failed to retrieve applicants: ${err.message}`
-        );
-      }
-    },
+    //     return applicants
+    //       .filter((tracking: any) => tracking.applicantId !== null)
+    //       .map((tracking: any) => {
+    //         const interviews = tracking.applicantId.technicalInterviews || [];
+    //         return {
+    //           applicant: {
+    //             _id: tracking.applicantId._id,
+    //             firstName: tracking.applicantId.firstName,
+    //             lastName: tracking.applicantId.lastName,
+    //             email: tracking.applicantId.email,
+    //             applicationPhase: tracking.applicantId.applicationPhase,
+    //             status: tracking.applicantId.status,
+    //           },
+    //           interviews: interviews.map((interview: any) => ({
+    //             _id: interview._id,
+    //             meetingLink: interview.meetingLink,
+    //             meetingPlatform: interview.meetingPlatform,
+    //             coordinator: interview.coordinatorId || null,
+    //             scheduledDate: interview.scheduledDate?.toISOString(),
+    //             status: interview.status,
+    //             emailSent: interview.emailSent,
+    //             createdAt: interview.createdAt?.toISOString(),
+    //             updatedAt: interview.updatedAt?.toISOString(),
+    //           })),
+    //           status: tracking.status,
+    //           score: tracking.interviewScore,
+    //           comments: tracking.comments,
+    //           createdAt: tracking.createdAt.toLocaleString(),
+    //           updatedAt: tracking.updatedAt.toLocaleString(),
+    //         };
+    //       });
+    //   } catch (err: any) {
+    //     throw new CustomGraphQLError(
+    //       `Failed to retrieve applicants: ${err.message}`
+    //     );
+    //   }
+    // },
   },
   Mutation: {
     moveToNextStage: async (
@@ -618,7 +619,7 @@ export const applicationStageResolvers: any = {
             const notification4 = await ApplicantNotificationsModel.create({
               userId: user!._id,
               message,
-              eventType: "applicationUpdate", 
+              eventType: "applicationUpdate",
             });
 
             await sendEmailTemplate(
