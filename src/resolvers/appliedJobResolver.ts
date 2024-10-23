@@ -19,7 +19,7 @@ async function getAllSheets(sheetId: string) {
   });
 
   // Extract sheet names from response
-  const sheets = response.data.sheets?.map(sheet => sheet.properties?.title);
+  const sheets = response.data.sheets?.map((sheet) => sheet.properties?.title);
   return sheets || [];
 }
 
@@ -62,7 +62,7 @@ async function fetchAllSheetData(sheetLink: string) {
 // Get the last processed timestamp from MongoDB
 async function getLastProcessedTimestamp(sheetId: string): Promise<string> {
   const sheetTracker = await TrackSheet.findOne({ sheetId });
-  return sheetTracker 
+  return sheetTracker
     ? sheetTracker.lastProcessedTimestamp.toISOString()
     : new Date("2024-01-01T00:00:00Z").toISOString();
 }
@@ -79,7 +79,56 @@ async function updateLastProcessedTimestamp(
   );
   return updatedSheetTracker.upsertedCount || 0;
 }
+export const processSheetData = async (sheetLink: string): Promise<boolean> => {
+  try {
+    // Fetch all data from all sheets
+    const allSheetData = await fetchAllSheetData(sheetLink);
 
+    const sheetId = extractSheetId(sheetLink);
+    if (!sheetId) {
+      throw new Error("Invalid sheet link provided");
+    }
+
+    // Get the last processed timestamp
+    const lastProcessedTimestamp = await getLastProcessedTimestamp(sheetId);
+
+    for (const { sheetName, data } of allSheetData) {
+      if (!data || data.length === 0) continue; // Skip empty sheets
+
+      const headers = data[0];
+      const timestampIndex = headers.indexOf("Timestamp");
+      if (timestampIndex === -1) {
+        throw new Error(`Timestamp column not found in sheet: ${sheetName}`);
+      }
+
+      const newRows = data.slice(1).filter((row: any) => {
+        const rowTimestamp = row[timestampIndex];
+        return (
+          rowTimestamp &&
+          new Date(rowTimestamp) > new Date(lastProcessedTimestamp)
+        );
+      });
+
+      if (newRows.length === 0) continue;
+
+      const documents = newRows.map((row: any) => {
+        const document: { [key: string]: any } = {};
+        headers.forEach((header: string, index: number) => {
+          document[header] = row[index] || null;
+        });
+        return { appliedJob: document };
+      });
+
+      await AppliedJobModel.insertMany(documents);
+
+      const latestTimestamp = newRows[newRows.length - 1][timestampIndex];
+      await updateLastProcessedTimestamp(sheetId, latestTimestamp);
+    }
+    return true;
+  } catch (error: any) {
+    throw new CustomGraphQLError(`Something went wrong: ${error.message}`);
+  }
+};
 export const appliedJobResolver = {
   Query: {
     getAllAppliedJobs: async (_: any, __: any, context: any) => {
@@ -127,9 +176,9 @@ export const appliedJobResolver = {
         }
 
         const data =
-          appliedJob.data instanceof Map
-            ? Object.fromEntries(appliedJob.data)
-            : appliedJob.data;
+          appliedJob.appliedJob instanceof Map
+            ? Object.fromEntries(appliedJob.appliedJob)
+            : appliedJob.appliedJob;
 
         const fieldData = Object.entries(data as any).map(([key, value]) => ({
           key,
@@ -140,6 +189,36 @@ export const appliedJobResolver = {
           id: appliedJob._id.toString(),
           data: fieldData,
         };
+      } catch (error: any) {
+        throw new Error(`Error retrieving application: ${error.message}`);
+      }
+    },
+    getMyOwnAppliedJob: async (_: any, __: any, context: any) => {
+      try {
+        if (!context.currentUser) {
+          throw new CustomGraphQLError(
+            "You must be logged in to view your application."
+          );
+        }
+        const appliedJobs = await AppliedJobModel.find({
+          "appliedJob.UserID": context.currentUser._id.toString(),
+        }).lean();
+        console.log(appliedJobs);
+        if (!appliedJobs) {
+          throw new Error("Application not found or you are unauthorized.");
+        }
+        const jobApplications = appliedJobs.map((appliedJob) => {
+          const fieldData = Object.entries(appliedJob.appliedJob as any).map(([key, value]) => ({
+            key,
+            value: value ? String(value) : null, // Convert value to string or null
+          }));
+        return {
+          id: appliedJob._id.toString(),
+          appliedJob: fieldData,
+          status: appliedJob.status
+        };
+      })
+      return jobApplications;
       } catch (error: any) {
         throw new Error(`Error retrieving application: ${error.message}`);
       }
@@ -172,12 +251,17 @@ export const appliedJobResolver = {
           const headers = data[0];
           const timestampIndex = headers.indexOf("Timestamp");
           if (timestampIndex === -1) {
-            throw new Error(`Timestamp column not found in sheet: ${sheetName}`);
+            throw new Error(
+              `Timestamp column not found in sheet: ${sheetName}`
+            );
           }
 
           const newRows = data.slice(1).filter((row: any) => {
             const rowTimestamp = row[timestampIndex];
-            return rowTimestamp && new Date(rowTimestamp) > new Date(lastProcessedTimestamp);
+            return (
+              rowTimestamp &&
+              new Date(rowTimestamp) > new Date(lastProcessedTimestamp)
+            );
           });
 
           if (newRows.length === 0) continue;

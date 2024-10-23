@@ -1,6 +1,7 @@
 import { ApolloServer } from "apollo-server";
 import { mergeResolvers, mergeTypeDefs } from "@graphql-tools/merge";
 import { connect } from "./database/db.config";
+import './utils/cronJob';
 import { typeDefsTrainee } from "./schema/traineeApplicantSchema";
 import { typeDefsAttribute } from "./schema/traineeAttributeSchema";
 import { traineeApplicantResolver } from "./resolvers/traineeApplicantResolver";
@@ -58,15 +59,16 @@ import { performanceSchema } from "./schema/performanceSchema";
 import filterJobResolver from "./resolvers/filterJob";
 import filterProgramResolver from "./resolvers/filterPrograms";
 import filterRoleResolver from "./resolvers/filterRole";
-
+import applicantNotificationResolver from "./resolvers/applicantNotifications"
+import applicantNotifcationsTypedefs from "./schema/applicantNotifications"
 // import {forgetPassword } from "./resolvers/forgetpassword";
 import { passwordResolvers } from './resolvers/forgetpassword';
 import { passwordSchema } from "./schema/forgetpassword";
-
 import { SearchSchema } from "./schema/searchSchema";
 import { searchResolver } from "./resolvers/searchResolver";
 import {appliedJobResolver} from "./resolvers/appliedJobResolver";
 import { appliedJobTypeDefs } from "./schema/appliedJobTypeDefs";
+
 
 const PORT = process.env.PORT || 3000;
 
@@ -100,10 +102,10 @@ const resolvers = mergeResolvers([
   filterJobResolver,
   filterProgramResolver,
   filterRoleResolver,
+  applicantNotificationResolver,
   passwordResolvers,
   searchResolver,
-  appliedJobResolver,
-
+  appliedJobResolver
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -131,6 +133,7 @@ const typeDefs = mergeTypeDefs([
   viewOwnApplicationTypeDefs,
   gradingTypeDefs,
   adminViewAllApplicationsTypedefs,
+  applicantNotifcationsTypedefs,
   SearchSchema,
   appliedJobTypeDefs,
   performanceSchema,
@@ -145,7 +148,9 @@ const server = new ApolloServer({
     let authToken = null;
     let currentUser = null;
     try {
-      authToken = req.headers.authorization;
+      authToken = req.headers.authorization && req.headers.authorization.startsWith("Bearer ")
+        ? req.headers.authorization.split(" ")[1]
+        : req.headers.authorization;
       if (authToken) {
       
         currentUser = await findOrCreateUser(authToken);

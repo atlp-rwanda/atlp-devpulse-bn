@@ -64,6 +64,19 @@ export const loggedUserResolvers: any = {
         email: context.currentUser.email
       };
     },
+    getByFilter: async (_: any, { filter }: { filter: any }) => {
+      const filterQuery: any = {};
+      for (const key in filter) {
+        if (filter[key] !== undefined && filter[key] !== null) {
+          filterQuery[key] = filter[key];
+        }
+      }
+      if (Object.keys(filterQuery).length === 0) {
+        throw new Error("No filter criteria provided.");
+      }
+      const users = await LoggedUserModel.find(filterQuery);
+      return users;
+    }    
   },
   Mutation: {
     async createUser_Logged(
@@ -394,6 +407,36 @@ export const loggedUserResolvers: any = {
       ).modifiedCount;
       return wasEdited;
     },
+
+    async updateUserSelf(
+      _: any,
+      { ID, editUserInput: { firstname, lastname, gender, code, country, telephone, picture } }: any, ctx: any) {
+        
+      if (!ctx.currentUser) {
+        throw new AuthenticationError('You must be logged in');
+      }
+      if (ctx.currentUser._id.toString() !== ID) {
+        throw new AuthenticationError('You are only authorized to update your own account.');
+      }
+    
+      const updateFields: any = {};
+      if (firstname) updateFields.firstname = firstname;
+      if (lastname) updateFields.lastname = lastname;
+      if (gender) updateFields.gender = gender;
+      if (code) updateFields.code = code;
+      if (country) updateFields.country = country;
+      if (telephone) updateFields.telephone = telephone;
+      if (picture) updateFields.picture = picture;
+    
+      const wasEdited = (
+        await LoggedUserModel.updateOne(
+          { _id: ctx.currentUser._id },
+          { $set: updateFields } 
+        )
+      ).modifiedCount;
+    
+      return wasEdited > 0; 
+    },       
 
     assignRoleToUser: async (
       _: any,
