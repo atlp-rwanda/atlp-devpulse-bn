@@ -65,19 +65,18 @@ const TraineeApplicantSchema = new Schema(
     coverLetterUrl: {
       type: String,
       required: false,
-      default: 'http://example.com/coverLetter.pdf'
-    }, 
+      default: "http://example.com/coverLetter.pdf",
+    },
     idDocumentUrl: {
       type: String,
       required: false,
-      default: 'http://example.com/idDocument.pdf'
+      default: "http://example.com/idDocument.pdf",
     },
     resumeUrl: {
       type: String,
       required: false,
-      default: 'http://example.com/resume.pdf'
-    }
-
+      default: "http://example.com/resume.pdf",
+    },
   },
   {
     timestamps: true,

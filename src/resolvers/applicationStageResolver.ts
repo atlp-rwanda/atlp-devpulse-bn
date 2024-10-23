@@ -13,6 +13,7 @@ import { LoggedUserModel } from "../models/AuthUser";
 import { pusher } from "../helpers/pusher";
 import { traineEAttributes } from "../models/traineeAttribute";
 import mongoose from "mongoose";
+import TechnicalInterview from "../models/technicalInterviewSchema";
 
 const validStages = [
   "Shortlisted",
@@ -70,32 +71,6 @@ export const applicationStageResolvers: any = {
         );
       }
     },
-    getApplicantsByStage: async (_: any, { stage }: { stage: string }) => {
-      try {
-        if (!validStages.includes(stage)) {
-          throw new Error("Invalid stage. Please choose a valid stage.");
-        }
-        const stageIndex = validStages.indexOf(stage);
-        const selectedModel = models[stageIndex];
-        const allApplicantInStage = await getApplicantsByModel(selectedModel);
-        return allApplicantInStage
-          .filter((tracking: any) => tracking.applicantId !== null)
-          .map((tracking: any) => ({
-            applicant: tracking.applicantId,
-            status: tracking.status,
-            score: tracking.score || tracking.interviewScore,
-            comments: tracking.comments,
-            platform: tracking.platform,
-            invitationLink: tracking.invitationLink,
-            createdAt: tracking.createdAt.toLocaleString(),
-            updatedAt: tracking.updatedAt.toLocaleString(),
-          }));
-      } catch (error: any) {
-        throw new Error(
-          `Failed to retrieve applicants for stage ${stage}: ${error.message}`
-        );
-      }
-    },
     getTraineeCyclesApplications: async (_: any, __: any, context: any) => {
       try {
         if (!context.currentUser) {
@@ -135,44 +110,46 @@ export const applicationStageResolvers: any = {
         throw new CustomGraphQLError(error);
       }
     },
-    getApplicationStages: async (_: any, { trainee_id }: any, context: any) => {
+    getApplicantsByStage: async (_: any, { stage }: { stage: string }) => {
       try {
-        if (!context.currentUser) {
-          throw new CustomGraphQLError(
-            "You must be logged in to view your applications"
-          );
+        if (!validStages.includes(stage)) {
+          throw new Error("Invalid stage. Please choose a valid stage.");
         }
+        const stageIndex = validStages.indexOf(stage);
+        const selectedModel = models[stageIndex];
+        const allApplicantInStage = await getApplicantsByModel(selectedModel);
 
-        const trainee = new mongoose.Types.ObjectId(trainee_id);
+        // Fetch interviews for each applicant
+        const allApplicantInStages = await Promise.all(
+          allApplicantInStage
+            .filter((tracking: any) => tracking.applicantId !== null)
+            .map(async (tracking: any) => {
+              const interviews = await TechnicalInterview.find({
+                applicantId: tracking.applicantId,
+              }).populate({
+                path: "coordinatorId",
+                model: LoggedUserModel,
+                select: "firstname lastname email",
+              });
 
-        const [
-          shortlistStage,
-          technicalStage,
-          interviewStage,
-          admittedStage,
-          rejectedStage,
-          AllStages,
-        ] = await Promise.all([
-          Shortlisted.findOne({ applicantId: trainee }),
-          TechnicalAssessment.findOne({ applicantId: trainee }),
-          InterviewAssessment.findOne({ applicantId: trainee }),
-          Admitted.findOne({ applicantId: trainee }),
-          Rejected.findOne({ applicantId: trainee }),
-          StageTracking.findOne({ applicantId: trainee }),
-        ]);
+              return {
+                applicant: tracking.applicantId,
+                status: tracking.status,
+                score: tracking.score || tracking.interviewScore,
+                comments: tracking.comments,
+                platform: tracking.platform,
+                invitationLink: tracking.invitationLink,
+                createdAt: tracking.createdAt.toLocaleString(),
+                updatedAt: tracking.updatedAt.toLocaleString(),
+                technicalInterviews: interviews,
+              };
+            })
+        );
 
-        return {
-          shortlist: shortlistStage,
-          technical: technicalStage,
-          interview: interviewStage,
-          admitted: admittedStage,
-          rejected: rejectedStage,
-          allStages: AllStages,
-        };
-      } catch (error) {
-        console.error("Error retrieving application stages:", error);
-        throw new CustomGraphQLError(
-          error || "An error occurred while retrieving applications"
+        return allApplicantInStages;
+      } catch (error: any) {
+        throw new Error(
+          `Failed to retrieve applicants for stage ${stage}: ${error.message}`
         );
       }
     },
@@ -415,28 +392,28 @@ export const applicationStageResolvers: any = {
                 },
               }
             );
-             const updatedApplicant = await TraineeApplicant.findOne({
-               _id: applicantId,
-             })
-               .populate("email")
-               .lean();
+            const updatedApplicant = await TraineeApplicant.findOne({
+              _id: applicantId,
+            })
+              .populate("email")
+              .lean();
 
-             const email = updatedApplicant?.email;
+            const email = updatedApplicant?.email;
 
-             if (email) {
-               await LoggedUserModel.updateOne(
-                 { email },
-                 {
-                   $set: {
-                     applicationPhase: nextStage,
-                     status: "Admitted",
-                     role: traineeRole._id,
-                   },
-                 }
-               );
-             } else {
-               throw new Error("Email not found for the provided applicant ID");
-             }
+            if (email) {
+              await LoggedUserModel.updateOne(
+                { email },
+                {
+                  $set: {
+                    applicationPhase: nextStage,
+                    status: "Admitted",
+                    role: traineeRole._id,
+                  },
+                }
+              );
+            } else {
+              throw new Error("Email not found for the provided applicant ID");
+            }
             const notification2 = await ApplicantNotificationsModel.create({
               userId: user!._id,
               message,
@@ -641,7 +618,21 @@ export const applicationStageResolvers: any = {
         return new Error(error.message);
       }
     },
-    sendInvitation: async ( _: any, { applicantId, email, platform,invitationLink,}: { applicantId: string; email: string; platform: string; invitationLink: string;}, context: any) => {
+    sendInvitation: async (
+      _: any,
+      {
+        applicantId,
+        email,
+        platform,
+        invitationLink,
+      }: {
+        applicantId: string;
+        email: string;
+        platform: string;
+        invitationLink: string;
+      },
+      context: any
+    ) => {
       try {
         if (!context.currentUser) {
           throw new CustomGraphQLError(
@@ -672,19 +663,20 @@ export const applicationStageResolvers: any = {
         const lastName = applicant.lastName;
         const notification = await ApplicantNotificationsModel.create({
           userId: user!._id,
-          message:"Invitation link has sent to your email address. Please check your email address",
+          message:
+            "Invitation link has sent to your email address. Please check your email address",
           eventType: "general",
         });
         await pusher
-        .trigger(`notifications-${user!._id}`, "new-notification", {
-          message: notification.message,
-          id: notification._id,
-          createdAt: notification.createdAt,
-          read: notification.read,
-        })
-        .catch((error) => {
-          console.error("Error with Pusher trigger:", error);
-        });
+          .trigger(`notifications-${user!._id}`, "new-notification", {
+            message: notification.message,
+            id: notification._id,
+            createdAt: notification.createdAt,
+            read: notification.read,
+          })
+          .catch((error) => {
+            console.error("Error with Pusher trigger:", error);
+          });
         await sendEmailTemplate(
           email,
           "Invitation to Complete Technical Assessment",
@@ -711,7 +703,7 @@ export const applicationStageResolvers: any = {
         );
         await TechnicalAssessment.updateOne(
           { applicantId },
-          { $set: { status: "Invited" ,invitationLink, platform} }
+          { $set: { status: "Invited", invitationLink, platform } }
         );
 
         return {

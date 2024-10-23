@@ -83,9 +83,9 @@ export const typeDefsTrainee = gql`
     cycle_id: ID!
     role: ID
     attributes: traineeAttributeInput
-    coverLetterUrl:String
-    idDocumentUrl:String
-    resumeUrl:String
+    coverLetterUrl: String
+    idDocumentUrl: String
+    resumeUrl: String
   }
 
   input traineeApplicantEmail {
