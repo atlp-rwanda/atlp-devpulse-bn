@@ -3,8 +3,54 @@ import { LoggedUserModel } from "../models/AuthUser";
 import { AuthenticationError } from "apollo-server-core";
 import scoreTypesModel from "../models/scoreTypesModel";
 
-
 const gradingResolver = {
+  Query: {
+    viewSingleGrading: async (_: any, { gradingId }: any, context: any) => {
+      try {
+        const userWithRole = await LoggedUserModel.findById(
+          context.currentUser?._id
+        ).populate("role");
+
+        if (
+          !userWithRole ||
+          !["admin", "superAdmin"].includes(
+            (userWithRole.role as any)?.roleName
+          )
+        ) {
+          throw new AuthenticationError("Only superAdmin can create a grading");
+        }
+        const grading = await gradingModel.findById(gradingId);
+        return grading;
+      } catch (error: any) {
+        throw new Error(`Error fetching single grading: ${error.message}`);
+      }
+    },
+
+    viewAllGradings: async (
+      _: any,
+      { page, pageSize, searchParams }: any,
+      context: any
+    ) => {
+      try {
+        const userWithRole = await LoggedUserModel.findById(
+          context.currentUser?._id
+        ).populate("role");
+
+        if (
+          !userWithRole ||
+          !["admin", "superAdmin"].includes(
+            (userWithRole.role as any)?.roleName
+          )
+        ) {
+          throw new AuthenticationError("Only superAdmin can create a grading");
+        }
+        const gradings = await gradingModel.find();
+        return gradings;
+      } catch (error: any) {
+        throw new Error(`Error fetching gradings: ${error.message}`);
+      }
+    },
+  },
   Mutation: {
     async createGrading(_: any, { gradingInput }: any, context: any) {
       try {
@@ -21,7 +67,7 @@ const gradingResolver = {
           throw new AuthenticationError("Only superAdmin can create a grading");
         }
 
-        const { title, description,  grades, assessment } = gradingInput;
+        const { title, description, grades, assessment } = gradingInput;
 
         for (const grade of grades) {
           if (
@@ -56,7 +102,7 @@ const gradingResolver = {
           }
         }
 
-        let  newGrade = new gradingModel({
+        let newGrade = new gradingModel({
           title,
           assessment,
           description,
