@@ -8,8 +8,6 @@ const TraineeApplicant = mongoose.model(
     },
     email: {
       type: String,
-      required: true,
-      unique: true,
     },
     firstName: {
       type: String,
@@ -41,6 +39,8 @@ const TraineeApplicant = mongoose.model(
       type: Schema.Types.ObjectId,
       ref: "cohortModel",
     }
+  }, {
+    timestamps: true
   })
 );
 
