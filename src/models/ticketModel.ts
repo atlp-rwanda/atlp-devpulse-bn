@@ -11,7 +11,7 @@ const AdminResponseSchema = new mongoose.Schema({
     },
     respondedBy: {
         type: Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'LoggedUserModel',
         required: true,
     }
 })
