@@ -72,7 +72,7 @@ export const typeDefsTrainee = gql`
     firstName: String!
     email: String!
     cycle_id: ID!
-    attributes: TraineeAttributeInput
+    attributes: traineeAttributeInput
   }
 
   input traineeApplicantEmail {

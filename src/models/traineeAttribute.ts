@@ -88,7 +88,7 @@ const traineeAttributeSchema = new Schema({
   },
   trainee_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Trainee",
+    ref: "Trainees",
     required: true,
   },
 });

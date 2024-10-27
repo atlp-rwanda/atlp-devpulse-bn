@@ -29,9 +29,9 @@ export const typeDefsAttribute = gql`
     isEmployed: Boolean!
     haveLaptop: Boolean!
     isStudent: Boolean!
-    Hackerrank_score: String!
-    english_score: String!
-    interview_decision: String!
+    Hackerrank_score: String
+    english_score: String
+    interview_decision: String
     past_andela_programs: String!
     understandTraining: Boolean
     trainee_id: String!
@@ -75,9 +75,9 @@ export const typeDefsAttribute = gql`
     isEmployed: Boolean!
     haveLaptop: Boolean!
     isStudent: Boolean!
-    Hackerrank_score: String!
-    english_score: String!
-    interview_decision: String!
+    Hackerrank_score: String
+    english_score: String
+    interview_decision: String
     past_andela_programs: String!
     understandTraining: Boolean
     _id: ID
@@ -97,9 +97,9 @@ export const typeDefsAttribute = gql`
     isEmployed: Boolean!
     haveLaptop: Boolean!
     isStudent: Boolean!
-    Hackerrank_score: String!
-    english_score: String!
-    interview_decision: String!
+    Hackerrank_score: String
+    english_score: String
+    interview_decision: String
     past_andela_programs: String!
     understandTraining: Boolean
     _id: ID
