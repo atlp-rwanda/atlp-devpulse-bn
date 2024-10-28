@@ -6,6 +6,7 @@ import {
   validateProgram,
   validateUpdateProgram,
 } from '../validations/program.validation';
+import { publishNotification } from "./adminNotificationsResolver";
 
 export const programResolvers = {
   Query: {
@@ -97,7 +98,10 @@ export const programResolvers = {
 
         // Save the program to the database
         const savedProgram = await program.save();
-
+        await publishNotification(
+          `${program.title} Program Created  , ${program.description}`,
+          "New Program Created"
+        );
         // Return the created program
         return savedProgram.toObject();
       } catch (error: any) {
@@ -141,6 +145,10 @@ export const programResolvers = {
             new: true,
           },
         );
+        await publishNotification(
+          `${args.updateProgramInput.title} Program Updated , ${args.updateProgramInput.description}`,
+          "Program Updated"
+        );
         if (!updatedProgram) {
           throw new CustomGraphQLError('Program Not Found');
         }
@@ -167,6 +175,10 @@ export const programResolvers = {
         if (!deletedProgram) {
           throw new CustomGraphQLError('Program Not Found');
         }
+        await publishNotification(
+          `${deletedProgram.title} Program Deleted, ${deletedProgram.description}`,
+          "Program Deleted"
+        );
         return deletedProgram;
       } catch (error) {
         throw new CustomGraphQLError(`Error deleting program: ${error}`);

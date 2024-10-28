@@ -5,6 +5,7 @@ import { ApplicantNotificationsModel } from "../models/applicantNotifications";
 import { LoggedUserModel } from "../models/AuthUser";
 import { pusher } from "../helpers/pusher";
 import { RoleModel } from "../models/roleModel";
+import { publishNotification } from "./adminNotificationsResolver";
 
 const applicationCycleResolver: any = {
   Query: {
@@ -36,7 +37,10 @@ const applicationCycleResolver: any = {
 
         const applicantRole = await RoleModel.findOne({ roleName: "applicant" });
         const applicants = await LoggedUserModel.find({ role: applicantRole!._id }).populate('role');
-
+        await publishNotification(
+          `Cycle "${newApplicationCycle.name}" created. Starts: ${newApplicationCycle.startDate}, Ends: ${newApplicationCycle.endDate}.`,
+          "Cycle  Created"
+        );
         const notificationPromises = applicants.map(async (applicant) => {
           const message = `A new application cycle "${_args.input.name}" is open from ${_args.input.startDate} to ${_args.input.endDate}.`;
 
@@ -79,6 +83,9 @@ const applicationCycleResolver: any = {
         } else {
           const applicationCycleDeleted =
             await applicationCycle.findByIdAndRemove(_args.id);
+            await publishNotification(
+              `Cycle "${applicationCycleToDelete.name}" deleted. It was active from ${applicationCycleToDelete.startDate} to ${applicationCycleToDelete.endDate}`,
+              "Cycle Deleted"); 
           return applicationCycleDeleted;
         }
       } else {
@@ -95,7 +102,12 @@ const applicationCycleResolver: any = {
         },
         { new: true }
       );
-
+      if (newapplicationCycle) {
+        await publishNotification(
+          `Cycle "${newapplicationCycle.name}" updated. New start: ${newapplicationCycle.startDate}, end: ${newapplicationCycle.endDate}`,
+          "Cycle  Updated"
+        );
+      }
       const applicants = await TraineeApplicant.find({});
       applicants.forEach(async (applicant) => {
         const message = `An update on the application cycle "${_args.input.name}" has been made.`;
