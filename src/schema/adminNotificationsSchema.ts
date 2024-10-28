@@ -1,6 +1,6 @@
 import { gql } from "apollo-server-express";
 
-export const adminNotificationsTypedefs = gql`
+export const adminNotificationsSchema = gql`
   type Notification {
     _id: ID!
     message: String!
