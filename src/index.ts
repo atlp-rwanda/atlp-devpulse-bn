@@ -68,8 +68,10 @@ import { SearchSchema } from "./schema/searchSchema";
 import { searchResolver } from "./resolvers/searchResolver";
 import {appliedJobResolver} from "./resolvers/appliedJobResolver";
 import { appliedJobTypeDefs } from "./schema/appliedJobTypeDefs";
-import { ticketResolver } from "./resolvers/ticketResolver";
+import { adminNotificationsResolver } from "./resolvers/adminNotificationsResolver";
+import { adminNotificationsSchema } from "./schema/adminNotificationsSchema";import { ticketResolver } from "./resolvers/ticketResolver";
 import { ticketSchema } from "./schema/ticketSchema";
+import filterTicketResolver from "./resolvers/filterTicketResolver";
 
 const PORT = process.env.PORT || 3000;
 
@@ -107,7 +109,9 @@ const resolvers = mergeResolvers([
   passwordResolvers,
   searchResolver,
   appliedJobResolver,
-  ticketResolver
+  adminNotificationsResolver,
+  ticketResolver,
+  filterTicketResolver
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -140,6 +144,7 @@ const typeDefs = mergeTypeDefs([
   appliedJobTypeDefs,
   performanceSchema,
   attendanceSchema,
+  adminNotificationsSchema,
   ticketSchema
 ]);
 

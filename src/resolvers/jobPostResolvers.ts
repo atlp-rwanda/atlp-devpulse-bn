@@ -7,6 +7,7 @@ import { jobModels } from "../models/jobModels";
 import { ProgramModel } from "../models/programModel";
 import { RoleModel } from "../models/roleModel";
 import { CustomGraphQLError } from "../utils/customErrorHandler";
+import { publishNotification } from "./adminNotificationsResolver";
 
 export const jobPostResolver = {
 	Query: {
@@ -102,6 +103,10 @@ export const jobPostResolver = {
 				}
 
 				const userInputs = await jobModels.create(args.jobFields);
+        await publishNotification(
+          `Job  ${args.jobFields.title} has been Added successfully`,
+          "Job Created"
+        );
         const applicantRole = await RoleModel.findOne({ roleName: "applicant" });
         const applicants = await LoggedUserModel.find({ role: applicantRole!._id }).populate('role');
        
@@ -148,6 +153,13 @@ export const jobPostResolver = {
 				);
 			}
 			try {
+        const existingRecord = await jobModels.findById(args.id);
+        if (existingRecord) {
+          await publishNotification(
+            `Job  ${existingRecord.title} Deleted`,
+            "Job Deleted"
+          );
+        }
 				const deleteJobApplication = await jobModels.findByIdAndDelete(args.id);
 
 				return (deleteJobApplication === null) ? "No Job-Post to delete was found!!!" : "Job-Post deleted successfully";
