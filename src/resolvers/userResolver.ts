@@ -1,4 +1,5 @@
 import { userModel } from "../models/user";
+import { publishNotification } from "./adminNotificationsResolver";
 export const usersResolvers:any = {
   Query: {
     async user(_:any,  args:any, context:any ) {
@@ -32,6 +33,10 @@ export const usersResolvers:any = {
       });
 
       const res = await createdUser.save(); // MongoDB saving
+      await publishNotification(
+        `${firstName} ${lastName} has registered as a new User.`,
+        "user_registration"
+      );
       return res;
     },
      // @ts-ignore
@@ -50,6 +55,10 @@ export const usersResolvers:any = {
         )
         )
         .modifiedCount;
+        await publishNotification(
+          `${firstName} ${lastName} 's information has been updated.`,
+          "user_update"
+        );
       return wasEdited; //1||true if something was Edited, 0||true if nothing Edited
     },
   },
