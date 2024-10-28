@@ -14,8 +14,8 @@ export const ticketSchema = gql`
 
   type User {
     id: String
-    firstName: String
-    lastName: String
+    firstname: String
+    lastname: String
     email: String
   }
 
@@ -23,6 +23,7 @@ export const ticketSchema = gql`
     id: ID!
     body: String!
     respondedAt: String!
+    respondedBy: User!
   }
 
   enum TicketStatus {
@@ -32,10 +33,36 @@ export const ticketSchema = gql`
     Resolved
   }
 
+  type Count {
+    total: Int!
+  }
+
+  input FilterOptions {
+    page: Int!
+    itemsPerPage: Int
+    All: Boolean
+    wordEntered: String
+    filterAttribute: String
+  }
+
+  input TicketInput {
+    title: String!
+    body: String!
+  }
+
+  input UpdateTicketInput {
+    id: ID!
+    title: String
+    body: String
+  }
+
+
   type Query {
     getAllTickets: [Ticket!]!
     getTicketById(id: ID!): Ticket
     getUserTickets: [Ticket!]!
+    filterTicketDetails(input: FilterOptions): [Ticket]
+		getAllTicketAttributescount: Count!
   }
 
   type Mutation {

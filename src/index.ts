@@ -70,6 +70,7 @@ import {appliedJobResolver} from "./resolvers/appliedJobResolver";
 import { appliedJobTypeDefs } from "./schema/appliedJobTypeDefs";
 import { ticketResolver } from "./resolvers/ticketResolver";
 import { ticketSchema } from "./schema/ticketSchema";
+import filterTicketResolver from "./resolvers/filterTicketResolver";
 
 const PORT = process.env.PORT || 3000;
 
@@ -107,7 +108,8 @@ const resolvers = mergeResolvers([
   passwordResolvers,
   searchResolver,
   appliedJobResolver,
-  ticketResolver
+  ticketResolver,
+  filterTicketResolver
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,

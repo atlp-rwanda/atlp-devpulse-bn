@@ -24,8 +24,8 @@ export const ticketResolver = {
             }
             try {
                 const tickets = await ticketModel.find()
-                .populate('author', 'email firstName lastName')
-                .populate('adminResponse.respondedBy', 'email firstName lastName');
+                .populate('author', 'email firstname lastname')
+                .populate('adminResponse.respondedBy', 'email firstname lastname');
                 if (tickets.length === 0) {
                     throw new CustomGraphQLError("No tickets found");
                 }
@@ -134,6 +134,6 @@ export const ticketResolver = {
                 throw new CustomGraphQLError(err.message);
             }
         }
-    }
+    },
         
 }
