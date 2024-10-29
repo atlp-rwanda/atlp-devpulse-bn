@@ -37,7 +37,10 @@ export const ticketResolver = {
         },
         getTicketById: async (_: any, { id }: any, context: any) => {
             try {
-                const ticket = await ticketModel.findById(id);
+                const ticket = await ticketModel.findById(id)
+                .populate('author')
+                .populate('applicantReplies.repliedBy')
+                .populate('adminReplies.repliedBy');;
                 if (!ticket) {
                     throw new CustomGraphQLError("Ticket not found");
                 }
@@ -49,7 +52,10 @@ export const ticketResolver = {
 
         getUserTickets: async (_: any, args: any, context: any) => {
             try{
-                const tickets = await ticketModel.find({ author: context.currentUser?._id });
+                const tickets = await ticketModel.find({ author: context.currentUser?._id })
+                .populate('author')
+                .populate('applicantReplies.repliedBy')
+                .populate('adminReplies.repliedBy');
                 if (tickets.length === 0) {
                   throw new CustomGraphQLError("No tickets found");
                 }
