@@ -163,6 +163,38 @@ export const ticketResolver = {
                 if(!resolvedTicket){
                     throw new CustomGraphQLError("Ticket not found");
                 }
+
+                const message = `Your ticket "${resolvedTicket.title}" has been resolved.`;
+                const notification = await ApplicantNotificationsModel.create({
+                    userId: resolvedTicket.author._id,
+                    message,
+                    eventType: "general",
+                });
+
+                await pusher
+                    .trigger(`notifications-${resolvedTicket.author._id}`, "new-notification", {
+                        message: notification.message,
+                        id: notification._id,
+                        createdAt: notification.createdAt,
+                        read: notification.read,
+                    })
+                    .catch((error) => {
+                        console.error("Error with Pusher trigger:", error);
+                    });
+
+                const user = await LoggedUserModel.findById(resolvedTicket.author._id);
+
+                if (user) {
+                    await sendEmailTemplate(
+                        user.email,
+                        "Ticket Resolved",
+                        `Hello ${user.email.split("@")[0]},`,
+                        `Your ticket titled "<strong>${resolvedTicket.title}</strong>" has been resolved by our team. <br/>
+                        <p>Response from Admin: ${resolvedTicket!.adminResponse!.body}</p>
+                        <br/><br/>Thank you for your patience.<br/>`,
+                    );
+                }
+
                 return resolvedTicket;
 
             } catch(err: any){
