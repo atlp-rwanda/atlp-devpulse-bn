@@ -9,6 +9,7 @@ const FrontendUrl = process.env.FRONTEND_URL || ""
 
 import { CustomGraphQLError } from "../utils/customErrorHandler";
 import { cohortModels } from "../models/cohortModel";
+import { publishNotification } from "./adminNotificationsResolver";
 import { any } from "joi";
 
 export const traineeApplicantResolver: any = {
@@ -171,6 +172,10 @@ export const traineeApplicantResolver: any = {
 
         await newTrainee.save({ session });
         await session.commitTransaction();
+        await publishNotification(
+          `${firstName} ${lastName} has registered as a new Trainee.`,
+          "new_Trainee_application"
+        );
         return newTrainee;
       } catch (error) {
         await session.abortTransaction();
