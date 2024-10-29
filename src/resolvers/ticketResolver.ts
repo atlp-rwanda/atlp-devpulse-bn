@@ -29,7 +29,8 @@ export const ticketResolver = {
             try {
                 const tickets = await ticketModel.find()
                 .populate('author', 'email firstname lastname')
-                .populate('adminResponse.respondedBy', 'email firstname lastname');
+                .populate('adminReplies.repliedBy', 'email firstname lastname')
+                .populate('applicantReplies.repliedBy', 'email firstname lastname');
                 if (tickets.length === 0) {
                     throw new CustomGraphQLError("No tickets found");
                 }
@@ -40,7 +41,10 @@ export const ticketResolver = {
         },
         getTicketById: async (_: any, { id }: any, context: any) => {
             try {
-                const ticket = await ticketModel.findById(id);
+                const ticket = await ticketModel.findById(id)
+                .populate('author')
+                .populate('applicantReplies.repliedBy')
+                .populate('adminReplies.repliedBy');;
                 if (!ticket) {
                     throw new CustomGraphQLError("Ticket not found");
                 }
@@ -52,7 +56,10 @@ export const ticketResolver = {
 
         getUserTickets: async (_: any, args: any, context: any) => {
             try{
-                const tickets = await ticketModel.find({ author: context.currentUser?._id });
+                const tickets = await ticketModel.find({ author: context.currentUser?._id })
+                .populate('author')
+                .populate('applicantReplies.repliedBy')
+                .populate('adminReplies.repliedBy');
                 if (tickets.length === 0) {
                   throw new CustomGraphQLError("No tickets found");
                 }
@@ -76,7 +83,9 @@ export const ticketResolver = {
                     title: args.title,
                     body: args.body,
                     author: user._id,
-                    status: "Open"
+                    status: "Open",
+                    adminReplies: [],
+                    applicantReplies: []
                 });
                 
                 const message = `Your ticket "${args.title}" has been submitted successfully.`;
@@ -115,13 +124,35 @@ export const ticketResolver = {
             }
 
         },
-        updateTicket: async (_: any, { id, title, body, status }: any, context: any) => {
+        updateTicket: async (_: any, { id, body }: any, context: any) => {
+            const user = await LoggedUserModel.findById(context.currentUser?._id);
+
+        if (!user) {
+            throw new CustomGraphQLError("User not found");
+        }
+
             try{
+
+                const ticket = await ticketModel.findById(id);
+            
+            if (!ticket) {
+                throw new CustomGraphQLError("Ticket not found");
+            }
                 const updatedTicket = await ticketModel.findByIdAndUpdate(
                     id,
-                    { title, body, status: 'ApplicantReply'},
-                    {new: true}
-                );
+{
+                    status: 'ApplicantReply',
+                    $push: {
+                        applicantReplies: {
+                            body,
+                            repliedBy: user._id,
+                            createdAt: new Date()
+                        }
+                    }
+                },{new: true}
+                ).populate('author')
+                .populate('applicantReplies.repliedBy')
+                .populate('adminReplies.repliedBy');
 
                 if(!updatedTicket){
                     throw new CustomGraphQLError("Ticket not found");
@@ -151,15 +182,26 @@ export const ticketResolver = {
                 );
             }
             try{
+                const user = await LoggedUserModel.findById(context.currentUser?._id);
+
+                if (!user) {
+                    throw new CustomGraphQLError("User not found");
+                }
                 const resolvedTicket = await ticketModel.findByIdAndUpdate(
                     id,
                     {status: "Resolved", 
-                    adminResponse: {
-                        body: adminResponse,
-                        respondedBy: userWithRole._id
-                    }},
+                        $push: {
+                            adminReplies: {
+                                body: adminResponse,
+                                repliedBy: user?._id,
+                                createdAt: new Date()
+                            }
+                        }},
                     {new: true}
-                ).populate('adminResponse')
+                )
+                .populate('author')
+                .populate('applicantReplies.repliedBy')
+                .populate('adminReplies.repliedBy');
                 if(!resolvedTicket){
                     throw new CustomGraphQLError("Ticket not found");
                 }

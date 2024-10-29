@@ -9,7 +9,22 @@ export const ticketSchema = gql`
     author: User!
     createdAt: String!
     updatedAt: String!
-    adminResponse: AdminResponse
+    adminReplies: [AdminReply!]
+    applicantReplies: [ApplicantReply!]
+  }
+
+  type ApplicantReply {
+    id: ID!
+    body: String!
+    repliedBy: User!
+    createdAt: String!
+  }
+
+  type AdminReply {
+    id: ID!
+    body: String!
+    repliedBy: User!
+    createdAt: String!
   }
 
   type User {
@@ -52,7 +67,6 @@ export const ticketSchema = gql`
 
   input UpdateTicketInput {
     id: ID!
-    title: String
     body: String
   }
 
@@ -67,7 +81,7 @@ export const ticketSchema = gql`
 
   type Mutation {
     createTicket(title: String!, body: String!): Ticket!
-    updateTicket(id: ID!, title: String, body: String): Ticket!
+    updateTicket(id: ID!, body: String): Ticket!
     resolveTicket(id: ID!, adminResponse: String!): Ticket!
   }
 `;

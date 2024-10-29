@@ -1,20 +1,36 @@
 import mongoose, { Schema } from "mongoose";
 
-const AdminResponseSchema = new mongoose.Schema({
+const AdminReplySchema = new mongoose.Schema({
     body: {
         type: String,
         required: true,
     },
-    respondedAt: {
+    repliedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'LoggedUserModel',
+        required: true
+    },
+    createdAt: {
         type: Date,
         default: Date.now
-    },
-    respondedBy: {
-        type: Schema.Types.ObjectId,
-        ref: 'LoggedUserModel',
-        required: true,
     }
 })
+
+const ApplicantReplySchema = new Schema({
+    body: {
+        type: String,
+        required: true
+    },
+    repliedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'LoggedUserModel',
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+});
 
 export const ticketModel = mongoose.model("ticket", 
     new mongoose.Schema({
@@ -44,7 +60,8 @@ export const ticketModel = mongoose.model("ticket",
             ref: 'LoggedUserModel',
             required: true,
         },
-        adminResponse: AdminResponseSchema,
+        applicantReplies: [ApplicantReplySchema],
+        adminReplies: [AdminReplySchema]
         
        
 

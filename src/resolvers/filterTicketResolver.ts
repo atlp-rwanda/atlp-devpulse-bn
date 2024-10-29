@@ -15,7 +15,7 @@ const filterTicketResolver = {
       
             if (wordEntered && filterAttribute) {
               const allowedAttributes = [
-                'subject', 'status', 'author', 'lastUpdate'
+                'title', 'status', 'author', 'lastUpdate'
               ];
       
               if (allowedAttributes.includes(filterAttribute)) {
@@ -25,8 +25,11 @@ const filterTicketResolver = {
       
             try {
               const allTickets = await ticketModel.find(query)
-                .skip(itemsToSkip)
-                .limit(items);
+              .populate('author')
+              .populate('applicantReplies.repliedBy')
+              .populate('adminReplies.repliedBy')
+              .skip(itemsToSkip)
+              .limit(items);
       
               return allTickets;
             } catch (error) {
