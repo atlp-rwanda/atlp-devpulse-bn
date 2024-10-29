@@ -89,7 +89,7 @@ export const ticketResolver = {
             }
 
         },
-        updateTicket: async (_: any, { id, title, body, status }: any, context: any) => {
+        updateTicket: async (_: any, { id, body }: any, context: any) => {
             const user = await LoggedUserModel.findById(context.currentUser?._id);
 
         if (!user) {

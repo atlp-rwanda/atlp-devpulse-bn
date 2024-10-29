@@ -67,7 +67,6 @@ export const ticketSchema = gql`
 
   input UpdateTicketInput {
     id: ID!
-    title: String
     body: String
   }
 
@@ -82,7 +81,7 @@ export const ticketSchema = gql`
 
   type Mutation {
     createTicket(title: String!, body: String!): Ticket!
-    updateTicket(id: ID!, title: String, body: String): Ticket!
+    updateTicket(id: ID!, body: String): Ticket!
     resolveTicket(id: ID!, adminResponse: String!): Ticket!
   }
 `;
