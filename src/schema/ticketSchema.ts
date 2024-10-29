@@ -9,7 +9,22 @@ export const ticketSchema = gql`
     author: User!
     createdAt: String!
     updatedAt: String!
-    adminResponse: AdminResponse
+    adminReplies: [AdminReply!]
+    applicantReplies: [ApplicantReply!]
+  }
+
+  type ApplicantReply {
+    id: ID!
+    body: String!
+    repliedBy: User!
+    createdAt: String!
+  }
+
+  type AdminReply {
+    id: ID!
+    body: String!
+    repliedBy: User!
+    createdAt: String!
   }
 
   type User {
