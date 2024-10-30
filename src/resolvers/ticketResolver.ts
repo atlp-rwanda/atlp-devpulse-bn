@@ -5,6 +5,7 @@ import { ApplicantNotificationsModel } from "../models/applicantNotifications";
 import { RoleModel } from "../models/roleModel";
 import { pusher } from "../helpers/pusher";
 import { sendEmailTemplate } from "../helpers/bulkyMails";
+import { publishNotification } from "./adminNotificationsResolver";
 
 export const ticketResolver = {
     Query: {
@@ -95,16 +96,6 @@ export const ticketResolver = {
                     eventType: "general",
                 });
 
-                await pusher
-                    .trigger(`notifications-${user._id}`, "new-notification", {
-                        message: notification.message,
-                        id: notification._id,
-                        createdAt: notification.createdAt,
-                        read: notification.read,
-                    })
-                    .catch((error) => {
-                        console.error("Error with Pusher trigger:", error);
-                    });
                 await sendEmailTemplate(
                     user.email,
                     "Ticket Received",
@@ -116,7 +107,23 @@ export const ticketResolver = {
                     <br />
                     Thank you for your patience.
               `
-            );
+                );
+
+                await publishNotification(
+                    `${user!.firstname} ${user.lastname} has sent a new ticket.`,
+                    "new_Ticket"
+                );
+
+                await pusher
+                    .trigger(`notifications-${user._id}`, "new-notification", {
+                        message: notification.message,
+                        id: notification._id,
+                        createdAt: notification.createdAt,
+                        read: notification.read,
+                    })
+                    .catch((error) => {
+                        console.error("Error with Pusher trigger:", error);
+                    });
 
                 return newTicket.populate('author');
             } catch(error: any) {
@@ -157,6 +164,39 @@ export const ticketResolver = {
                 if(!updatedTicket){
                     throw new CustomGraphQLError("Ticket not found");
                 }
+
+                await sendEmailTemplate(
+                    user.email,
+                    "Ticket Update",
+                    `Hello ${user.email.split("@")[0]},`,
+                    `Your ticket titled "<strong>${updatedTicket.title}</strong>" has been received.<br/>
+                    <p>New response: ${body}</p>
+                    <br/><br/>Thank you for your patience.<br/>`
+                );
+
+                const message = `Your ticket "${updatedTicket.title}" has been updated.`;
+                const notification = await ApplicantNotificationsModel.create({
+                    userId: updatedTicket.author._id,
+                    message,
+                    eventType: "general",
+                });
+
+                await publishNotification(
+                    `${user!.firstname} ${user.lastname} has sent a new ticket.`,
+                    "new_Ticket"
+                );
+
+                await pusher
+                    .trigger(`notifications-${updatedTicket.author._id}`, "new-notification", {
+                        message: notification.message,
+                        id: notification._id,
+                        createdAt: notification.createdAt,
+                        read: notification.read,
+                    })
+                    .catch((error) => {
+                        console.error("Error with Pusher trigger:", error);
+                    });
+                
                 return updatedTicket;
             } catch(err: any){
                 throw new CustomGraphQLError(err.message);
@@ -224,15 +264,13 @@ export const ticketResolver = {
                         console.error("Error with Pusher trigger:", error);
                     });
 
-                const user = await LoggedUserModel.findById(resolvedTicket.author._id);
-
                 if (user) {
                     await sendEmailTemplate(
                         user.email,
                         "Ticket Resolved",
                         `Hello ${user.email.split("@")[0]},`,
                         `Your ticket titled "<strong>${resolvedTicket.title}</strong>" has been resolved by our team. <br/>
-                        <p>Response from Admin: ${resolvedTicket!.adminResponse!.body}</p>
+                        <p>Response from Admin: ${adminResponse}</p>
                         <br/><br/>Thank you for your patience.<br/>`,
                     );
                 }
