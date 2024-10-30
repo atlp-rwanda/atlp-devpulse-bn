@@ -28,69 +28,69 @@ export const applicationStageResolvers: any = {
             exitedAt: stage.exitedAt ? stage.exitedAt.toISOString() : null,
           })),
         };
-      } catch (error:any) {
+      } catch (error: any) {
         throw new Error(`Failed to retrieve applicant history: ${error.message}`);
       }
     },
-    getApplicantsByStage : async (_:any, { stage} : { stage: string}) =>{
+    getApplicantsByStage: async (_: any, { stage }: { stage: string }) => {
       try {
-        
+
         const validStages = ["Shortlisted", "Technical Assessment", "Interview Assessment", "Admitted"];
         if (!validStages.includes(stage)) {
           throw new Error("Invalid stage. Please choose a valid stage.");
         }
-    
+
         const applicantsInStage = await StageTracking.find({ currentStage: stage })
           .populate('applicantId')
           .exec();
-    
+
         return applicantsInStage.map((tracking) => ({
           applicant: tracking.applicantId,
           currentStage: tracking.currentStage,
           history: tracking.history,
         }));
-      } catch (error:any) {
+      } catch (error: any) {
         throw new Error(`Failed to retrieve applicants for stage ${stage}: ${error.message}`);
       }
     }
   },
   Mutation: {
-    moveToNextStage: async (_: any, { applicantId, nextStage, comments }: any,context: any) => {
+    moveToNextStage: async (_: any, { applicantId, nextStage, comments }: any, context: any) => {
       try {
         if (!context.currentUser) {
           throw new CustomGraphQLError("You must be logged in to perform this action");
         }
-    
+
         const userRole = await RoleModel.findById({ _id: context.currentUser.role });
         if (userRole?.roleName !== "admin" && userRole?.roleName !== "superAdmin") {
           throw new CustomGraphQLError("Only admin and super admins are allowed");
         }
-    
+
         const stageOrder = ["Shortlisted", "Technical Assessment", "Interview Assessment", "Admitted"];
-    
+
         let stageTracking = await StageTracking.findOne({ applicantId, exitedAt: { $exists: false } });
-    
+
         if (nextStage !== "Dismissed") {
           const currentStageIndex = stageTracking ? stageOrder.indexOf(stageTracking.currentStage) : -1;
           const nextStageIndex = stageOrder.indexOf(nextStage);
-    
+
           if (nextStageIndex !== currentStageIndex + 1) {
             return new CustomGraphQLError(`Applicants must proceed through each stage in order. The next stage should be ${stageOrder[currentStageIndex + 1]}.`);
           }
         }
-    
+
 
         if (stageTracking?.currentStage === nextStage) {
           return new CustomGraphQLError("The applicant is already in this stage.");
         }
-    
+
         if (nextStage === "Interview Assessment") {
           const technicalScore = await TechnicalAssessment.findOne({ applicantId });
           if (!technicalScore || technicalScore.score === undefined || technicalScore.score === null) {
             return new CustomGraphQLError("Technical assessment score is required before moving to the Interview Assessment, Please add score😎.");
           }
         }
-      
+
         // If moving to Admitted, ensure Interview Assessment has a score
         if (nextStage === "Admitted") {
           const interviewScore = await InterviewAssessment.findOne({ applicantId });
@@ -98,7 +98,7 @@ export const applicationStageResolvers: any = {
             return new CustomGraphQLError("Interview assessment score is required before moving to Admitted, Please add score😎.");
           }
         }
-        
+
         if (!stageTracking) {
           stageTracking = new StageTracking({
             applicantId,
@@ -112,12 +112,12 @@ export const applicationStageResolvers: any = {
             enteredAt: stageTracking.history[stageTracking.history.length - 1]?.enteredAt || new Date(),
             exitedAt: new Date(),
           });
-    
+
           stageTracking.currentStage = nextStage;
           await stageTracking.save();
         }
-    
-        
+
+
         let message = "";
         switch (nextStage) {
           case "Technical Assessment":
@@ -126,35 +126,35 @@ export const applicationStageResolvers: any = {
                 { applicantId, status: "No action" },
                 { $set: { status: "Moved" } }
               );
-              await TraineeApplicant.updateOne({_id:applicantId},{$set: {applicationPhase: nextStage, status: "Moved"}});
+              await TraineeApplicant.updateOne({ _id: applicantId }, { $set: { applicationPhase: nextStage, status: "Moved" } });
             }
-            
+
             await TechnicalAssessment.create({
               applicantId,
               comments,
               status: "No action",
             });
-            await TraineeApplicant.updateOne({_id:applicantId},{$set: {applicationPhase:nextStage, status: "No action"}});
+            await TraineeApplicant.updateOne({ _id: applicantId }, { $set: { applicationPhase: nextStage, status: "No action" } });
             message = `Applicant advanced to ${nextStage} stage.`;
             break;
-    
+
           case "Interview Assessment":
             if (stageTracking) {
               await TechnicalAssessment.updateOne(
                 { applicantId, status: "No action" },
                 { $set: { status: "Moved" } }
               );
-              await TraineeApplicant.updateOne({_id:applicantId},{$set: {applicationPhase: nextStage, status: "Moved"}});
+              await TraineeApplicant.updateOne({ _id: applicantId }, { $set: { applicationPhase: nextStage, status: "Moved" } });
             }
             await InterviewAssessment.create({
               applicantId,
               comments,
               status: "No action",
             });
-            await TraineeApplicant.updateOne({_id:applicantId},{$set: {applicationPhase:nextStage, status: "No action"}});
+            await TraineeApplicant.updateOne({ _id: applicantId }, { $set: { applicationPhase: nextStage, status: "No action" } });
             message = `Applicant advanced to ${nextStage} stage.`;
             break;
-    
+
           case "Admitted":
             if (stageTracking) {
               await InterviewAssessment.updateOne(
@@ -162,16 +162,16 @@ export const applicationStageResolvers: any = {
                 { $set: { status: "Moved" } }
               );
             }
-    
+
 
             await Admitted.create({
               applicantId,
               comments,
               status: "Passed",
             });
-            await TraineeApplicant.updateOne({_id:applicantId},{$set: {applicationPhase:nextStage, status: "Admitted"}});
+            await TraineeApplicant.updateOne({ _id: applicantId }, { $set: { applicationPhase: nextStage, status: "Admitted" } });
             break;
-    
+
           case "Dismissed":
             if (stageTracking) {
               await StageTracking.updateOne(
@@ -179,16 +179,16 @@ export const applicationStageResolvers: any = {
                 { $set: { status: "Dismissed", exitedAt: new Date() } }
               );
             }
-    
+
             await Dismissed.create({
               applicantId,
               stageDismissedFrom: stageTracking?.currentStage,
               comments,
             });
-            await TraineeApplicant.updateOne({_id:applicantId},{$set: {applicationPhase:"Dismissed",status: "Dismissed"}});
+            await TraineeApplicant.updateOne({ _id: applicantId }, { $set: { applicationPhase: "Dismissed", status: "Dismissed" } });
             message = `Applicant dismissed from the ${stageTracking.currentStage} stage.`;
             break;
-    
+
           case "Shortlisted":
             if (stageTracking) {
               await StageTracking.updateOne(
@@ -196,17 +196,17 @@ export const applicationStageResolvers: any = {
                 { $set: { status: "Moved", exitedAt: new Date() } }
               );
             }
-    
+
             await Shortlisted.create({
               applicantId,
               comments,
               status: "No action",
             });
-            await TraineeApplicant.updateOne({_id:applicantId},{$set: {applicationPhase:nextStage, status: "No action"}});
+            await TraineeApplicant.updateOne({ _id: applicantId }, { $set: { applicationPhase: nextStage, status: "No action" } });
             message = `Applicant advanced to ${nextStage} stage.`;
             break;
         }
-    
+
         return {
           success: true,
           message
@@ -215,18 +215,18 @@ export const applicationStageResolvers: any = {
         return new Error(error.message);
       }
     },
-    addScore : async (_:any, {applicantId, applicantStage, score}:{applicantId:string, applicantStage:string, score:number},context:any) =>{
+    addScore: async (_: any, { applicantId, applicantStage, score }: { applicantId: string, applicantStage: string, score: number }, context: any) => {
       try {
         if (!context.currentUser) {
           throw new CustomGraphQLError("You must be logged in to perform this action");
         }
-    
+
         const userRole = await RoleModel.findById({ _id: context.currentUser.role });
         if (userRole?.roleName !== "admin" && userRole?.roleName !== "superAdmin") {
           throw new CustomGraphQLError("Only admin and super admins are allowed");
         }
 
-        if (!score){
+        if (!score) {
           throw new CustomGraphQLError("Score is required");
         }
 
@@ -250,7 +250,7 @@ export const applicationStageResolvers: any = {
           success: true,
           message: "Score added successfully"
         };
-      } catch (error:any) {
+      } catch (error: any) {
         return new Error(error.message);
       }
     }

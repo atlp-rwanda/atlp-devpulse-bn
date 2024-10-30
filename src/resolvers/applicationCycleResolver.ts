@@ -6,6 +6,7 @@ import { LoggedUserModel } from "../models/AuthUser";
 import { pusher } from "../helpers/pusher";
 import { RoleModel } from "../models/roleModel";
 import { publishNotification } from "./adminNotificationsResolver";
+import { CustomGraphQLError } from "../utils/customErrorHandler";
 
 const applicationCycleResolver: any = {
   Query: {
@@ -18,6 +19,19 @@ const applicationCycleResolver: any = {
       if (!applicationCycle) throw new Error("This cohort cycle doesn't exist");
       return getOneapplicationCycle;
     },
+    getTraineeCyclesApplications: async (_: any, __: any, context: any) => {
+      try {
+        if (!context.currentUser) {
+          throw new CustomGraphQLError("You must be logged in to view your applications");
+        }
+
+
+        const applications = await TraineeApplicant.find({ user: context.currentUser._id })
+        return applications;
+      } catch (error: any) {
+        throw new CustomGraphQLError(error.message);
+      }
+    }
   },
   Mutation: {
     async createApplicationCycle(_parent: any, _args: any) {
@@ -119,6 +133,39 @@ const applicationCycleResolver: any = {
       });
       return newapplicationCycle;
     },
+    applyCycle: async (_: any, { input }: any, context: any) => {
+      const { cycle_id } = input;
+      try {
+        if (!context.currentUser) {
+          throw new CustomGraphQLError("You must be logged in to apply in the Cycle");
+        }
+
+        const [userRole, isUserAlreadyApplied] = await Promise.all([
+          RoleModel.findById(context.currentUser.role),
+          TraineeApplicant.findOne({ user: context.currentUser._id, cycle_id }),
+        ]);
+
+        if (isUserAlreadyApplied) {
+          return { message: "You have already applied to this Cycle" };
+        }
+
+        let newApplicationData = {
+          user: context.currentUser._id,
+          email: context.currentUser.email,
+          firstName: context.currentUser.firstName || " ",
+          lastName: context.currentUser.lastName || " ",
+          cycle_id: cycle_id,
+        };
+
+        const newApplication = new TraineeApplicant(newApplicationData);
+        await newApplication.save();
+
+        return { message: "Application submitted successfully" };
+      } catch (error: any) {
+        throw new CustomGraphQLError(error.message);
+      }
+    }
+
   },
 };
 export default applicationCycleResolver;
