@@ -8,6 +8,7 @@ const FrontendUrl = process.env.FRONTEND_URL || ""
 
 import { CustomGraphQLError } from "../utils/customErrorHandler";
 import { cohortModels } from "../models/cohortModel";
+import { publishNotification } from "./adminNotificationsResolver";
 
 export const traineeApplicantResolver: any = {
   Query: {
@@ -149,7 +150,10 @@ export const traineeApplicantResolver: any = {
         }], { session });
     
         await session.commitTransaction();
-  
+        await publishNotification(
+          `${firstName} ${lastName} has registered as a new Trainee.`,
+          "new_Trainee_application"
+        );
         return (await newTrainee[0].populate("cycle_id")).toObject();
       } catch (error) {
         await session.abortTransaction();

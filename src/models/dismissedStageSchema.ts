@@ -25,6 +25,8 @@ const dismissedSchema = new Schema<IDismissed>({
     default: "Dismissed",
     required: true,
   }
+},{
+  timestamps: true
 });
 
 const Dismissed = mongoose.model<IDismissed>("Dismissed", dismissedSchema);

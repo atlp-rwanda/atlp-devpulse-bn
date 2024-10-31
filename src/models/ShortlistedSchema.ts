@@ -21,6 +21,8 @@ const shortlistedSchema = new Schema<IShortlisted>({
   comments: {
     type: String,
   },
+},{
+  timestamps: true,
 });
 
 const Shortlisted = mongoose.model<IShortlisted>("Shortlisted", shortlistedSchema);

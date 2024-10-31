@@ -6,6 +6,7 @@ interface IStageTracking extends Document {
   history: [
     {
       stage: string;
+      comments: string;
       enteredAt: Date;
       exitedAt?: Date;
     }
@@ -27,6 +28,7 @@ const stageTrackingSchema = new Schema<IStageTracking>({
   history: [
     {
       stage: { type: String, required: true },
+      comments:{type:String,required: true},
       enteredAt: { type: Date, default: Date.now },
       exitedAt: { type: Date },
     }

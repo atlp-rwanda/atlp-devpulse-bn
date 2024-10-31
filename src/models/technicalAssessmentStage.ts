@@ -27,6 +27,8 @@ const technicalAssessmentSchema = new Schema<ITechnicalAssessment>({
   comments: {
     type: String,
   },
+},{
+  timestamps: true
 });
 
 const TechnicalAssessment = mongoose.model<ITechnicalAssessment>(
