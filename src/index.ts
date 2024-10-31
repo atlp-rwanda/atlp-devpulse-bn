@@ -55,7 +55,8 @@ import { attendanceResolver } from "./resolvers/attendanceResolver";
 import { attendanceSchema } from "./schema/attendanceSchema";
 import { performanceResolver } from "./resolvers/performanceResolver";
 import { performanceSchema } from "./schema/performanceSchema";
-
+import { applicationStageDefs } from './schema/applicationStage';
+import { applicationStageResolvers } from './resolvers/applicationStageResolver';
 import filterJobResolver from "./resolvers/filterJob";
 import filterProgramResolver from "./resolvers/filterPrograms";
 import filterRoleResolver from "./resolvers/filterRole";
@@ -109,6 +110,7 @@ const resolvers = mergeResolvers([
   passwordResolvers,
   searchResolver,
   appliedJobResolver,
+  applicationStageResolvers,
   adminNotificationsResolver,
   ticketResolver,
   filterTicketResolver
@@ -144,6 +146,7 @@ const typeDefs = mergeTypeDefs([
   appliedJobTypeDefs,
   performanceSchema,
   attendanceSchema,
+  applicationStageDefs,
   adminNotificationsSchema,
   ticketSchema
 ]);

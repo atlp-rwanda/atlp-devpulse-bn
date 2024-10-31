@@ -30,7 +30,7 @@ export const typeDefsTrainee = gql`
     cycle_id: applicationCycle
     delete_at: Boolean
     status: String!
-    applicationPhase: ApplicationPhase!
+    applicationPhase: String!
     cohort: ID
   }
 
@@ -41,8 +41,11 @@ export const typeDefsTrainee = gql`
 
   enum ApplicationPhase {
     Applied
-    Interviewed
-    Accepted
+    Shortlisted
+    Technical_Assessment
+    Interview_Assessment
+    Admitted
+    Dismissed
     Enrolled
   }
 
