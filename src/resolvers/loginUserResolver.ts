@@ -12,6 +12,7 @@ import { userModel } from '../models/user';
 import { sessionModel } from '../models/session';
 import { cohortModels } from '../models/cohortModel';
 import TraineeApplicant from '../models/traineeApplicant';
+import { publishNotification } from './adminNotificationsResolver';
 
 const FrontendUrl = process.env.FRONTEND_URL
 
@@ -230,7 +231,10 @@ export const loggedUserResolvers: any = {
           userId: res._id,
           token,
         });
-
+        await publishNotification(
+          `${firstname} ${lastname} has registered as a new applicant.`,
+          "new_application"
+        );
         const savedSession = await newSession.save();
 
         await sendEmailTemplate(email, "Verify Account!",
