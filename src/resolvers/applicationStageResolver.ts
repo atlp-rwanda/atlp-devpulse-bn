@@ -161,6 +161,7 @@ export const applicationStageResolvers: any = {
         } else {
           stageTracking.history.push({
             stage: stageTracking.currentStage,
+            comments,
             enteredAt:
               stageTracking.history[stageTracking.history.length - 1]
                 ?.enteredAt || new Date(),

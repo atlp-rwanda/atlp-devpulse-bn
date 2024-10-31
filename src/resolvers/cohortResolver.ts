@@ -1,6 +1,7 @@
 import { cohortModels } from "../models/cohortModel";
 import { LoggedUserModel } from "../models/AuthUser";
 import { CustomGraphQLError } from "../utils/customErrorHandler";
+import { publishNotification } from "./adminNotificationsResolver";
 
 export const cohortResolver =  {
     Query: {
@@ -54,6 +55,10 @@ export const cohortResolver =  {
 				}
 
 				const userInputs = await cohortModels.create(args.cohortFields);
+				await publishNotification(
+					`Cohort ${userInputs.title} has Been Created, starts at  ${userInputs.start}  and End at ${userInputs.end} `,
+					"Cohort Creation"
+				  );
 				return userInputs;
 			} catch (error) {
 				throw new CustomGraphQLError(`Something went wrong: ${error}`);
