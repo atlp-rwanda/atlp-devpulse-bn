@@ -217,7 +217,7 @@ export const applicationStageResolvers: any = {
               user!.email,
               "Application Update",
               `Hello ${user!.email.split("@")[0]}, `,
-              `Your application has been moved to ${nextStage}.
+              `Your application has been moved to ${nextStage} stage.
                     <br />
                     You will hear from us very soon.
                     <br />
@@ -264,7 +264,7 @@ export const applicationStageResolvers: any = {
               user!.email,
               "Application Update",
               `Hello ${user!.email.split("@")[0]}, `,
-              `Your application has been moved to ${nextStage}.
+              `Your application has been moved to ${nextStage} stage.
                   <br />
                    ${scoreDetails}
                    <br />
@@ -419,7 +419,7 @@ export const applicationStageResolvers: any = {
               user!.email,
               "Application Update",
               `Hello ${user!.email.split("@")[0]}, `,
-              `Your application has been moved to ${nextStage}.
+              `Your application has been moved to ${nextStage} stage.
                     <br />
                     You will hear from us very soon.
                     <br />
