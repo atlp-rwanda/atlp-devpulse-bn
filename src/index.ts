@@ -113,7 +113,8 @@ const resolvers = mergeResolvers([
   applicationStageResolvers,
   adminNotificationsResolver,
   ticketResolver,
-  filterTicketResolver
+  filterTicketResolver,
+  applicationStageResolvers
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -148,7 +149,8 @@ const typeDefs = mergeTypeDefs([
   attendanceSchema,
   applicationStageDefs,
   adminNotificationsSchema,
-  ticketSchema
+  ticketSchema,
+  applicationStageDefs
 ]);
 
 const server = new ApolloServer({
