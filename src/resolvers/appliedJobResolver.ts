@@ -140,22 +140,25 @@ export const appliedJobResolver = {
         }
 
         const appliedJobs = await AppliedJobModel.find({}).lean();
-
+        console.log(appliedJobs);
         if (appliedJobs.length === 0) {
           throw new Error("No applications found.");
         }
 
-        return appliedJobs.map((job: any) => {
-          const fieldData = Object.keys(job.data).map((key) => ({
-            key,
-            value: job.data[key] ? String(job.data[key]) : null,
-          }));
-
+        const jobApplications = appliedJobs.map((appliedJob) => {
+          const fieldData = Object.entries(appliedJob.appliedJob as any).map(
+            ([key, value]) => ({
+              key,
+              value: value ? String(value) : null, // Convert value to string or null
+            })
+          );
           return {
-            id: job._id.toString(),
-            data: fieldData,
+            id: appliedJob._id.toString(),
+            appliedJob: fieldData,
+            status: appliedJob.status,
           };
         });
+        return jobApplications;
       } catch (error: any) {
         throw new Error(`Error retrieving applications: ${error.message}`);
       }
@@ -187,7 +190,8 @@ export const appliedJobResolver = {
 
         return {
           id: appliedJob._id.toString(),
-          data: fieldData,
+          appliedJob: fieldData,
+          status:appliedJob.status
         };
       } catch (error: any) {
         throw new Error(`Error retrieving application: ${error.message}`);
@@ -201,24 +205,29 @@ export const appliedJobResolver = {
           );
         }
         const appliedJobs = await AppliedJobModel.find({
-          "appliedJob.UserID": context.currentUser._id.toString(),
+          $or: [
+            { "appliedJob.UserID": context.currentUser._id.toString() },
+            { "appliedJob.Email": context.currentUser.email },
+          ],
         }).lean();
         console.log(appliedJobs);
         if (!appliedJobs) {
           throw new Error("Application not found or you are unauthorized.");
         }
         const jobApplications = appliedJobs.map((appliedJob) => {
-          const fieldData = Object.entries(appliedJob.appliedJob as any).map(([key, value]) => ({
-            key,
-            value: value ? String(value) : null, // Convert value to string or null
-          }));
-        return {
-          id: appliedJob._id.toString(),
-          appliedJob: fieldData,
-          status: appliedJob.status
-        };
-      })
-      return jobApplications;
+          const fieldData = Object.entries(appliedJob.appliedJob as any).map(
+            ([key, value]) => ({
+              key,
+              value: value ? String(value) : null, // Convert value to string or null
+            })
+          );
+          return {
+            id: appliedJob._id.toString(),
+            appliedJob: fieldData,
+            status: appliedJob.status,
+          };
+        });
+        return jobApplications;
       } catch (error: any) {
         throw new Error(`Error retrieving application: ${error.message}`);
       }
