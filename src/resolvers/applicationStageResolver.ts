@@ -127,6 +127,8 @@ export const applicationStageResolvers: any = {
           );
         }
 
+        let scoreDetails = "";
+
         if (nextStage === "Interview Assessment") {
           const technicalScore = await TechnicalAssessment.findOne({
             applicantId,
@@ -140,6 +142,7 @@ export const applicationStageResolvers: any = {
               "Technical assessment score is required before moving to the Interview Assessment, Please add score😎."
             );
           }
+          scoreDetails = `Your Technical Assessment Score: ${technicalScore.score}`;
         }
 
         // If moving to Admitted, ensure Interview Assessment has a score
@@ -156,6 +159,7 @@ export const applicationStageResolvers: any = {
               "Interview assessment score is required before moving to Admitted, Please add score😎."
             );
           }
+          scoreDetails = `Your Interview Assessment Score: ${interviewScore.interviewScore}`;
         }
 
         if (!stageTracking) {
@@ -261,6 +265,9 @@ export const applicationStageResolvers: any = {
               "Application Update",
               `Hello ${user!.email.split("@")[0]}, `,
               `Your application has been moved to ${nextStage}.
+                  <br />
+                   ${scoreDetails}
+                   <br />
                     <br />
                     You will hear from us very soon.
                     <br />
@@ -310,6 +317,9 @@ export const applicationStageResolvers: any = {
               "Application Update",
               `Hello ${user!.email.split("@")[0]}, `,
               `Your application has successfully passed the application stage.
+                   <br />
+                   ${scoreDetails}
+                   <br /> 
                     <br />
                     You will hear from us very soon.
                     <br />
