@@ -41,8 +41,10 @@ const TraineeApplicant = mongoose.model(
       type: Schema.Types.ObjectId,
       ref: "cohortModel",
     }
-  },{
-    timestamps: true,
+    , createdAt:{
+      type: Date,
+      default: Date.now,
+    }
   })
 );
 

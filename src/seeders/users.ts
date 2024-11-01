@@ -44,6 +44,20 @@ const seedUsers = async() => {
                 cohort: cohort._id,
                 isVerified:true,
 
+            },
+            {
+                firstname: "Jane",
+                lastname: "Doe",
+                email: "jane@example.com",
+                password: await BcryptUtil.hash("password123"),
+                role: applicantRole._id,
+                country: "Rwanda",
+                code: "+250",
+                telephone: "0788888888",
+                isActive: true,
+                gender: "male",
+
+                
             }
         ]
         await LoggedUserModel.deleteMany({users});

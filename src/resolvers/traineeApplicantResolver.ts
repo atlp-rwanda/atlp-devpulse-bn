@@ -4,7 +4,7 @@ import { applicationCycle } from "../models/applicationCycle";
 import mongoose, { ObjectId } from "mongoose";
 import { sendEmailTemplate } from "../helpers/bulkyMails";
 
-const FrontendUrl = process.env.FRONTEND_URL || ""
+const FrontendUrl = process.env.FRONTEND_URL || "";
 
 import { CustomGraphQLError } from "../utils/customErrorHandler";
 import { cohortModels } from "../models/cohortModel";
@@ -16,39 +16,29 @@ export const traineeApplicantResolver: any = {
       const { page, itemsPerPage, All } = input;
       let pages;
       let items;
-
+    
       const totalItems = await TraineeApplicant.countDocuments({});
-      if (page && page > 1) {
-        pages = page;
-      } else {
-        pages = 1;
-      }
-      if (All) {
-        items = totalItems;
-      } else {
-        if (itemsPerPage && itemsPerPage > 0) {
-          items = itemsPerPage;
-        } else {
-          items = 3;
-        }
-      }
-      
+      pages = page && page > 1 ? page : 1;
+      items = All ? totalItems : itemsPerPage && itemsPerPage > 0 ? itemsPerPage : 3;
+    
       const itemsToSkip = (pages - 1) * items;
       const allTrainee = await TraineeApplicant.find({ delete_at: false })
         .populate("cycle_id")
-        
         .skip(itemsToSkip)
         .limit(items);
-
-      const traineeApplicant = allTrainee;
-
+    
+      // Format the dates to ISO strings
+      const formattedTrainees = allTrainee.map((trainee) => ({
+        ...trainee.toObject(),
+        createdAt: trainee.createdAt.toLocaleString(), // Format createdAt as ISO string
+      }));
       return {
-        data: traineeApplicant,
+        data: formattedTrainees,
         totalItems,
         page: pages,
         itemsPerPage: items,
       };
-    },
+    },    
 
     async getOneTrainee(_: any, { ID }: any) {
       const trainee = await TraineeApplicant.findById(ID).populate("cycle_id");
@@ -57,15 +47,15 @@ export const traineeApplicantResolver: any = {
       return trainee;
     },
 
-    async getTraineeByUserId(_: any, { userId }: any){
-      const trainee = await TraineeApplicant.findOne({ user: userId })
-        
-        if (!trainee) {
-          throw new Error('Trainee not found');
-        }
+    async getTraineeByUserId(_: any, { userId }: any) {
+      const trainee = await TraineeApplicant.findOne({ user: userId });
 
-        return trainee._id;
-    }
+      if (!trainee) {
+        throw new Error("Trainee not found");
+      }
+
+      return trainee._id;
+    },
   },
 
   Mutation: {
@@ -117,7 +107,7 @@ export const traineeApplicantResolver: any = {
     },
     async createNewTraineeApplicant(parent: any, args: any, context: any) {
       const { lastName, firstName, email, cycle_id, attributes } = args.input;
-    
+
       // Validate email
       const validateEmail = (email: string) => {
         return String(email)
@@ -126,35 +116,46 @@ export const traineeApplicantResolver: any = {
             /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
           );
       };
-    
+
       if (!validateEmail(email)) {
-        throw new Error("This email is not valid. Please provide a valid email.");
+        throw new Error(
+          "This email is not valid. Please provide a valid email."
+        );
       }
-    
+
       // Check if cycle exists
       const cycle = await applicationCycle.findById(cycle_id);
       if (!cycle) {
         throw new Error("The cycle provided does not exist");
       }
-    
+
       const session = await mongoose.startSession();
       session.startTransaction();
-    
+
       try {
-        
-        const newTrainee = await TraineeApplicant.create([{
-          lastName,
-          firstName,
-          email,
-          cycle_id
-        }], { session });
-    
+        const newTrainee = await TraineeApplicant.create(
+          [
+            {
+              lastName,
+              firstName,
+              email,
+              cycle_id,
+            },
+          ],
+          { session }
+        );
+
         await session.commitTransaction();
+        const traineeObject = await newTrainee[0].populate("cycle_id");
+        const result = {
+          ...traineeObject.toObject(),
+          createdAt: traineeObject.createdAt.toLocaleString(), // Ensure createdAt is a string
+        };
         await publishNotification(
           `${firstName} ${lastName} has registered as a new Trainee.`,
           "new_Trainee_application"
         );
-        return (await newTrainee[0].populate("cycle_id")).toObject();
+        return result;
       } catch (error) {
         await session.abortTransaction();
         throw error;
@@ -163,12 +164,11 @@ export const traineeApplicantResolver: any = {
       }
     },
 
-    async acceptTrainee(_: any, { traineeId, cohortId }: any){
-      try{
+    async acceptTrainee(_: any, { traineeId, cohortId }: any) {
+      try {
         const trainee = await TraineeApplicant.findById(traineeId);
-        if(!trainee){
+        if (!trainee) {
           throw new CustomGraphQLError("Trainee not found");
-
         }
 
         const cohort = await cohortModels.findById(cohortId);
@@ -189,10 +189,9 @@ export const traineeApplicantResolver: any = {
         await cohort.save();
 
         return { success: true, message: "Trainee accepted successfully" };
-
       } catch (error) {
         throw new CustomGraphQLError(`Failed to accept trainee: ${error}`);
       }
-    }
+    },
   },
 };

@@ -32,6 +32,7 @@ export const typeDefsTrainee = gql`
     status: String!
     applicationPhase: String!
     cohort: ID
+    createdAt: String!
   }
 
   type AcceptTraineeResponse {
