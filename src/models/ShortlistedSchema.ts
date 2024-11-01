@@ -9,7 +9,7 @@ interface IShortlisted extends Document {
 const shortlistedSchema = new Schema<IShortlisted>({
   applicantId: {
     type: Schema.Types.ObjectId,
-    ref: "Trainee",
+    ref: "Trainees",
     required: true,
 
   },
