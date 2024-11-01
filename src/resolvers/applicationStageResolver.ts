@@ -95,6 +95,9 @@ export const applicationStageResolvers: any = {
       context: any
     ) => {
       try {
+        const applicant = await TraineeApplicant.findById(applicantId);
+        const user = await LoggedUserModel.findOne({ email: applicant!.email });
+
         if (!context.currentUser) {
           throw new CustomGraphQLError(
             "You must be logged in to perform this action"
@@ -199,13 +202,9 @@ export const applicationStageResolvers: any = {
               { _id: applicantId },
               { $set: { applicationPhase: nextStage, status: "No action" } }
             );       
-            message = `Applicant advanced to ${nextStage} stage.`;
-            const user = await LoggedUserModel.findById(applicantId);
-            console.log("User1: ", user)
-            console.log("The message: ", message)
-            console.log("The user email: ", user?.email)
+            message = `You have advanced to the ${nextStage} stage.`;
             const notification = await ApplicantNotificationsModel.create({
-              userId: applicantId,
+              userId: user!._id,
               message,
               eventType: "general",
             });
@@ -250,19 +249,17 @@ export const applicationStageResolvers: any = {
               comments,
               status: "No action",
             });
-            message = `Applicant advanced to ${nextStage} stage.`;
-
-            const user1 = await LoggedUserModel.findById(applicantId);
+            message = `You have advanced to the ${nextStage} stage.`;
             const notification1 = await ApplicantNotificationsModel.create({
-              userId: applicantId,
+              userId: user!._id,
               message,
               eventType: "general",
             });
 
             await sendEmailTemplate(
-              user1!.email,
+              user!.email,
               "Application Update",
-              `Hello ${user1!.email.split("@")[0]}, `,
+              `Hello ${user!.email.split("@")[0]}, `,
               `Your application has been moved to ${nextStage}.
                     <br />
                     You will hear from us very soon.
@@ -272,7 +269,7 @@ export const applicationStageResolvers: any = {
             );
 
             await pusher
-              .trigger(`notifications-${user1!._id}`, "new-notification", {
+              .trigger(`notifications-${user!._id}`, "new-notification", {
                 message: notification1.message,
                 id: notification1._id,
                 createdAt: notification1.createdAt,
@@ -296,23 +293,22 @@ export const applicationStageResolvers: any = {
               comments,
               status: "Passed",
             });
-            message = `Applicant passed the application stage✅.`;
+            message = `You have passed the application stage✅.`;
             await TraineeApplicant.updateOne(
               { _id: applicantId },
               { $set: { applicationPhase: nextStage, status: "Admitted" } }
             );
-
-            const user2 = await LoggedUserModel.findById(applicantId);
+            
             const notification2 = await ApplicantNotificationsModel.create({
-              userId: applicantId,
+              userId: user!._id,
               message,
               eventType: "general",
             });
 
             await sendEmailTemplate(
-              user2!.email,
+              user!.email,
               "Application Update",
-              `Hello ${user2!.email.split("@")[0]}, `,
+              `Hello ${user!.email.split("@")[0]}, `,
               `Your application has successfully passed the application stage.
                     <br />
                     You will hear from us very soon.
@@ -322,7 +318,7 @@ export const applicationStageResolvers: any = {
             );
 
             await pusher
-              .trigger(`notifications-${user2!._id}`, "new-notification", {
+              .trigger(`notifications-${user!._id}`, "new-notification", {
                 message: notification2.message,
                 id: notification2._id,
                 createdAt: notification2.createdAt,
@@ -353,21 +349,20 @@ export const applicationStageResolvers: any = {
               { _id: applicantId },
               { $set: { applicationPhase: "Dismissed", status: "Dismissed" } }
             );
-            message = `Applicant dismissed from the ${stageDismissedFrom?.applicationPhase} stage.`;
-
-            const user3 = await LoggedUserModel.findById(applicantId);
-            console.log("User3 dismissed: ", user3?.email)
+            message = `You have been dismissed from the ${stageDismissedFrom?.applicationPhase} stage.`;
+            
             const notification3 = await ApplicantNotificationsModel.create({
-              userId: applicantId,
+              userId: user!._id,
               message,
               eventType: "general",
             });
 
             await sendEmailTemplate(
-              user3!.email,
+              user!.email,
               "Application Update",
-              `Hello ${user3!.email.split("@")[0]}, `,
-              `Your application has been dismissed from the ${stageDismissedFrom?.applicationPhase} stage.
+              `Hello ${user!.email.split("@")[0]}, `,
+              `We are sorry to inform you that 
+              your application has been dismissed from the ${stageDismissedFrom?.applicationPhase} stage.
                     <br />
                     <br />
                     You can always apply again.
@@ -375,7 +370,7 @@ export const applicationStageResolvers: any = {
             );
 
             await pusher
-              .trigger(`notifications-${user3!._id}`, "new-notification", {
+              .trigger(`notifications-${user!._id}`, "new-notification", {
                 message: notification3.message,
                 id: notification3._id,
                 createdAt: notification3.createdAt,
@@ -403,18 +398,17 @@ export const applicationStageResolvers: any = {
               { _id: applicantId },
               { $set: { applicationPhase: nextStage, status: "No action" } }
             );
-            message = `Applicant advanced to ${nextStage} stage.`;
-            const user4 = await LoggedUserModel.findById(applicantId);
+            message = `You have advanced to the ${nextStage} stage.`;
             const notification4 = await ApplicantNotificationsModel.create({
-              userId: applicantId,
+              userId: user!._id,
               message,
               eventType: "general",
             });
 
             await sendEmailTemplate(
-              user4!.email,
+              user!.email,
               "Application Update",
-              `Hello ${user4!.email.split("@")[0]}, `,
+              `Hello ${user!.email.split("@")[0]}, `,
               `Your application has been moved to ${nextStage}.
                     <br />
                     You will hear from us very soon.
@@ -424,7 +418,7 @@ export const applicationStageResolvers: any = {
             );
 
             await pusher
-              .trigger(`notifications-${user4!._id}`, "new-notification", {
+              .trigger(`notifications-${user!._id}`, "new-notification", {
                 message: notification4.message,
                 id: notification4._id,
                 createdAt: notification4.createdAt,
