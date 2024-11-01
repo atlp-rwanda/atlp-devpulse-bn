@@ -3,7 +3,7 @@ import TraineeApplicant from "../models/traineeApplicant";
 import StageTracking from "../models/stageSchema";
 import { RoleModel } from "../models/roleModel";
 import Shortlisted from "../models/ShortlistedSchema";
-import Dismissed from "../models/dismissedStageSchema";
+import Rejected from "../models/dismissedStageSchema";
 import Admitted from "../models/admittedStageSchema";
 import InterviewAssessment from "../models/InterviewAssessmentStageSchema";
 import TechnicalAssessment from "../models/technicalAssessmentStage";
@@ -13,20 +13,23 @@ const validStages = [
   "Technical Assessment",
   "Interview Assessment",
   "Admitted",
-  "Dismissed",
+  "Rejected",
 ];
 const models = [
   Shortlisted,
   TechnicalAssessment,
   InterviewAssessment,
   Admitted,
-  Dismissed,
+  Rejected,
 ];
 async function getApplicantsByModel(model: any) {
   return await model.find().populate("applicantId").exec();
 }
 async function updateApplicantAfterDismissed(model: any, applicantId: string) {
-  await model.updateOne({ applicantId }, { $set: { status: "Dismissed" } });
+  await model.updateOne({ applicantId }, { $set: { status: "Rejected" } });
+}
+async function updateApplicantAfterAdmitted(model: any,applicantId:string) {
+  await model.updateOne({ applicantId }, { $set: { status: "Admitted" } });
 }
 export const applicationStageResolvers: any = {
   Query: {
@@ -227,6 +230,8 @@ export const applicationStageResolvers: any = {
               );
             }
 
+            await Promise.all(models.map(model => updateApplicantAfterAdmitted(model, applicantId)));
+
             await Admitted.create({
               applicantId,
               comments,
@@ -240,27 +245,27 @@ export const applicationStageResolvers: any = {
 
             break;
 
-          case "Dismissed":
+          case "Rejected":
             if (stageTracking && stageTracking.currentStage) {
               await StageTracking.updateOne(
                 { applicantId, currentStage: stageTracking.currentStage },
-                { $set: { status: "Dismissed", exitedAt: new Date() } }
+                { $set: { status: "Rejected", exitedAt: new Date() } }
               );
             }
             await Promise.all(models.map(model => updateApplicantAfterDismissed(model, applicantId)));
             const stageDismissedFrom = await TraineeApplicant.findOne({
               _id: applicantId,
             });
-            await Dismissed.create({
+            await Rejected.create({
               applicantId,
               stageDismissedFrom: stageDismissedFrom?.applicationPhase,
               comments,
             });
             await TraineeApplicant.updateOne(
               { _id: applicantId },
-              { $set: { applicationPhase: "Dismissed", status: "Dismissed" } }
+              { $set: { applicationPhase: "Rejected", status: "Rejected" } }
             );
-            message = `Applicant dismissed from the ${stageDismissedFrom?.applicationPhase} stage.`;
+            message = `Applicant Rejected from the ${stageDismissedFrom?.applicationPhase} stage.`;
             break;
 
           case "Shortlisted":

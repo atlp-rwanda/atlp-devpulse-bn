@@ -41,6 +41,12 @@ export const LoggedUserSchema = gql`
 		trainees:[User_Logged!]
   }
 
+  type CurrentUser{
+    firstName: String!
+    lastName: String!
+    email: String!
+  }
+
 
   input UserInput_Logged {
     firstname: String
@@ -95,6 +101,7 @@ export const LoggedUserSchema = gql`
     getByFilter(filter: UserFilterInput!): [User_Logged]!
     getCohort(id: ID!): cohort
 		getAllCohorts: [cohort!]!
+    currentUser: CurrentUser
   }
 
   type Mutation {

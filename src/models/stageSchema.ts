@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 interface IStageTracking extends Document {
   applicantId: mongoose.Schema.Types.ObjectId;
-  currentStage: "Applied" | "Shortlisted" | "Technical Assessment" | "Interview Assessment" | "Admitted" | "Dismissed";
+  currentStage: "Applied" | "Shortlisted" | "Technical Assessment" | "Interview Assessment" | "Admitted" | "Rejected";
   history: [
     {
       stage: string;
@@ -21,7 +21,7 @@ const stageTrackingSchema = new Schema<IStageTracking>({
   },
   currentStage: {
     type: String,
-    enum: ["Applied","Shortlisted", "Technical Assessment", "Interview Assessment", "Admitted", "Dismissed"],
+    enum: ["Applied","Shortlisted", "Technical Assessment", "Interview Assessment", "Admitted", "Rejected"],
     required: true,
     default: "Applied",
   },
