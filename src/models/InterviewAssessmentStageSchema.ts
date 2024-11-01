@@ -10,7 +10,7 @@ interface IInterviewAssessment extends Document {
 const interviewAssessmentSchema = new Schema<IInterviewAssessment>({
   applicantId: {
     type: Schema.Types.ObjectId,
-    ref: "Trainee",
+    ref: "Trainees",
     required: true,
   },
   status: {

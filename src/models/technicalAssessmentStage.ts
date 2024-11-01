@@ -10,7 +10,7 @@ interface ITechnicalAssessment extends Document {
 const technicalAssessmentSchema = new Schema<ITechnicalAssessment>({
   applicantId: {
     type: Schema.Types.ObjectId,
-    ref: "Trainee",
+    ref: "Trainees",
     required: true,
   },
   status: {

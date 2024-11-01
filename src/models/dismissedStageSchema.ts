@@ -10,7 +10,7 @@ interface IDismissed extends Document {
 const dismissedSchema = new Schema<IDismissed>({
   applicantId: {
     type: Schema.Types.ObjectId,
-    ref: "Trainee",
+    ref: "Trainees",
     required: true,
   },
   stageDismissedFrom: {

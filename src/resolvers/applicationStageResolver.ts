@@ -28,6 +28,9 @@ async function getApplicantsByModel(model: any) {
 async function updateApplicantAfterDismissed(model: any, applicantId: string) {
   await model.updateOne({ applicantId }, { $set: { status: "Dismissed" } });
 }
+async function updateApplicantAfterAdmitted(model: any,applicantId:string) {
+  await model.updateOne({ applicantId }, { $set: { status: "Admitted" } });
+}
 export const applicationStageResolvers: any = {
   Query: {
     getStageHistoryByApplicant: async (
@@ -226,6 +229,8 @@ export const applicationStageResolvers: any = {
                 { $set: { status: "Moved" } }
               );
             }
+
+            await Promise.all(models.map(model => updateApplicantAfterAdmitted(model, applicantId)));
 
             await Admitted.create({
               applicantId,
