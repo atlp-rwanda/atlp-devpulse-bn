@@ -164,7 +164,6 @@ export const ticketResolver = {
                 if(!updatedTicket){
                     throw new CustomGraphQLError("Ticket not found");
                 }
-
                 await sendEmailTemplate(
                     user.email,
                     "Ticket Update",
@@ -245,7 +244,6 @@ export const ticketResolver = {
                 if(!resolvedTicket){
                     throw new CustomGraphQLError("Ticket not found");
                 }
-
                 const message = `Your ticket "${resolvedTicket.title}" has been resolved.`;
                 const notification = await ApplicantNotificationsModel.create({
                     userId: resolvedTicket.author._id,
@@ -281,6 +279,5 @@ export const ticketResolver = {
                 throw new CustomGraphQLError(err.message);
             }
         }
-    },
-        
+    },       
 }
