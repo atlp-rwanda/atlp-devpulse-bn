@@ -7,6 +7,10 @@ import { pusher } from "../helpers/pusher";
 import { RoleModel } from "../models/roleModel";
 import { publishNotification } from "./adminNotificationsResolver";
 import { CustomGraphQLError } from "../utils/customErrorHandler";
+import Shortlisted from "../models/ShortlistedSchema";
+import TechnicalAssessment from "../models/technicalAssessmentStage";
+import InterviewAssessment from "../models/InterviewAssessmentStageSchema";
+import Admitted from "../models/admittedStageSchema";
 
 const applicationCycleResolver: any = {
   Query: {
@@ -24,15 +28,72 @@ const applicationCycleResolver: any = {
         if (!context.currentUser) {
           throw new CustomGraphQLError("You must be logged in to view your applications");
         }
-
-
         const applications = await TraineeApplicant.find({ user: context.currentUser._id })
         return applications;
       } catch (error: any) {
         throw new CustomGraphQLError(error.message);
       }
+    },
+    getShortlistedByApplicantId: async (_: any, { applicantId }: { applicantId: string }) => {
+      try {
+        const shortListedTrainee = await Shortlisted.findOne({ _id: applicantId });
+        if (!shortListedTrainee) {
+          throw new Error("Trainee not found on shortlist");
+        }
+
+        return {
+          message: "Trainee retrieved successfully",
+          shortListedTrainee: shortListedTrainee
+        }
+      } catch (error: any) {
+        throw new Error(`Failed to retrieve applicant history: ${error.message}`);
+      }
+    },
+    getTechnicalAssessmentByApplicantId: async (_: any, { applicantId }: any) => {
+      try {
+        const technicalAssessment = await TechnicalAssessment.findOne({ _id: applicantId });
+        if (!technicalAssessment) {
+          throw new Error("Technical Assessment not found");
+        }
+        return {
+          message: "Technical Assessment retrieved successfully",
+          technicalAssessment: technicalAssessment
+        }
+      }
+      catch (error: any) {
+        throw new Error(`Failed to retrieve applicant history: ${error.message}`);
+      }
+    },
+    getInterviewAssessmentByApplicantId: async (_: any, { applicantId }: any) => {
+      try {
+        const InterviewAssessmentData = await InterviewAssessment.findOne({ _id: applicantId })
+        if (!InterviewAssessmentData) {
+          throw new Error(`Could not find interview assessment!`)
+        }
+        return {
+          message: "Interview Assessment retrieved successfully",
+          InterviewAssessmentData: InterviewAssessmentData
+        }
+      } catch (error: any) {
+        throw new Error(`Failed to getInterviewAssessmentByApplicant: ${error.message}`)
+      }
+    },
+    getAdmittedByApplicantId: async (_: any, { applicantId }: any) => {
+      try {
+        const AdmittedData = await Admitted.findOne({ _id: applicantId });
+        if (!AdmittedData) {
+          throw new Error(`Could not find admission!`)
+        }
+        return {
+          message: "Admitted retrieved successfully",
+          AdmittedData: AdmittedData
+        }
+      } catch (error: any) {
+        throw new Error(error)
+      }
     }
   },
+
   Mutation: {
     async createApplicationCycle(_parent: any, _args: any) {
       try {
@@ -97,9 +158,9 @@ const applicationCycleResolver: any = {
         } else {
           const applicationCycleDeleted =
             await applicationCycle.findByIdAndRemove(_args.id);
-            await publishNotification(
-              `Cycle "${applicationCycleToDelete.name}" deleted. It was active from ${applicationCycleToDelete.startDate} to ${applicationCycleToDelete.endDate}`,
-              "Cycle Deleted"); 
+          await publishNotification(
+            `Cycle "${applicationCycleToDelete.name}" deleted. It was active from ${applicationCycleToDelete.startDate} to ${applicationCycleToDelete.endDate}`,
+            "Cycle Deleted");
           return applicationCycleDeleted;
         }
       } else {

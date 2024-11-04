@@ -1,4 +1,6 @@
 import { gql } from "apollo-server";
+import { GraphQLJSON } from "graphql-type-json";
+
 const Schema = gql`
   type applicationCycle {
     id: ID!
@@ -48,6 +50,10 @@ const Schema = gql`
     getAllApplicationCycles: [applicationCycle]
     applicationCycle(id: ID!): applicationCycle!
     getTraineeCyclesApplications: [CycleApplications]
+    getShortlistedByApplicantId(applicantId: String): JSON
+    getTechnicalAssessmentByApplicantId(applicantId: String): JSON
+    getInterviewAssessmentByApplicantId(applicantId: String): JSON
+    getAdmittedByApplicantId(applicantId: String): JSON
   }
 
   type Mutation {
