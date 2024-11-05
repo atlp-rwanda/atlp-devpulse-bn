@@ -55,7 +55,8 @@ import { attendanceResolver } from "./resolvers/attendanceResolver";
 import { attendanceSchema } from "./schema/attendanceSchema";
 import { performanceResolver } from "./resolvers/performanceResolver";
 import { performanceSchema } from "./schema/performanceSchema";
-
+import { applicationStageDefs } from './schema/applicationStage';
+import { applicationStageResolvers } from './resolvers/applicationStageResolver';
 import filterJobResolver from "./resolvers/filterJob";
 import filterProgramResolver from "./resolvers/filterPrograms";
 import filterRoleResolver from "./resolvers/filterRole";
@@ -69,6 +70,9 @@ import { searchResolver } from "./resolvers/searchResolver";
 import {appliedJobResolver} from "./resolvers/appliedJobResolver";
 import { appliedJobTypeDefs } from "./schema/appliedJobTypeDefs";
 import { adminNotificationsResolver } from "./resolvers/adminNotificationsResolver";
+import { adminNotificationsSchema } from "./schema/adminNotificationsSchema";import { ticketResolver } from "./resolvers/ticketResolver";
+import { ticketSchema } from "./schema/ticketSchema";
+import filterTicketResolver from "./resolvers/filterTicketResolver";
 import { adminNotificationsSchema } from "./schema/adminNotificationsSchema";import { ticketResolver } from "./resolvers/ticketResolver";
 import { ticketSchema } from "./schema/ticketSchema";
 import filterTicketResolver from "./resolvers/filterTicketResolver";
@@ -111,7 +115,8 @@ const resolvers = mergeResolvers([
   appliedJobResolver,
   adminNotificationsResolver,
   ticketResolver,
-  filterTicketResolver
+  filterTicketResolver,
+  applicationStageResolvers
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -145,7 +150,8 @@ const typeDefs = mergeTypeDefs([
   performanceSchema,
   attendanceSchema,
   adminNotificationsSchema,
-  ticketSchema
+  ticketSchema,
+  applicationStageDefs
 ]);
 
 const server = new ApolloServer({
