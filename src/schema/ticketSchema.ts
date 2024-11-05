@@ -6,7 +6,7 @@ export const ticketSchema = gql`
     title: String!
     body: String!
     status: TicketStatus!
-    author: User!
+    author: User
     createdAt: String!
     updatedAt: String!
     adminReplies: [AdminReply!]
@@ -16,7 +16,7 @@ export const ticketSchema = gql`
   type ApplicantReply {
     id: ID!
     body: String!
-    repliedBy: User!
+    repliedBy: User
     createdAt: String!
   }
 
@@ -38,7 +38,7 @@ export const ticketSchema = gql`
     id: ID!
     body: String!
     respondedAt: String!
-    respondedBy: User!
+    respondedBy: User
   }
 
   enum TicketStatus {
