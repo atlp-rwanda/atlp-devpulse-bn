@@ -70,12 +70,10 @@ import { searchResolver } from "./resolvers/searchResolver";
 import {appliedJobResolver} from "./resolvers/appliedJobResolver";
 import { appliedJobTypeDefs } from "./schema/appliedJobTypeDefs";
 import { adminNotificationsResolver } from "./resolvers/adminNotificationsResolver";
-import { adminNotificationsSchema } from "./schema/adminNotificationsSchema";import { ticketResolver } from "./resolvers/ticketResolver";
+import { ticketResolver } from "./resolvers/ticketResolver";
 import { ticketSchema } from "./schema/ticketSchema";
 import filterTicketResolver from "./resolvers/filterTicketResolver";
-import { adminNotificationsSchema } from "./schema/adminNotificationsSchema";import { ticketResolver } from "./resolvers/ticketResolver";
-import { ticketSchema } from "./schema/ticketSchema";
-import filterTicketResolver from "./resolvers/filterTicketResolver";
+import { adminNotificationsSchema } from "./schema/adminNotificationsSchema";
 
 const PORT = process.env.PORT || 3000;
 
