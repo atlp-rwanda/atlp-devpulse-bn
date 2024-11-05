@@ -23,7 +23,7 @@ export const ticketSchema = gql`
   type AdminReply {
     id: ID!
     body: String!
-    repliedBy: User!
+    repliedBy: User
     createdAt: String!
   }
 
