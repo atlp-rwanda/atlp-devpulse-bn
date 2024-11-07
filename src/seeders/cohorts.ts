@@ -12,16 +12,16 @@ const seedCohorts = async () => {
     const cohorts = [
         {
             title: "Cohort 1",
-            program: program._id,
-            cycle: cycle._id,
+            program: program,
+            cycle: cycle,
             phase: 1,
             start: "2022-01-01",
             end: "2022-12-31"
         },
         {
             title: "Cohort 2",
-            program: program._id,
-            cycle: cycle._id,
+            program: program,
+            cycle: cycle,
             phase: 2,
             start: "2023-01-01",
             end: "2023-12-31"

@@ -9,7 +9,7 @@ export const cohortSchema = gql`
 		start: String
 		end: String
 		phase: Int
-		trainees:[ID!]
+		trainees:[traineeApplicant]
 		
 	}
 

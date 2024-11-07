@@ -8,7 +8,7 @@ export const cohortResolver =  {
         getAllCohorts: async (_: any, args: any, context: any) => {
 
 			try {
-				const cohorts = await cohortModels.find();
+				const cohorts = await cohortModels.find().populate("trainees program cycle");
 				if (cohorts.length === 0) {
 					throw new CustomGraphQLError("no jobpost found");
 				}
@@ -20,7 +20,7 @@ export const cohortResolver =  {
         getCohort: async (_: any, args: any, context: any) => {
 			
 			try {
-				const cohort = await cohortModels.findOne({ _id: args.id });
+				const cohort = await cohortModels.findOne({ _id: args.id }).populate("trainees program cycle");
 				if (!cohort) {
 					throw new Error("no cohort found");
 				}
