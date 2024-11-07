@@ -9,10 +9,10 @@ import seedApplications from './applications';
 import seedApplicationCycle from './applicationCyle';
 
 connect().then(async () => {
+    await seedApplicationCycle();
     await seedUsers();
     await seedDeleteTrainee()
     await seedPrograms();
-    await seedApplicationCycle();
     await seedCohorts();
     await seedJobs();
     await seedApplications();

@@ -33,6 +33,8 @@ export const applicationStageDefs = gql`
     status: String!
     score: Float
     comments: String
+    createdAt: String
+    updatedAt: String
   }
   type Query {
     getStageHistoryByApplicant(applicantId: ID!): HistoryStage

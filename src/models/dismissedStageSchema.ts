@@ -10,7 +10,7 @@ interface IDismissed extends Document {
 const dismissedSchema = new Schema<IDismissed>({
   applicantId: {
     type: Schema.Types.ObjectId,
-    ref: "Trainee",
+    ref: "Trainees",
     required: true,
   },
   stageDismissedFrom: {
@@ -25,6 +25,8 @@ const dismissedSchema = new Schema<IDismissed>({
     default: "Dismissed",
     required: true,
   }
+},{
+  timestamps: true
 });
 
 const Dismissed = mongoose.model<IDismissed>("Dismissed", dismissedSchema);

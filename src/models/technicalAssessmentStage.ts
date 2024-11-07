@@ -10,7 +10,7 @@ interface ITechnicalAssessment extends Document {
 const technicalAssessmentSchema = new Schema<ITechnicalAssessment>({
   applicantId: {
     type: Schema.Types.ObjectId,
-    ref: "Trainee",
+    ref: "Trainees",
     required: true,
   },
   status: {
@@ -27,6 +27,8 @@ const technicalAssessmentSchema = new Schema<ITechnicalAssessment>({
   comments: {
     type: String,
   },
+},{
+  timestamps: true
 });
 
 const TechnicalAssessment = mongoose.model<ITechnicalAssessment>(

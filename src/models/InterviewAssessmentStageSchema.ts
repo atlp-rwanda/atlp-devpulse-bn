@@ -10,7 +10,7 @@ interface IInterviewAssessment extends Document {
 const interviewAssessmentSchema = new Schema<IInterviewAssessment>({
   applicantId: {
     type: Schema.Types.ObjectId,
-    ref: "Trainee",
+    ref: "Trainees",
     required: true,
   },
   status: {
@@ -22,10 +22,16 @@ const interviewAssessmentSchema = new Schema<IInterviewAssessment>({
     type: Number,
     min: 0,
     max: 2,
+    validate: {
+      validator: (value : number) => value === null || (value >= 0 && value <= 2),
+      message: "Score must be between 0 and 2."
+    }
   },
   comments: {
     type: String,
   },
+},{
+  timestamps: true
 });
 
 const InterviewAssessment = mongoose.model<IInterviewAssessment>(

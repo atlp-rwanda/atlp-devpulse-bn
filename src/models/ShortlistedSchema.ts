@@ -9,7 +9,7 @@ interface IShortlisted extends Document {
 const shortlistedSchema = new Schema<IShortlisted>({
   applicantId: {
     type: Schema.Types.ObjectId,
-    ref: "Trainee",
+    ref: "Trainees",
     required: true,
 
   },
@@ -21,6 +21,8 @@ const shortlistedSchema = new Schema<IShortlisted>({
   comments: {
     type: String,
   },
+},{
+  timestamps: true,
 });
 
 const Shortlisted = mongoose.model<IShortlisted>("Shortlisted", shortlistedSchema);
