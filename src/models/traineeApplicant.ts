@@ -38,7 +38,7 @@ const TraineeApplicantSchema = new Schema({
     cycleApplied: [CycleAppliedSchema],
     applicationPhase: {
       type: String,
-      enum: ["Applied", 'Shortlisted', 'Technical Assessment', 'Interview Assessment', 'Admitted', 'Dismissed', "Enrolled"],
+      enum: ["Applied", 'Shortlisted', 'Technical Assessment', 'Interview Assessment', 'Admitted', 'Rejected', "Enrolled"],
       default: "Applied",
     },
     status: {
