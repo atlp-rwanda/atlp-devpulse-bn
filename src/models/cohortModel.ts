@@ -17,8 +17,9 @@ export const cohortModels = mongoose.model('cohortModel',
             required: true 
         },
         phase:{
-            type:Number,
-            default: 1
+            type:String,
+            enum: ["Core Concept", "Team Project", "Apprenticeship"],
+            default: "Core Concept",
         },
         start:{
             type:String,

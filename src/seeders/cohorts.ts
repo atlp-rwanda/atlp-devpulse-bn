@@ -14,7 +14,7 @@ const seedCohorts = async () => {
             title: "Cohort 1",
             program: program,
             cycle: cycle,
-            phase: 1,
+            phase:"Core Concept",
             start: "2022-01-01",
             end: "2022-12-31"
         },
@@ -22,7 +22,7 @@ const seedCohorts = async () => {
             title: "Cohort 2",
             program: program,
             cycle: cycle,
-            phase: 2,
+            phase:"Core Concept",
             start: "2023-01-01",
             end: "2023-12-31"
         },

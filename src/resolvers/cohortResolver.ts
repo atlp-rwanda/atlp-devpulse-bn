@@ -64,5 +64,84 @@ export const cohortResolver =  {
 				throw new CustomGraphQLError(`Something went wrong: ${error}`);
 			}
 		},
+		updateCohort: async (_: any, { id, cohortFields }: any, context: any) => {
+            const userWithRole = await LoggedUserModel.findById(
+                context.currentUser?._id
+            ).populate("role");
+            
+            if (
+                !userWithRole ||
+                ((userWithRole.role as any)?.roleName !== "admin" &&
+                    (userWithRole.role as any)?.roleName !== "superAdmin")
+            ) {
+                throw new CustomGraphQLError(
+                    "You do not have permission to perform this action"
+                );
+            }
+
+            try {
+                const existingCohort = await cohortModels.findById(id);
+                if (!existingCohort) {
+                    throw new CustomGraphQLError("Cohort not found");
+                }
+
+                const existingRecord = await cohortModels.findOne({ title: cohortFields.title });
+
+				if (existingRecord) {
+					throw new CustomGraphQLError(
+						`the cohort with same title exist`
+					);
+				}
+
+                const updatedCohort = await cohortModels.findByIdAndUpdate(
+                    id,
+                    { $set: cohortFields },
+                    { new: true, runValidators: true }
+                ).populate("trainees program cycle");
+
+                if (!updatedCohort) {
+                    throw new CustomGraphQLError("Failed to update cohort");
+                }
+
+                await publishNotification(
+                    `Cohort ${updatedCohort.title} has been updated`,
+                    "Cohort Update"
+                );
+                return updatedCohort;
+            } catch (error) {
+                throw new CustomGraphQLError(`Failed to update cohort: ${error}`);
+            }
+		},
+			deleteCohort: async (_: any, args: any, context: any) => {
+            const userWithRole = await LoggedUserModel.findById(
+                context.currentUser?._id
+            ).populate("role");
+            
+            if (
+                !userWithRole ||
+                ((userWithRole.role as any)?.roleName !== "admin" &&
+                    (userWithRole.role as any)?.roleName !== "superAdmin")
+            ) {
+                throw new CustomGraphQLError(
+                    "You do not have permission to perform this action"
+                );
+            }
+
+            try {
+                const deletedCohort = await cohortModels.findByIdAndDelete(args.id);
+                if (!deletedCohort) {
+                    throw new CustomGraphQLError("Cohort not found");
+                }
+
+                await publishNotification(
+                    `Cohort has been deleted`,
+                    "Cohort Deletion"
+                );
+				const message = `Cohort has been deleted successfully`;
+                return message;
+            } catch (error) {
+                throw new CustomGraphQLError(`Failed to delete cohort: ${error}`);
+            }
+        },
     }
 }

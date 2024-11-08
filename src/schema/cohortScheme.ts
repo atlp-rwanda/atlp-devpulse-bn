@@ -8,7 +8,7 @@ export const cohortSchema = gql`
 		cycle: applicationCycle
 		start: String
 		end: String
-		phase: Int
+		phase: String
 		trainees:[traineeApplicant]
 		
 	}
@@ -24,18 +24,20 @@ export const cohortSchema = gql`
 		cycle: String!
         start: String!
         end: String!
-		phase: Int
+		phase: String!
   }
+  input updateCohortInput {
+    title: String
+    program: String
+    cycle: String
+    start: String
+    end: String
+    phase: String
+  }
+
 	type Mutation {
 		createCohort(cohortFields: cohortInput): cohort
-		deleteCohort(id: ID!): cohort
-		updateCohort(
-			title: String
-			program: String
-		    cycle: String
-			phase: Int
-            start: String
-            end: String
-		): cohort!
+		deleteCohort(id: ID!): String
+		updateCohort(id: ID!, cohortFields: updateCohortInput): cohort
 	}
 `;
