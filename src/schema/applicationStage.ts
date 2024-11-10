@@ -82,6 +82,7 @@ export const applicationStageDefs = gql`
     technical:technical
     interview:interview
     admitted:admitted
+    dismissed: dismissed
   }
   type  shortlist{
     applicantId:String
@@ -108,6 +109,12 @@ export const applicationStageDefs = gql`
     status:String
     comments:String
     createdAt:String
+  }
+  type dismissed {
+    applicantId:String
+    stageDismissedFrom: String
+    comments:String
+    status:String
   }
   type Query {
     getStageHistoryByApplicant(applicantId: ID!): HistoryStage

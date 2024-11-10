@@ -8,6 +8,7 @@ import Admitted from "../models/admittedStageSchema";
 import InterviewAssessment from "../models/InterviewAssessmentStageSchema";
 import TechnicalAssessment from "../models/technicalAssessmentStage";
 import { traineEAttributes } from "../models/traineeAttribute";
+import mongoose from "mongoose";
 
 const validStages = [
   "Shortlisted",
@@ -125,16 +126,28 @@ export const applicationStageResolvers: any = {
           throw new CustomGraphQLError("You must be logged in to view your applications");
         }
 
-        const shortlistStage = Shortlisted.findOne({ applicantId: trainee_id });
-        const technicalStage = TechnicalAssessment.findOne({ applicantId: trainee_id });
-        const interviewStage = InterviewAssessment.findOne({ applicantId: trainee_id });
-        const admittedStage = Admitted.findOne({ applicant_id: trainee_id });
+        const trainee = new mongoose.Types.ObjectId(trainee_id);
+
+        const [shortlistStage, technicalStage, interviewStage, admittedStage, dismissedStage] = await Promise.all([
+          Shortlisted.findOne({ applicantId: trainee }),
+          TechnicalAssessment.findOne({ applicantId: trainee }),
+          InterviewAssessment.findOne({ applicantId: trainee }),
+          Admitted.findOne({ applicantId: trainee }),
+          Dismissed.findOne({ applicantId: trainee })
+        ]);
+
         return {
-          shortlistStage, technicalStage, interviewStage, admittedStage
+          shortlist: shortlistStage,
+          technical: technicalStage,
+          interview: interviewStage,
+          admitted: admittedStage,
+          dismissed: dismissedStage
         }
+
+
       } catch (error) {
-        console.error("Error retrieving applications with attributes:", error);
-        throw new CustomGraphQLError(error);
+        console.error("Error retrieving application stages:", error);
+        throw new CustomGraphQLError(error || "An error occurred while retrieving applications");
       }
     }
   },
