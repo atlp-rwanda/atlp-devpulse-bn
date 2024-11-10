@@ -130,6 +130,9 @@ export const applicationStageDefs = gql`
     getTraineeCyclesApplications: cycleApplication
     getApplicationsAttributes(trainee_id:String!): Attributes
     getApplicationStages(trainee_id:String!):Stages
+    getTraineeCyclesApplications: cycleApplication
+    getApplicationsAttributes(trainee_id:String!): Attributes
+    getApplicationStages(trainee_id:String!):Stages
   }
 
   type response {
