@@ -7,6 +7,7 @@ import Rejected from "../models/dismissedStageSchema";
 import Admitted from "../models/admittedStageSchema";
 import InterviewAssessment from "../models/InterviewAssessmentStageSchema";
 import TechnicalAssessment from "../models/technicalAssessmentStage";
+import { traineEAttributes } from "../models/traineeAttribute";
 
 const validStages = [
   "Shortlisted",
@@ -28,7 +29,7 @@ async function getApplicantsByModel(model: any) {
 async function updateApplicantAfterDismissed(model: any, applicantId: string) {
   await model.updateOne({ applicantId }, { $set: { status: "Rejected" } });
 }
-async function updateApplicantAfterAdmitted(model: any,applicantId:string) {
+async function updateApplicantAfterAdmitted(model: any, applicantId: string) {
   await model.updateOne({ applicantId }, { $set: { status: "Admitted" } });
 }
 export const applicationStageResolvers: any = {
@@ -88,6 +89,54 @@ export const applicationStageResolvers: any = {
         );
       }
     },
+    getTraineeCyclesApplications: async (_: any, __: any, context: any) => {
+      try {
+        if (!context.currentUser) {
+          throw new CustomGraphQLError("You must be logged in to view your applications");
+        }
+
+        const applications = await TraineeApplicant.findOne({ email: context.currentUser.email })
+          .populate("cycle_id")
+          .lean();
+        return applications
+      }
+      catch (error: any) {
+        console.error("Error retrieving applications with attributes:", error);
+        throw new CustomGraphQLError(error);
+      }
+    },
+    getApplicationsAttributes: async (_: any, { trainee_id }: any, context: any) => {
+      try {
+        if (!context.currentUser) {
+          throw new CustomGraphQLError("You must be logged in to view your applications");
+        }
+
+        const attributes = await traineEAttributes.findOne({ trainee_id });
+
+        return attributes
+      } catch (error) {
+        console.error("Error getting attributes:", error);
+        throw new CustomGraphQLError(error);
+      }
+    },
+    getApplicationStages: async (_: any, { trainee_id }: any, context: any) => {
+      try {
+        if (!context.currentUser) {
+          throw new CustomGraphQLError("You must be logged in to view your applications");
+        }
+
+        const shortlistStage = Shortlisted.findOne({ applicantId: trainee_id });
+        const technicalStage = TechnicalAssessment.findOne({ applicantId: trainee_id });
+        const interviewStage = InterviewAssessment.findOne({ applicantId: trainee_id });
+        const admittedStage = Admitted.findOne({ applicant_id: trainee_id });
+        return {
+          shortlistStage, technicalStage, interviewStage, admittedStage
+        }
+      } catch (error) {
+        console.error("Error retrieving applications with attributes:", error);
+        throw new CustomGraphQLError(error);
+      }
+    }
   },
   Mutation: {
     moveToNextStage: async (
