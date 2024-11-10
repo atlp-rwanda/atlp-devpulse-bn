@@ -83,6 +83,7 @@ export const applicationStageDefs = gql`
     interview:interview
     admitted:admitted
     dismissed: dismissed
+    dismissed: dismissed
   }
   type  shortlist{
     applicantId:String
