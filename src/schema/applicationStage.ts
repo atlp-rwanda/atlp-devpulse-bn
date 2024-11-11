@@ -116,6 +116,14 @@ export const applicationStageDefs = gql`
     comments:String
     status:String
   }
+  type stageByModel {
+    applicant: Applicant
+    status: String!
+    score: Float
+    comments: String
+    createdAt: String
+    updatedAt: String
+  }
   type Query {
     getStageHistoryByApplicant(applicantId: ID!): HistoryStage
     getApplicantsByStage(stage: String!): [stageByModel!]!

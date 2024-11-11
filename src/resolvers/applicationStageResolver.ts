@@ -7,8 +7,6 @@ import Rejected from "../models/dismissedStageSchema";
 import Admitted from "../models/admittedStageSchema";
 import InterviewAssessment from "../models/InterviewAssessmentStageSchema";
 import TechnicalAssessment from "../models/technicalAssessmentStage";
-import { traineEAttributes } from "../models/traineeAttribute";
-import mongoose from "mongoose";
 
 const validStages = [
   "Shortlisted",
@@ -30,7 +28,7 @@ async function getApplicantsByModel(model: any) {
 async function updateApplicantAfterDismissed(model: any, applicantId: string) {
   await model.updateOne({ applicantId }, { $set: { status: "Rejected" } });
 }
-async function updateApplicantAfterAdmitted(model: any, applicantId: string) {
+async function updateApplicantAfterAdmitted(model: any,applicantId:string) {
   await model.updateOne({ applicantId }, { $set: { status: "Admitted" } });
 }
 export const applicationStageResolvers: any = {
@@ -90,75 +88,32 @@ export const applicationStageResolvers: any = {
         );
       }
     },
-    getTraineeCyclesApplications: async (_: any, __: any, context: any) => {
-      try {
-        if (!context.currentUser) {
-          throw new CustomGraphQLError("You must be logged in to view your applications");
-        }
-
-        const applications = await TraineeApplicant.findOne({ email: context.currentUser.email })
-          .populate("cycle_id")
-          .lean();
-        return applications
-      }
-      catch (error: any) {
-        console.error("Error retrieving applications with attributes:", error);
-        throw new CustomGraphQLError(error);
-      }
-    },
-    getApplicationsAttributes: async (_: any, { trainee_id }: any, context: any) => {
-      try {
-        if (!context.currentUser) {
-          throw new CustomGraphQLError("You must be logged in to view your applications");
-        }
-
-        const attributes = await traineEAttributes.findOne({ trainee_id });
-
-        return attributes
-      } catch (error) {
-        console.error("Error getting attributes:", error);
-        throw new CustomGraphQLError(error);
-      }
-    },
-    getApplicationStages: async (_: any, { trainee_id }: any, context: any) => {
-      try {
-        if (!context.currentUser) {
-          throw new CustomGraphQLError("You must be logged in to view your applications");
-        }
-
-        const trainee = new mongoose.Types.ObjectId(trainee_id);
-
-        const [shortlistStage, technicalStage, interviewStage, admittedStage, dismissedStage] = await Promise.all([
-          Shortlisted.findOne({ applicantId: trainee }),
-          TechnicalAssessment.findOne({ applicantId: trainee }),
-          InterviewAssessment.findOne({ applicantId: trainee }),
-          Admitted.findOne({ applicantId: trainee }),
-          Dismissed.findOne({ applicantId: trainee })
-        ]);
-
-        return {
-          shortlist: shortlistStage,
-          technical: technicalStage,
-          interview: interviewStage,
-          admitted: admittedStage,
-          dismissed: dismissedStage
-        }
-
-
-      } catch (error) {
-        console.error("Error retrieving application stages:", error);
-        throw new CustomGraphQLError(error || "An error occurred while retrieving applications");
-      }
-    }
   },
   Mutation: {
-    moveToNextStage: async (
-      _: any,
-      { applicantId, nextStage, comments }: any,
-      context: any
-    ) => {
+    moveToNextStage: async (_: any, { applicantId, nextStage, comments }: any,context: any) => {
       try {
         if (!context.currentUser) {
+          throw new CustomGraphQLError(
+            "You must be logged in to perform this action"
+          );
+        }
+
+        const userRole = await RoleModel.findById({
+          _id: context.currentUser.role,
+        });
+        if (
+          userRole?.roleName !== "admin" &&
+          userRole?.roleName !== "superAdmin"
+        ) {
+          throw new CustomGraphQLError(
+            "Only admin and super admins are allowed"
+          );
+        }
+
+        let stageTracking = await StageTracking.findOne({
+          applicantId,
+          exitedAt: { $exists: false },
+        });
           throw new CustomGraphQLError(
             "You must be logged in to perform this action"
           );
