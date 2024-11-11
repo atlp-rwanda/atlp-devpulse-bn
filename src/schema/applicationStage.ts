@@ -23,14 +23,22 @@ export const applicationStageDefs = gql`
     history: [Stage!]!
   }
   type applicant_records {
-    applicant: Applicant!
+    applicant: Applicant
     currentStage: String!
     history: [Stage!]!
   }
 
+  type stageByModel {
+    applicant: Applicant
+    status: String!
+    score: Float
+    comments: String
+    createdAt: String
+    updatedAt: String
+  }
   type Query {
     getStageHistoryByApplicant(applicantId: ID!): HistoryStage
-    getApplicantsByStage(stage: String!): [applicant_records!]!
+    getApplicantsByStage(stage: String!): [stageByModel!]!
   }
 
   type response {

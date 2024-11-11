@@ -42,14 +42,16 @@ export const traineeApplicantResolver: any = {
         .skip(itemsToSkip)
         .limit(items);
 
-      const traineeApplicant = allTrainee;
-
-      return {
-        data: traineeApplicant,
-        totalItems,
-        page: pages,
-        itemsPerPage: items,
-      };
+        const formattedTrainees = allTrainee.map((trainee) => ({
+          ...trainee.toObject(),
+          createdAt: trainee.createdAt.toLocaleString(), // Format createdAt as ISO string
+        }));
+        return {
+          data: formattedTrainees,
+          totalItems,
+          page: pages,
+          itemsPerPage: items,
+        };
     },
 
     async getOneTrainee(_: any, { ID }: any) {
@@ -176,7 +178,11 @@ export const traineeApplicantResolver: any = {
           `${firstName} ${lastName} has registered as a new Trainee.`,
           "new_Trainee_application"
         );
-        return newTrainee;
+        const result = {
+          ...newTrainee.toObject(),
+          createdAt: newTrainee.createdAt.toLocaleString()
+        };
+        return result;
       } catch (error) {
         await session.abortTransaction();
         throw error;

@@ -38,7 +38,7 @@ const TraineeApplicantSchema = new Schema({
     cycleApplied: [CycleAppliedSchema],
     applicationPhase: {
       type: String,
-      enum: ["Applied", 'Shortlisted', 'Technical Assessment', 'Interview Assessment', 'Admitted', 'Dismissed', "Enrolled"],
+      enum: ["Applied", 'Shortlisted', 'Technical Assessment', 'Interview Assessment', 'Admitted', 'Rejected', "Enrolled"],
       default: "Applied",
     },
     status: {
@@ -49,6 +49,8 @@ const TraineeApplicantSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: "cohortModel",
     }
+  },{
+    timestamps: true,
   });
 
 const TraineeApplicant = mongoose.model('Trainees', TraineeApplicantSchema);

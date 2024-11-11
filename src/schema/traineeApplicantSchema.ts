@@ -37,6 +37,7 @@ export const typeDefsTrainee = gql`
     status: String!
     applicationPhase: String!
     cohort: ID
+    createdAt: String!
     user: User
   }
 
@@ -67,7 +68,7 @@ export const typeDefsTrainee = gql`
     Technical_Assessment
     Interview_Assessment
     Admitted
-    Dismissed
+    Rejected
     Enrolled
   }
 

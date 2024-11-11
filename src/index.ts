@@ -110,6 +110,7 @@ const resolvers = mergeResolvers([
   passwordResolvers,
   searchResolver,
   appliedJobResolver,
+  applicationStageResolvers,
   adminNotificationsResolver,
   ticketResolver,
   filterTicketResolver,
@@ -146,6 +147,7 @@ const typeDefs = mergeTypeDefs([
   appliedJobTypeDefs,
   performanceSchema,
   attendanceSchema,
+  applicationStageDefs,
   adminNotificationsSchema,
   ticketSchema,
   applicationStageDefs
