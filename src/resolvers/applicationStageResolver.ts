@@ -7,8 +7,8 @@ import Rejected from "../models/dismissedStageSchema";
 import Admitted from "../models/admittedStageSchema";
 import InterviewAssessment from "../models/InterviewAssessmentStageSchema";
 import TechnicalAssessment from "../models/technicalAssessmentStage";
-import { traineEAttributes } from "../models/traineeAttribute";
 import mongoose from "mongoose";
+import { traineEAttributes } from "../models/traineeAttribute";
 
 const validStages = [
   "Shortlisted",
@@ -133,7 +133,7 @@ export const applicationStageResolvers: any = {
           TechnicalAssessment.findOne({ applicantId: trainee }),
           InterviewAssessment.findOne({ applicantId: trainee }),
           Admitted.findOne({ applicantId: trainee }),
-          Dismissed.findOne({ applicantId: trainee })
+          Rejected.findOne({ applicantId: trainee })
         ]);
 
         return {
@@ -152,30 +152,13 @@ export const applicationStageResolvers: any = {
     }
   },
   Mutation: {
-    moveToNextStage: async (_: any, { applicantId, nextStage, comments }: any,context: any) => {
+    moveToNextStage: async (
+      _: any,
+      { applicantId, nextStage, comments }: any,
+      context: any
+    ) => {
       try {
         if (!context.currentUser) {
-          throw new CustomGraphQLError(
-            "You must be logged in to perform this action"
-          );
-        }
-
-        const userRole = await RoleModel.findById({
-          _id: context.currentUser.role,
-        });
-        if (
-          userRole?.roleName !== "admin" &&
-          userRole?.roleName !== "superAdmin"
-        ) {
-          throw new CustomGraphQLError(
-            "Only admin and super admins are allowed"
-          );
-        }
-
-        let stageTracking = await StageTracking.findOne({
-          applicantId,
-          exitedAt: { $exists: false },
-        });
           throw new CustomGraphQLError(
             "You must be logged in to perform this action"
           );

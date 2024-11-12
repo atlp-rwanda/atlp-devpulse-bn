@@ -31,14 +31,6 @@ export const applicationStageDefs = gql`
     history: [Stage!]!
   }
 
-  type stageByModel {
-    applicant: Applicant
-    status: String!
-    score: Float
-    comments: String
-    createdAt: String
-    updatedAt: String
-  }
   type cycleApplication {
     email: String
     cycle_id: Cycles
@@ -82,7 +74,6 @@ export const applicationStageDefs = gql`
     technical:technical
     interview:interview
     admitted:admitted
-    dismissed: dismissed
     dismissed: dismissed
   }
   type  shortlist{
@@ -128,9 +119,6 @@ export const applicationStageDefs = gql`
   type Query {
     getStageHistoryByApplicant(applicantId: ID!): HistoryStage
     getApplicantsByStage(stage: String!): [stageByModel!]!
-    getTraineeCyclesApplications: cycleApplication
-    getApplicationsAttributes(trainee_id:String!): Attributes
-    getApplicationStages(trainee_id:String!):Stages
     getTraineeCyclesApplications: cycleApplication
     getApplicationsAttributes(trainee_id:String!): Attributes
     getApplicationStages(trainee_id:String!):Stages
