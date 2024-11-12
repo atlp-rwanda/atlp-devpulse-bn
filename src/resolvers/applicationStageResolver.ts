@@ -128,12 +128,13 @@ export const applicationStageResolvers: any = {
 
         const trainee = new mongoose.Types.ObjectId(trainee_id);
 
-        const [shortlistStage, technicalStage, interviewStage, admittedStage, dismissedStage] = await Promise.all([
+        const [shortlistStage, technicalStage, interviewStage, admittedStage, dismissedStage, AllStages] = await Promise.all([
           Shortlisted.findOne({ applicantId: trainee }),
           TechnicalAssessment.findOne({ applicantId: trainee }),
           InterviewAssessment.findOne({ applicantId: trainee }),
           Admitted.findOne({ applicantId: trainee }),
-          Rejected.findOne({ applicantId: trainee })
+          Rejected.findOne({ applicantId: trainee }),
+          StageTracking.findOne({ applicantId: trainee }),
         ]);
 
         return {
@@ -141,7 +142,8 @@ export const applicationStageResolvers: any = {
           technical: technicalStage,
           interview: interviewStage,
           admitted: admittedStage,
-          dismissed: dismissedStage
+          dismissed: dismissedStage,
+          allStages: AllStages
         }
 
 

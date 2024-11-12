@@ -75,6 +75,7 @@ export const applicationStageDefs = gql`
     interview:interview
     admitted:admitted
     dismissed: dismissed
+    allStages:allStages
   }
   type  shortlist{
     applicantId:String
@@ -94,7 +95,7 @@ export const applicationStageDefs = gql`
     status:String
     interviewScore:String
     comments:String
-    creatdAt:String
+    createdAt:String
   }
   type admitted {
     applicantId: String
@@ -108,6 +109,18 @@ export const applicationStageDefs = gql`
     comments:String
     status:String
   }
+  type StageHistory {
+  stage: String
+  comments: String
+  enteredAt: String
+  exitedAt: String
+}
+
+type allStages {
+  applicantId: String
+  currentStage: String
+  history: [StageHistory]
+}
   type stageByModel {
     applicant: Applicant
     status: String!
