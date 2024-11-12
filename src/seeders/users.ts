@@ -55,6 +55,7 @@ const seedUsers = async() => {
                 code: "+250",
                 telephone: "0788888888",
                 isActive: true,
+                isVerified:true,
                 gender: "male",
 
                 
