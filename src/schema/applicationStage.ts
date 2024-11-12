@@ -108,6 +108,7 @@ export const applicationStageDefs = gql`
     stageDismissedFrom: String
     comments:String
     status:String
+    createdAt:String
   }
   type StageHistory {
   stage: String
