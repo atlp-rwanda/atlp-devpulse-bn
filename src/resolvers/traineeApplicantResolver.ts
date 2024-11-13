@@ -4,6 +4,9 @@ import  {applicationCycle}  from "../models/applicationCycle";
 import mongoose, { ObjectId } from "mongoose";
 import { sendEmailTemplate } from "../helpers/bulkyMails";
 import { Types } from 'mongoose';
+import { AuthenticationError } from 'apollo-server';
+import { LoggedUserModel } from "../models/AuthUser";
+import { RoleModel } from "../models/roleModel";
 
 const FrontendUrl = process.env.FRONTEND_URL || ""
 
@@ -11,6 +14,10 @@ import { CustomGraphQLError } from "../utils/customErrorHandler";
 import { cohortModels } from "../models/cohortModel";
 import { publishNotification } from "./adminNotificationsResolver";
 import { any } from "joi";
+
+interface Context {
+  currentUser: { _id: string };
+}
 
 export const traineeApplicantResolver: any = {
   Query: {
@@ -191,15 +198,32 @@ export const traineeApplicantResolver: any = {
       }
     },
 
-    async acceptTrainee(_: any, { traineeId, cohortId }: any){
-      try{
-        const trainee = await TraineeApplicant.findById(traineeId);
-        if(!trainee){
-          throw new CustomGraphQLError("Trainee not found");
-
+    async acceptTrainee(_: any, { traineeId, cohortId }: any, ctx: Context) {
+      try {
+        if (!ctx.currentUser) {
+          throw new AuthenticationError("You must be logged in");
+        }
+        const userWithRole = await LoggedUserModel.findById(
+          ctx.currentUser._id
+        ).populate("role");
+        if (
+          !userWithRole ||
+          ((userWithRole.role as any)?.roleName !== "admin" &&
+            (userWithRole.role as any)?.roleName !== "superAdmin")
+        ) {
+          throw new AuthenticationError("Not allowed to access.");
         }
 
-        const cohort = await cohortModels.findById(cohortId);
+        const trainee = await TraineeApplicant.findById(traineeId);
+        if (!trainee) {
+          throw new CustomGraphQLError("Trainee not found");
+        }
+
+        if (trainee.cohort) {
+          throw new CustomGraphQLError("Trainee already belongs to a cohort");
+        }
+
+        const cohort = await cohortModels.findById(cohortId).populate('trainees');
         if (!cohort) {
           throw new CustomGraphQLError("Cohort not found");
         }
