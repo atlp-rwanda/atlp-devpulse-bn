@@ -4,8 +4,8 @@ export const commentReplySchema = gql`
   type LoggedUserModel {
     id: ID
     createdAt: String
-    firstName: String
-    lastName: String
+    firstname: String
+    lastname: String
     email: String
     role: String
     profile: String

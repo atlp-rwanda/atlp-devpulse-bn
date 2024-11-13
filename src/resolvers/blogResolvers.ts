@@ -29,6 +29,10 @@ interface GetBlogByIdArgs {
   id: string;
 }
 
+interface GetBlogsByAuthorArgs {
+  authorId: string;
+}
+
 interface UpdateBlogArgs {
   id: string;
   title?: string;
@@ -46,11 +50,23 @@ export const blogResolvers = {
     getAllBlogs: {
       type: new GraphQLList(BlogType),
       args: {
-        tag: { type: GraphQLString }, // optional filter by tag
+        tag: { type: GraphQLString },
       },
       resolve: async (_: any, { tag }: GetAllBlogsArgs) => {
         const filter = tag ? { tags: tag } : {};
         return BlogModel.find(filter).populate("author likes comments");
+      },
+    },
+
+    getBlogsByAuthor: {
+      type: new GraphQLList(BlogType),
+      args: {
+        authorId: { type: new GraphQLNonNull(GraphQLID) },
+      },
+      resolve: async (_: any, { authorId }: GetBlogsByAuthorArgs) => {
+        return BlogModel.find({ author: authorId }).populate(
+          "author likes comments"
+        );
       },
     },
 

@@ -19,6 +19,14 @@ const seedDeleteTrainee = async () => {
             
         },
         {
+            email: 'testUser@gmail.com',
+            firstName: 'Test',
+            lastName: 'user',
+            deleted_at: false,
+            cycle_id: cycle._id
+            
+        },
+        {
             email: 'ben@gmail.com',
             firstName: 'iradukunda',
             lastName: 'benjamin',

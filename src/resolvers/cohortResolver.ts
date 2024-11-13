@@ -8,7 +8,7 @@ export const cohortResolver =  {
         getAllCohorts: async (_: any, args: any, context: any) => {
 
 			try {
-				const cohorts = await cohortModels.find();
+				const cohorts = await cohortModels.find().populate("trainees program cycle");
 				if (cohorts.length === 0) {
 					throw new CustomGraphQLError("no jobpost found");
 				}
@@ -20,7 +20,7 @@ export const cohortResolver =  {
         getCohort: async (_: any, args: any, context: any) => {
 			
 			try {
-				const cohort = await cohortModels.findOne({ _id: args.id });
+				const cohort = await cohortModels.findOne({ _id: args.id }).populate("trainees program cycle");
 				if (!cohort) {
 					throw new Error("no cohort found");
 				}
@@ -64,5 +64,83 @@ export const cohortResolver =  {
 				throw new CustomGraphQLError(`Something went wrong: ${error}`);
 			}
 		},
+        updateCohort: async (_: any, { id, cohortFields }: any, context: any) => {
+            const userWithRole = await LoggedUserModel.findById(
+              context.currentUser?._id
+            ).populate("role");
+      
+            if (
+              !userWithRole ||
+              ((userWithRole.role as any)?.roleName !== "admin" &&
+                (userWithRole.role as any)?.roleName !== "superAdmin")
+            ) {
+              throw new CustomGraphQLError(
+                "You do not have permission to perform this action"
+              );
+            }
+            try {
+              const existingCohort = await cohortModels.findById(id);
+              if (!existingCohort) {
+                throw new CustomGraphQLError("Cohort not found");
+              }
+      
+              if (cohortFields.title) {
+                const existingRecord = await cohortModels.findOne({
+                  title: cohortFields.title,
+                  _id: { $ne: id },
+                });
+                if (existingRecord) {
+                  throw new CustomGraphQLError("The cohort with same title exists");
+                }
+              }
+      
+              const updatedCohort = await cohortModels
+                .findByIdAndUpdate(
+                  id,
+                  { $set: cohortFields },
+                  { new: true, runValidators: true }
+                )
+                .populate("trainees program cycle");
+      
+              if (!updatedCohort) {
+                throw new CustomGraphQLError("Failed to update cohort");
+              }
+              return updatedCohort;
+            } catch (error) {
+              console.error("Update cohort error:", error);
+              throw new CustomGraphQLError(`Failed to update cohort: ${error}`);
+            }
+          },
+			deleteCohort: async (_: any, args: any, context: any) => {
+            const userWithRole = await LoggedUserModel.findById(
+                context.currentUser?._id
+            ).populate("role");
+            
+            if (
+                !userWithRole ||
+                ((userWithRole.role as any)?.roleName !== "admin" &&
+                    (userWithRole.role as any)?.roleName !== "superAdmin")
+            ) {
+                throw new CustomGraphQLError(
+                    "You do not have permission to perform this action"
+                );
+            }
+
+            try {
+                const deletedCohort = await cohortModels.findByIdAndDelete(args.id);
+                if (!deletedCohort) {
+                    throw new CustomGraphQLError("Cohort not found");
+                }
+
+                await publishNotification(
+                    `Cohort has been deleted`,
+                    "Cohort Deletion"
+                );
+				const message = `Cohort has been deleted successfully`;
+                return message;
+            } catch (error) {
+                throw new CustomGraphQLError(`Failed to delete cohort: ${error}`);
+            }
+        },
     }
 }

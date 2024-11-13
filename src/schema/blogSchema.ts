@@ -4,8 +4,8 @@ export const blogSchema = gql`
   type LoggedUserModel {
     id: ID
     createdAt: String
-    firstName: String
-    lastName: String
+    firstname: String
+    lastname: String
     email: String
     role: String
     profile: String
@@ -59,6 +59,7 @@ export const blogSchema = gql`
   type Query {
     getBlogById(id: ID!): Blog
     getAllBlogs(tag: String): [Blog!]!
+    getBlogsByAuthor(authorId: ID!): [Blog!]!
   }
 
   input BlogInput {
