@@ -62,7 +62,19 @@ export const blogResolvers = {
           .populate("author likes comments")
           .populate({
             path: "comments",
-            populate: { path: "user", model: "LogedUserModel" },
+            populate: [
+              { path: "user", model: "LogedUserModel" },
+              {
+                path: "likes",
+                model: "CommentLike",
+                populate: { path: "user", model: "LoggedUserModel" },
+              },
+              {
+                path: "replies",
+                model: "CommentReply",
+                populate: { path: "user", model: "LoggedUserModel" },
+              },
+            ],
           });
       },
     },

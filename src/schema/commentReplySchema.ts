@@ -1,6 +1,6 @@
 import { gql } from "apollo-server-core";
 
-export const commentSchema = gql`
+export const commentReplySchema = gql`
   type LoggedUserModel {
     id: ID
     createdAt: String
@@ -23,21 +23,6 @@ export const commentSchema = gql`
     created_at: String
   }
 
-  type CommentLike {
-    id: ID
-    user: LoggedUserModel
-    comment: Comment
-    created_at: String
-  }
-
-  type CommentReply {
-    id: ID
-    content: String
-    user: LoggedUserModel
-    comment: Comment
-    created_at: String
-  }
-
   type Blog {
     id: ID
     title: String
@@ -54,26 +39,32 @@ export const commentSchema = gql`
   }
 
   type Comment {
-    id: ID
-    content: String
-    user: LoggedUserModel
-    blog: Blog
-    likes: [CommentLike]
-    replies: [CommentReply]
+    id: ID!
+    content: String!
+    user: LoggedUserModel!
+    blog: Blog!
+    createdAt: String
+  }
+
+  type CommentReply {
+    id: ID!
+    content: String!
+    user: LoggedUserModel!
+    comment: Comment!
     createdAt: String
   }
 
   type Query {
-    getCommentsByBlog(blog: ID!): [Comment!]!
+    getRepliesByComment(comment: ID!): [CommentReply!]!
   }
 
-  input CommentInput {
+  input CommentReplyInput {
     content: String!
     user: ID!
-    blog: ID!
+    comment: ID!
   }
 
   type Mutation {
-    addComment(commentFields: CommentInput): Comment!
+    addCommentReply(commentReplyFields: CommentReplyInput): CommentReply!
   }
 `;

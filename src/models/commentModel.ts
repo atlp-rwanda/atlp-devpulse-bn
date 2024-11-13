@@ -15,6 +15,20 @@ const commentSchema = new Schema({
     ref: "Blog",
     required: true,
   },
+  likes: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "CommentLike",
+      required: true,
+    },
+  ],
+  replies: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "CommentReplies",
+      required: true,
+    },
+  ],
   created_at: {
     type: Date,
     default: Date.now,

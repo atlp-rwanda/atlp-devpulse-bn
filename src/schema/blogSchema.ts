@@ -16,6 +16,31 @@ export const blogSchema = gql`
     cohort: ID
   }
 
+  type CommentLike {
+    id: ID
+    user: LoggedUserModel
+    comment: Comment
+    created_at: String
+  }
+
+  type CommentReply {
+    id: ID
+    content: String
+    user: LoggedUserModel
+    comment: Comment
+    created_at: String
+  }
+
+  type Comment {
+    id: ID
+    content: String
+    user: LoggedUserModel
+    blog: Blog
+    likes: [CommentLike]
+    replies: [CommentReply]
+    createdAt: String
+  }
+
   type Blog {
     id: ID!
     title: String!
