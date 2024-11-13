@@ -10,7 +10,7 @@ interface IAdmitted extends Document {
 const admittedSchema = new Schema<IAdmitted>({
   applicantId: {
     type: Schema.Types.ObjectId,
-    ref: "Applicant",
+    ref: "Trainees",
     required: true,
   },
   status: {
@@ -20,6 +20,8 @@ const admittedSchema = new Schema<IAdmitted>({
   comments: {
     type: String,
   },
+},{
+  timestamps: true
 });
 
 const Admitted = mongoose.model<IAdmitted>("Admitted", admittedSchema);

@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 interface ITechnicalAssessment extends Document {
   applicantId: mongoose.Schema.Types.ObjectId;
-  status: "No action" | "Moved" | "Dismissed";
+  status: "No action" | "Moved" | "Rejected" | "Admitted";
   score: number;
   comments?: string;
 }
@@ -10,22 +10,25 @@ interface ITechnicalAssessment extends Document {
 const technicalAssessmentSchema = new Schema<ITechnicalAssessment>({
   applicantId: {
     type: Schema.Types.ObjectId,
-    ref: "Applicant",
+    ref: "Trainees",
     required: true,
   },
   status: {
     type: String,
-    enum: ["No action", "Moved", "Dismissed"],
+    enum: ["No action", "Moved", "Rejected", "Admitted"],
     default: "No action",
   },
   score: {
     type: Number,
     min: 0,
     max: 100,
+    default:null
   },
   comments: {
     type: String,
   },
+},{
+  timestamps: true
 });
 
 const TechnicalAssessment = mongoose.model<ITechnicalAssessment>(

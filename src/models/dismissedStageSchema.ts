@@ -4,12 +4,13 @@ interface IDismissed extends Document {
   applicantId: mongoose.Schema.Types.ObjectId;
   stageDismissedFrom: string;
   comments?: string;
+  status: "Rejected"; // Added status field
 }
 
-const dismissedSchema = new Schema<IDismissed>({
+const rejectedSchema = new Schema<IDismissed>({
   applicantId: {
     type: Schema.Types.ObjectId,
-    ref: "Applicant",
+    ref: "Trainees",
     required: true,
   },
   stageDismissedFrom: {
@@ -19,7 +20,14 @@ const dismissedSchema = new Schema<IDismissed>({
   comments: {
     type: String,
   },
+  status:{
+    type: String,
+    default: "Rejected",
+    required: true,
+  }
+},{
+  timestamps: true
 });
 
-const Dismissed = mongoose.model<IDismissed>("Dismissed", dismissedSchema);
-export default Dismissed;
+const Rejected = mongoose.model<IDismissed>("Rejected", rejectedSchema);
+export default Rejected;

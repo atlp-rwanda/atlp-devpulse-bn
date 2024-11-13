@@ -1,16 +1,24 @@
 import TraineeApplicant from "../models/traineeApplicant";
 import { traineEAttributes } from "../models/traineeAttribute";
-import  {applicationCycle}  from "../models/applicationCycle";
+import { applicationCycle } from "../models/applicationCycle";
 import mongoose, { ObjectId } from "mongoose";
 import { sendEmailTemplate } from "../helpers/bulkyMails";
 import { Types } from 'mongoose';
+import { AuthenticationError } from 'apollo-server';
+import { LoggedUserModel } from "../models/AuthUser";
+import { RoleModel } from "../models/roleModel";
 
-const FrontendUrl = process.env.FRONTEND_URL || ""
+const FrontendUrl = process.env.FRONTEND_URL || "";
 
 import { CustomGraphQLError } from "../utils/customErrorHandler";
 import { cohortModels } from "../models/cohortModel";
 import { publishNotification } from "./adminNotificationsResolver";
 import { any } from "joi";
+
+
+interface Context {
+  currentUser: { _id: string };
+}
 
 export const traineeApplicantResolver: any = {
   Query: {
@@ -34,18 +42,20 @@ export const traineeApplicantResolver: any = {
           items = 3;
         }
       }
-      
+
       const itemsToSkip = (pages - 1) * items;
       const allTrainee = await TraineeApplicant.find({ delete_at: false })
         .populate("cycle_id")
-        
+
         .skip(itemsToSkip)
         .limit(items);
 
-      const traineeApplicant = allTrainee;
-
+      const formattedTrainees = allTrainee.map((trainee) => ({
+        ...trainee.toObject(),
+        createdAt: trainee.createdAt.toLocaleString(), // Format createdAt as ISO string
+      }));
       return {
-        data: traineeApplicant,
+        data: formattedTrainees,
         totalItems,
         page: pages,
         itemsPerPage: items,
@@ -59,15 +69,15 @@ export const traineeApplicantResolver: any = {
       return trainee;
     },
 
-    async getTraineeByUserId(_: any, { userId }: any){
-      const trainee = await TraineeApplicant.findOne({ user: userId })
-        
-        if (!trainee) {
-          throw new Error('Trainee not found');
-        }
+    async getTraineeByUserId(_: any, { userId }: any) {
+      const trainee = await TraineeApplicant.findOne({ user: userId });
 
-        return trainee._id;
-    }
+      if (!trainee) {
+        throw new Error("Trainee not found");
+      }
+
+      return trainee._id;
+    },
   },
 
   Mutation: {
@@ -117,9 +127,12 @@ export const traineeApplicantResolver: any = {
         return false;
       }
     },
-    async createNewTraineeApplicant(_:any, { input }:any) {
+    async createNewTraineeApplicant(_: any, { input }: any, context: any) {
       const { lastName, firstName, email, cycle_id, attributes } = input;
-    
+      const userWithRole = await LoggedUserModel.findById(
+        context.currentUser?._id
+      ).populate("role");
+
       // Validate email
       const validateEmail = (email: string) => {
         return String(email)
@@ -128,27 +141,35 @@ export const traineeApplicantResolver: any = {
             /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
           );
       };
-    
+
       if (!validateEmail(email)) {
-        throw new Error("This email is not valid. Please provide a valid email.");
+        throw new Error(
+          "This email is not valid. Please provide a valid email."
+        );
       }
-    
+
       const session = await mongoose.startSession();
       session.startTransaction();
 
       try {
-        const cycle = await applicationCycle.findById(cycle_id).session(session);
+        const cycle = await applicationCycle
+          .findById(cycle_id)
+          .session(session);
         if (!cycle) {
           throw new Error("Application cycle not found");
         }
 
-        const existingTrainee = await TraineeApplicant.findOne({ email }).session(session);
+        const existingTrainee = await TraineeApplicant.findOne({
+          email,
+        }).session(session);
         if (existingTrainee) {
           const existingApplication = existingTrainee.cycleApplied.find(
-           ( app: any) => app.cycle.toString() === cycle_id
+            (app: any) => app.cycle.toString() === cycle_id
           );
           if (existingApplication) {
-            throw new Error("You have already applied to this application cycle");
+            throw new Error(
+              "You have already applied to this application cycle"
+            );
           }
 
           existingTrainee.cycle_id = cycle_id;
@@ -157,7 +178,10 @@ export const traineeApplicantResolver: any = {
           });
           await existingTrainee.save({ session });
           await session.commitTransaction();
-          return existingTrainee;
+          //populating traineeApplicant with cycle_id
+          return await TraineeApplicant.findById(existingTrainee._id).populate(
+            "cycle_id"
+          );
         }
 
         const newTrainee = new TraineeApplicant({
@@ -165,10 +189,24 @@ export const traineeApplicantResolver: any = {
           firstName,
           email,
           cycle_id,
-          cycleApplied: [{
-            cycle: cycle_id,
-          }]
+          cycleApplied: [
+            {
+              cycle: cycle_id,
+            },
+          ],
         });
+        // Create the corresponding traineEAttributes
+        if (
+          userWithRole &&
+          ((userWithRole.role as any)?.roleName === "admin" ||
+            (userWithRole.role as any)?.roleName === "superAdmin")
+        ) {
+          const newTraineeAttributes = new traineEAttributes({
+            trainee_id: newTrainee._id,
+            ...attributes,
+          });
+          await newTraineeAttributes.save({ session });
+        }
 
         await newTrainee.save({ session });
         await session.commitTransaction();
@@ -176,7 +214,13 @@ export const traineeApplicantResolver: any = {
           `${firstName} ${lastName} has registered as a new Trainee.`,
           "new_Trainee_application"
         );
-        return newTrainee;
+        const result = {
+          ...newTrainee.toObject(),
+          createdAt: newTrainee.createdAt.toLocaleString(),
+        };
+
+        //return populated traineeApplicant
+        return await TraineeApplicant.findById(result._id).populate("cycle_id");
       } catch (error) {
         await session.abortTransaction();
         throw error;
@@ -185,15 +229,32 @@ export const traineeApplicantResolver: any = {
       }
     },
 
-    async acceptTrainee(_: any, { traineeId, cohortId }: any){
-      try{
-        const trainee = await TraineeApplicant.findById(traineeId);
-        if(!trainee){
-          throw new CustomGraphQLError("Trainee not found");
-
+    async acceptTrainee(_: any, { traineeId, cohortId }: any, ctx: Context) {
+      try {
+        if (!ctx.currentUser) {
+          throw new AuthenticationError("You must be logged in");
+        }
+        const userWithRole = await LoggedUserModel.findById(
+          ctx.currentUser._id
+        ).populate("role");
+        if (
+          !userWithRole ||
+          ((userWithRole.role as any)?.roleName !== "admin" &&
+            (userWithRole.role as any)?.roleName !== "superAdmin")
+        ) {
+          throw new AuthenticationError("Not allowed to access.");
         }
 
-        const cohort = await cohortModels.findById(cohortId);
+        const trainee = await TraineeApplicant.findById(traineeId);
+        if (!trainee) {
+          throw new CustomGraphQLError("Trainee not found");
+        }
+
+        if (trainee.cohort) {
+          throw new CustomGraphQLError("Trainee already belongs to a cohort");
+        }
+
+        const cohort = await cohortModels.findById(cohortId).populate('trainees');
         if (!cohort) {
           throw new CustomGraphQLError("Cohort not found");
         }
@@ -211,10 +272,9 @@ export const traineeApplicantResolver: any = {
         await cohort.save();
 
         return { success: true, message: "Trainee accepted successfully" };
-
       } catch (error) {
         throw new CustomGraphQLError(`Failed to accept trainee: ${error}`);
       }
-    }
+    },
   },
 };
