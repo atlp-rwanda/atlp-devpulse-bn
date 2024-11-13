@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 interface IShortlisted extends Document {
   applicantId: mongoose.Schema.Types.ObjectId;
-  status: "No action" | "Moved" | "Dismissed" | "Admitted";
+  status: "No action" | "Moved" | "Rejected" | "Admitted";
   comments?: string;
 }
 
@@ -15,7 +15,7 @@ const shortlistedSchema = new Schema<IShortlisted>({
   },
   status: {
     type: String,
-    enum: ["No action", "Moved", "Dismissed", "Admitted"],
+    enum: ["No action", "Moved", "Rejected", "Admitted"],
     default: "No action",
   },
   comments: {

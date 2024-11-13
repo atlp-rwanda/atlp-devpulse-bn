@@ -35,7 +35,7 @@ export const typeDefsTrainee = gql`
     cycleApplied: [CycleApplied!]!
     delete_at: Boolean
     status: String!
-    applicationPhase: String!
+    applicationPhase: ApplicationPhase!
     cohort: ID
     createdAt: String!
     user: User
@@ -68,7 +68,7 @@ export const typeDefsTrainee = gql`
     Technical_Assessment
     Interview_Assessment
     Admitted
-    Dismissed
+    Rejected
     Enrolled
   }
 

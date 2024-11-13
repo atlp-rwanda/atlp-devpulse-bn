@@ -5,6 +5,7 @@ interface IDismissed extends Document {
   stageDismissedFrom: string;
   comments?: string;
   status: "Rejected"; // Added status field
+  status: "Rejected"; // Added status field
 }
 
 const rejectedSchema = new Schema<IDismissed>({

@@ -4,6 +4,7 @@ import StageTracking from "../models/stageSchema";
 import { RoleModel } from "../models/roleModel";
 import Shortlisted from "../models/ShortlistedSchema";
 import Rejected from "../models/dismissedStageSchema";
+import Rejected from "../models/dismissedStageSchema";
 import Admitted from "../models/admittedStageSchema";
 import InterviewAssessment from "../models/InterviewAssessmentStageSchema";
 import TechnicalAssessment from "../models/technicalAssessmentStage";

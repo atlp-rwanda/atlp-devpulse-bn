@@ -151,6 +151,7 @@ const typeDefs = mergeTypeDefs([
   applicationStageDefs,
   adminNotificationsSchema,
   ticketSchema,
+  applicationStageDefs,
   applicationStageDefs
 ]);
 
