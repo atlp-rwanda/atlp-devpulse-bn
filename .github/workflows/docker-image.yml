@@ -31,15 +31,11 @@ jobs:
         uses: mr-smithers-excellent/docker-build-push@v6
         with:
           image: ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn
-          tags: |
-            latest
-            ${{ github.sha }} # Use SHA for traceability
+          tags: latest
           registry: docker.io
           username: ${{ secrets.DOCKER_HUB_USERNAME2 }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD2 }}
-          buildArgs: |
-            NODE_ENV=production
-            MONGO_PROD_DB=${{ secrets.MONGO_PROD_DB }}
+          buildArgs: 'NODE_ENV=production, MONGO_PROD_DB="${{ secrets.MONGO_PROD_DB }}"'
 
       - name: Deploy to DigitalOcean
         uses: appleboy/ssh-action@v0.1.0
