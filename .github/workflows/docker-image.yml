@@ -38,7 +38,7 @@ jobs:
           buildArgs: 'NODE_ENV=production, MONGO_PROD_DB="${{ secrets.MONGO_PROD_DB }}"'
 
       - name: Deploy to DigitalOcean
-        uses: appleboy/ssh-action@v0.1.0
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DO_HOST }}
           username: ${{ secrets.DO_USERNAME }}
