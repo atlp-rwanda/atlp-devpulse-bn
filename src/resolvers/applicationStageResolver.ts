@@ -9,6 +9,7 @@ import InterviewAssessment from "../models/InterviewAssessmentStageSchema";
 import TechnicalAssessment from "../models/technicalAssessmentStage";
 import mongoose from "mongoose";
 import { traineEAttributes } from "../models/traineeAttribute";
+import { LoggedUserModel } from "../models/AuthUser";
 
 const validStages = [
   "Shortlisted",
@@ -344,6 +345,29 @@ export const applicationStageResolvers: any = {
                 },
               }
             );
+
+            const updatedApplicant = await TraineeApplicant.findOne({
+              _id: applicantId,
+            })
+              .populate("email")
+              .lean();
+
+            const email = updatedApplicant?.email;
+
+            if (email) {
+              await LoggedUserModel.updateOne(
+                { email },
+                {
+                  $set: {
+                    applicationPhase: nextStage,
+                    status: "Admitted",
+                    role: traineeRole._id,
+                  },
+                }
+              );
+            } else {
+              throw new Error("Email not found for the provided applicant ID");
+            }
             break;
 
           case "Rejected":
