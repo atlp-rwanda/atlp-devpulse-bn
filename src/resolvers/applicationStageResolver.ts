@@ -9,6 +9,7 @@ import InterviewAssessment from "../models/InterviewAssessmentStageSchema";
 import TechnicalAssessment from "../models/technicalAssessmentStage";
 import mongoose from "mongoose";
 import { traineEAttributes } from "../models/traineeAttribute";
+import { sendEmailTemplate } from "../helpers/bulkyMails";
 
 const validStages = [
   "Shortlisted",
@@ -93,28 +94,37 @@ export const applicationStageResolvers: any = {
     getTraineeCyclesApplications: async (_: any, __: any, context: any) => {
       try {
         if (!context.currentUser) {
-          throw new CustomGraphQLError("You must be logged in to view your applications");
+          throw new CustomGraphQLError(
+            "You must be logged in to view your applications"
+          );
         }
 
-        const applications = await TraineeApplicant.findOne({ email: context.currentUser.email })
+        const applications = await TraineeApplicant.findOne({
+          email: context.currentUser.email,
+        })
           .populate("cycle_id")
           .lean();
-        return applications
-      }
-      catch (error: any) {
+        return applications;
+      } catch (error: any) {
         console.error("Error retrieving applications with attributes:", error);
         throw new CustomGraphQLError(error);
       }
     },
-    getApplicationsAttributes: async (_: any, { trainee_id }: any, context: any) => {
+    getApplicationsAttributes: async (
+      _: any,
+      { trainee_id }: any,
+      context: any
+    ) => {
       try {
         if (!context.currentUser) {
-          throw new CustomGraphQLError("You must be logged in to view your applications");
+          throw new CustomGraphQLError(
+            "You must be logged in to view your applications"
+          );
         }
 
         const attributes = await traineEAttributes.findOne({ trainee_id });
 
-        return attributes
+        return attributes;
       } catch (error) {
         console.error("Error getting attributes:", error);
         throw new CustomGraphQLError(error);
@@ -123,12 +133,21 @@ export const applicationStageResolvers: any = {
     getApplicationStages: async (_: any, { trainee_id }: any, context: any) => {
       try {
         if (!context.currentUser) {
-          throw new CustomGraphQLError("You must be logged in to view your applications");
+          throw new CustomGraphQLError(
+            "You must be logged in to view your applications"
+          );
         }
 
         const trainee = new mongoose.Types.ObjectId(trainee_id);
 
-        const [shortlistStage, technicalStage, interviewStage, admittedStage, dismissedStage, AllStages] = await Promise.all([
+        const [
+          shortlistStage,
+          technicalStage,
+          interviewStage,
+          admittedStage,
+          dismissedStage,
+          AllStages,
+        ] = await Promise.all([
           Shortlisted.findOne({ applicantId: trainee }),
           TechnicalAssessment.findOne({ applicantId: trainee }),
           InterviewAssessment.findOne({ applicantId: trainee }),
@@ -143,15 +162,15 @@ export const applicationStageResolvers: any = {
           interview: interviewStage,
           admitted: admittedStage,
           dismissed: dismissedStage,
-          allStages: AllStages
-        }
-
-
+          allStages: AllStages,
+        };
       } catch (error) {
         console.error("Error retrieving application stages:", error);
-        throw new CustomGraphQLError(error || "An error occurred while retrieving applications");
+        throw new CustomGraphQLError(
+          error || "An error occurred while retrieving applications"
+        );
       }
-    }
+    },
   },
   Mutation: {
     moveToNextStage: async (
@@ -294,7 +313,11 @@ export const applicationStageResolvers: any = {
               );
             }
 
-            await Promise.all(models.map(model => updateApplicantAfterAdmitted(model, applicantId)));
+            await Promise.all(
+              models.map((model) =>
+                updateApplicantAfterAdmitted(model, applicantId)
+              )
+            );
 
             await Admitted.create({
               applicantId,
@@ -316,7 +339,11 @@ export const applicationStageResolvers: any = {
                 { $set: { status: "Rejected", exitedAt: new Date() } }
               );
             }
-            await Promise.all(models.map(model => updateApplicantAfterDismissed(model, applicantId)));
+            await Promise.all(
+              models.map((model) =>
+                updateApplicantAfterDismissed(model, applicantId)
+              )
+            );
             const stageDismissedFrom = await TraineeApplicant.findOne({
               _id: applicantId,
             });
@@ -419,5 +446,67 @@ export const applicationStageResolvers: any = {
         return new Error(error.message);
       }
     },
+    sendInvitation: async (
+      _: any,
+      { applicantId, email, invitationLink }: { applicantId: string; email: string; invitationLink: string },
+      context: any
+    ) => {
+      try {
+        if (!context.currentUser) {
+          throw new CustomGraphQLError("You must be logged in to perform this action.");
+        }
+    
+        if (!email || !invitationLink) {
+          throw new CustomGraphQLError("Email and invitation link are required.");
+        }
+    
+        // Find the applicant
+        const isApplicantExist = await TechnicalAssessment.findOne({ applicantId })
+          .populate("applicantId")
+          .exec();
+    
+        if (!isApplicantExist || !isApplicantExist.applicantId) {
+          throw new Error("Applicant not found or applicantId is missing.");
+        }
+    
+        const applicant = isApplicantExist.applicantId as any;
+        const firstName = applicant.firstName;
+        const lastName = applicant.lastName;
+    
+        await sendEmailTemplate(
+          email,
+          "Invitation to Complete Technical Assessment",
+          `Dear ${firstName} ${lastName},`,
+          `We are excited to invite you to take the next step in your application process!<br>
+          Please complete the following technical assessment to continue:<br>
+          ${invitationLink}<br>
+          Once you've finished the assessment, we'll review your results and follow up with next steps.
+          `,
+          {
+            text: "Invitation link",
+            url: invitationLink,
+          }
+        );
+
+        await TraineeApplicant.updateOne(
+          { _id: applicantId },
+          { $set: { status: "Invited" } }
+        );
+        await TechnicalAssessment.updateOne(
+          { applicantId },
+          { $set: { status: "Invited" } }
+        );
+    
+        return {
+          success: true,
+          message: "Invitation sent successfully",
+        };
+      } catch (error: any) {
+        return {
+          success: false,
+          message: error.message,
+        };
+      }
+    }    
   },
 };

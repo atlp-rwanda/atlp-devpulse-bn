@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 interface ITechnicalAssessment extends Document {
   applicantId: mongoose.Schema.Types.ObjectId;
-  status: "No action" | "Moved" | "Rejected" | "Admitted";
+  status: "No action" | "Invited"| "Moved" | "Rejected" | "Admitted";
   score: number;
   comments?: string;
 }
@@ -15,7 +15,7 @@ const technicalAssessmentSchema = new Schema<ITechnicalAssessment>({
   },
   status: {
     type: String,
-    enum: ["No action", "Moved", "Rejected", "Admitted"],
+    enum: ["No action", "Invited", "Moved", "Rejected", "Admitted"],
     default: "No action",
   },
   score: {
