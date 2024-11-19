@@ -39,6 +39,7 @@ export const typeDefsTrainee = gql`
     cohort: ID
     createdAt: String!
     user: User
+    technicalInterviews: [TechnicalInterview!]
   }
 
   type CycleApplied {
@@ -51,15 +52,24 @@ export const typeDefsTrainee = gql`
   }
 
   type applicationCycle {
-  _id: ID!
-  name: String!
-  startDate: String!
-  endDate: String!
-}
+    _id: ID!
+    name: String!
+    startDate: String!
+    endDate: String!
+  }
 
   type AcceptTraineeResponse {
     success: Boolean!
     message: String!
+  }
+
+  type TechnicalInterview {
+    _id: ID!
+    meetingLink: String!
+    scheduledDate: String!
+    meetingPlatform: String!
+    status: String!
+    emailSent: Boolean!
   }
 
   enum ApplicationPhase {

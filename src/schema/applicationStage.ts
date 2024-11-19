@@ -53,8 +53,43 @@ export const applicationStageDefs = gql`
       comments: String
     ): response!
 
-    addScore(applicantId:ID!
-    applicantStage:String!
-    score: Float!): response!
+    addScore(
+      applicantId: ID!
+      applicantStage: String!
+      score: Float!
+    ): response!
+  }
+`;
+
+export const technicalInterviewDefs = gql`
+  type TechnicalInterview {
+    _id: ID!
+    applicant: Applicant!
+    coordinator: User
+    meetingLink: String!
+    scheduledDate: String!
+    meetingPlatform: String!
+    status: String!
+    emailSent: Boolean!
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  input ScheduleInterviewInput {
+    applicantId: ID!
+    coordinatorId: ID!
+    meetingLink: String!
+    scheduledDate: String!
+    meetingPlatform: String!
+  }
+
+  extend type Query {
+    getTechnicalInterviews(status: String): [TechnicalInterview!]!
+    getTechnicalInterviewById(interviewId: ID!): TechnicalInterview
+  }
+
+  extend type Mutation {
+    scheduleTechnicalInterview(input: ScheduleInterviewInput!): response!
+    updateInterviewStatus(interviewId: ID!, status: String!): response!
   }
 `;
