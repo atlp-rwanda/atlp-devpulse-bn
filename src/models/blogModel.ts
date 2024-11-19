@@ -31,6 +31,12 @@ const blogSchema = new Schema({
       ref: "Comment",
     },
   ],
+  reactions: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Reaction", 
+    },
+  ],
   isHidden: {
     type: Boolean,
     default: false,
