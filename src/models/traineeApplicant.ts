@@ -77,6 +77,12 @@ const TraineeApplicantSchema = new Schema(
       required: false,
       default: "http://example.com/resume.pdf",
     },
+    technicalInterviews: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "TechnicalInterview",
+      },
+    ],
   },
   {
     timestamps: true,

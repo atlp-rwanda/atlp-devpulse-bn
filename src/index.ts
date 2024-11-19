@@ -191,6 +191,7 @@ const typeDefs = mergeTypeDefs([
   blogRelatedArticlesSchema,
   DocSchema,
   reactionSchema,
+  applicationStageDefs,
   technicalInterviewDefs,
 ]);
 

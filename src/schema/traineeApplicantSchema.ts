@@ -43,6 +43,7 @@ export const typeDefsTrainee = gql`
     coverLetterUrl: String!
     idDocumentUrl: String!
     resumeUrl: String!
+    technicalInterviews: [TechnicalInterview!]
   }
 
   type CycleApplied {
@@ -64,6 +65,15 @@ export const typeDefsTrainee = gql`
   type AcceptTraineeResponse {
     success: Boolean!
     message: String!
+  }
+
+  type TechnicalInterview {
+    _id: ID!
+    meetingLink: String!
+    scheduledDate: String!
+    meetingPlatform: String!
+    status: String!
+    emailSent: Boolean!
   }
 
   enum ApplicationPhase {
