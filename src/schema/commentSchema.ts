@@ -75,5 +75,7 @@ export const commentSchema = gql`
 
   type Mutation {
     addComment(commentFields: CommentInput): Comment!
+    updateComment(id: ID!, content: String!): Comment!
+    deleteComment(id: ID!): String!
   }
 `;

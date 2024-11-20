@@ -9,6 +9,15 @@ interface AddCommentArgs {
   blog: string;
 }
 
+interface UpdateCommentArgs {
+  id: string;
+  content: string;
+}
+
+interface DeleteCommentArgs {
+  id: string;
+}
+
 interface GetCommentsByBlogArgs {
   blog: string;
 }
@@ -48,5 +57,49 @@ export const commentResolvers = {
         });
       },
     },
+    updateComment: {
+      type: CommentType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+        content: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      resolve: async (_: any, { id, content }: UpdateCommentArgs) => {
+        const updatedComment = await CommentModel.findByIdAndUpdate(
+          id,
+          { content },
+          { new: true }
+        )
+          .populate("user")
+          .populate({
+            path: "blog",
+            populate: { path: "author" },
+          });
+
+        if (!updatedComment) {
+          throw new Error("Comment not found");
+        }
+        return updatedComment;
+      },
+    },
+    deleteComment: {
+      type: GraphQLString,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+      },
+      resolve: async (_: any, { id }: DeleteCommentArgs) => {
+        const deletedComment = await CommentModel.findByIdAndDelete(id);
+
+        if (!deletedComment) {
+          throw new Error("Comment not found");
+        }
+
+        await BlogModel.findByIdAndUpdate(deletedComment.blog, {
+          $pull: { comments: id },
+        });
+
+        return "Comment deleted successfully";
+      },
+    },
   },
 };
+

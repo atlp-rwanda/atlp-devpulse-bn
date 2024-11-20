@@ -7,7 +7,7 @@ export const commentLikeResolvers = {
   Query: {
     getCommentLikes: {
       type: new GraphQLList(CommentLikeType),
-      args: { blog: { type: new GraphQLNonNull(GraphQLID) } },
+      args: { comment: { type: new GraphQLNonNull(GraphQLID) } },
       resolve: async (_: any, { comment }: any) => {
         return await CommentLikeModel.find({ comment })
           .populate("user")
