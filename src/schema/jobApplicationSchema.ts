@@ -18,8 +18,8 @@ export const jobApplicationTypeDefs = gql`
 
     type JobApplication {
         _id: ID!
-        userId: User!
-        jobId: Job!
+        userId: User
+        jobId: Job
         essay: String!
         resume: String!
         status: String!
