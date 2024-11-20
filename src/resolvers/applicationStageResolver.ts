@@ -92,6 +92,86 @@ export const applicationStageResolvers: any = {
         );
       }
     },
+    getTraineeCyclesApplications: async (_: any, __: any, context: any) => {
+      try {
+        if (!context.currentUser) {
+          throw new CustomGraphQLError(
+            "You must be logged in to view your applications"
+          );
+        }
+
+        const applications = await TraineeApplicant.findOne({
+          email: context.currentUser.email,
+        })
+          .populate("cycle_id")
+          .lean();
+        return applications;
+      } catch (error: any) {
+        console.error("Error retrieving applications with attributes:", error);
+        throw new CustomGraphQLError(error);
+      }
+    },
+    getApplicationsAttributes: async (
+      _: any,
+      { trainee_id }: any,
+      context: any
+    ) => {
+      try {
+        if (!context.currentUser) {
+          throw new CustomGraphQLError(
+            "You must be logged in to view your applications"
+          );
+        }
+
+        const attributes = await traineEAttributes.findOne({ trainee_id });
+
+        return attributes;
+      } catch (error) {
+        console.error("Error getting attributes:", error);
+        throw new CustomGraphQLError(error);
+      }
+    },
+    getApplicationStages: async (_: any, { trainee_id }: any, context: any) => {
+      try {
+        if (!context.currentUser) {
+          throw new CustomGraphQLError(
+            "You must be logged in to view your applications"
+          );
+        }
+
+        const trainee = new mongoose.Types.ObjectId(trainee_id);
+
+        const [
+          shortlistStage,
+          technicalStage,
+          interviewStage,
+          admittedStage,
+          dismissedStage,
+          AllStages,
+        ] = await Promise.all([
+          Shortlisted.findOne({ applicantId: trainee }),
+          TechnicalAssessment.findOne({ applicantId: trainee }),
+          InterviewAssessment.findOne({ applicantId: trainee }),
+          Admitted.findOne({ applicantId: trainee }),
+          Rejected.findOne({ applicantId: trainee }),
+          StageTracking.findOne({ applicantId: trainee }),
+        ]);
+
+        return {
+          shortlist: shortlistStage,
+          technical: technicalStage,
+          interview: interviewStage,
+          admitted: admittedStage,
+          dismissed: dismissedStage,
+          allStages: AllStages,
+        };
+      } catch (error) {
+        console.error("Error retrieving application stages:", error);
+        throw new CustomGraphQLError(
+          error || "An error occurred while retrieving applications"
+        );
+      }
+    },
   },
   Mutation: {
     moveToNextStage: async (
@@ -186,6 +266,15 @@ export const applicationStageResolvers: any = {
 
           stageTracking.currentStage = nextStage;
           await stageTracking.save();
+        }
+
+        let traineeRole = await RoleModel.findOne({ roleName: "trainee" });
+        if (!traineeRole) {
+          traineeRole = await RoleModel.create({
+            roleName: "trainee",
+            description: "A user who has been accepted as a trainee",
+            permissions: [],
+          });
         }
 
         let message = "";
@@ -300,7 +389,11 @@ export const applicationStageResolvers: any = {
               );
             }
 
-            await Promise.all(models.map(model => updateApplicantAfterAdmitted(model, applicantId)));
+            await Promise.all(
+              models.map((model) =>
+                updateApplicantAfterAdmitted(model, applicantId)
+              )
+            );
 
             await Admitted.create({
               applicantId,
@@ -310,7 +403,13 @@ export const applicationStageResolvers: any = {
             message = `You have passed the application stage✅.`;
             await TraineeApplicant.updateOne(
               { _id: applicantId },
-              { $set: { applicationPhase: nextStage, status: "Admitted" } }
+              {
+                $set: {
+                  applicationPhase: nextStage,
+                  status: "Admitted",
+                  role: traineeRole._id,
+                },
+              }
             );
             
             const notification2 = await ApplicantNotificationsModel.create({
@@ -353,7 +452,11 @@ export const applicationStageResolvers: any = {
                 { $set: { status: "Rejected", exitedAt: new Date() } }
               );
             }
-            await Promise.all(models.map(model => updateApplicantAfterDismissed(model, applicantId)));
+            await Promise.all(
+              models.map((model) =>
+                updateApplicantAfterDismissed(model, applicantId)
+              )
+            );
             const stageDismissedFrom = await TraineeApplicant.findOne({
               _id: applicantId,
             });
