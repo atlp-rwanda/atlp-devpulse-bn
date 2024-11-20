@@ -13,6 +13,10 @@ const userSchema = new Schema(
       type: String,
       default: process.env.DEFAULT_AVATAR,
     },
+    bio: {
+      type: String,
+      default: "",
+    },
     isVerified:{
       type:Boolean,
       default:false

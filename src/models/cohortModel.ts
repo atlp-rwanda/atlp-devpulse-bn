@@ -32,6 +32,9 @@ export const cohortModels = mongoose.model('cohortModel',
         trainees: [{
             type: Schema.Types.ObjectId,
             ref: "Trainees",
-        }]
+        }], 
+        manager: {
+            type: String,
+        }
     })
 )

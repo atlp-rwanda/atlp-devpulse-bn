@@ -19,6 +19,7 @@ export const LoggedUserSchema = gql`
     isActive: Boolean,
     applicationPhase: String,
     cohort: Cohort
+    bio: String,
 
     isVerified:Boolean
   }
@@ -39,6 +40,7 @@ export const LoggedUserSchema = gql`
 		end: String
 		phase: Int
 		trainees:[User_Logged!]
+    manager: String
   }
 
   type CurrentUser{
@@ -59,6 +61,7 @@ export const LoggedUserSchema = gql`
     country: String
     role: String
     applicationPhase: String
+    bio: String
   }
   input EditUserSelfInput_Logged {
     firstname: String
@@ -68,6 +71,7 @@ export const LoggedUserSchema = gql`
     telephone: String
     gender: String
     country: String
+    bio: String
   }
   input EditUserInput_Logged {
     firstname: String
@@ -79,6 +83,7 @@ export const LoggedUserSchema = gql`
     picture:String
     applicationPhase: String
     cohortId: ID
+    bio: String
   }
   input EmailInput {
     email: String
