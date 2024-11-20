@@ -27,7 +27,6 @@ export const applicationStageDefs = gql`
 
   type applicant_records {
     applicant: Applicant
-    applicant: Applicant
     currentStage: String!
     history: [Stage!]!
   }

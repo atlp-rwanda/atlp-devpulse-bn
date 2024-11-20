@@ -70,10 +70,10 @@ import { searchResolver } from "./resolvers/searchResolver";
 import { appliedJobResolver } from "./resolvers/appliedJobResolver";
 import { appliedJobTypeDefs } from "./schema/appliedJobTypeDefs";
 import { adminNotificationsResolver } from "./resolvers/adminNotificationsResolver";
+import { adminNotificationsSchema } from "./schema/adminNotificationsSchema";
 import { ticketResolver } from "./resolvers/ticketResolver";
 import { ticketSchema } from "./schema/ticketSchema";
 import filterTicketResolver from "./resolvers/filterTicketResolver";
-import { adminNotificationsSchema } from "./schema/adminNotificationsSchema";
 import { blogResolvers } from "./resolvers/blogResolvers";
 import { blogSchema } from "./schema/blogSchema";
 import { likeResolvers } from "./resolvers/likeResolvers";
@@ -123,6 +123,7 @@ const resolvers = mergeResolvers([
   passwordResolvers,
   searchResolver,
   appliedJobResolver,
+  applicationStageResolvers,
   applicationStageResolvers,
   adminNotificationsResolver,
   ticketResolver,
@@ -189,7 +190,7 @@ const server = new ApolloServer({
     try {
       authToken =
         req.headers.authorization &&
-        req.headers.authorization.startsWith("Bearer ")
+          req.headers.authorization.startsWith("Bearer ")
           ? req.headers.authorization.split(" ")[1]
           : req.headers.authorization;
       if (authToken) {
