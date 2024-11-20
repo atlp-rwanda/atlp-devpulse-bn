@@ -52,7 +52,7 @@ export const traineeApplicantResolver: any = {
 
       const formattedTrainees = allTrainee.map((trainee) => ({
         ...trainee.toObject(),
-        createdAt: trainee.createdAt.toLocaleString(), // Format createdAt as ISO string
+        createdAt: trainee.createdAt.toLocaleString(),
       }));
       return {
         data: formattedTrainees,
@@ -128,12 +128,11 @@ export const traineeApplicantResolver: any = {
       }
     },
     async createNewTraineeApplicant(_: any, { input }: any, context: any) {
-      const { lastName, firstName, email, cycle_id, attributes } = input;
+      const { lastName, firstName, email, cycle_id, attributes, coverLetterUrl, idDocumentUrl, resumeUrl } = input;
       const userWithRole = await LoggedUserModel.findById(
         context.currentUser?._id
       ).populate("role");
 
-      // Validate email
       const validateEmail = (email: string) => {
         return String(email)
           .toLowerCase()
@@ -150,7 +149,6 @@ export const traineeApplicantResolver: any = {
 
       const session = await mongoose.startSession();
       session.startTransaction();
-
       try {
         const cycle = await applicationCycle
           .findById(cycle_id)
@@ -178,7 +176,6 @@ export const traineeApplicantResolver: any = {
           });
           await existingTrainee.save({ session });
           await session.commitTransaction();
-          //populating traineeApplicant with cycle_id
           return await TraineeApplicant.findById(existingTrainee._id).populate(
             "cycle_id"
           );
@@ -194,6 +191,9 @@ export const traineeApplicantResolver: any = {
               cycle: cycle_id,
             },
           ],
+          idDocumentUrl,
+          coverLetterUrl,
+          resumeUrl
         });
         // Create the corresponding traineEAttributes
         if (

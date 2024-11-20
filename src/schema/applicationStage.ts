@@ -40,7 +40,10 @@ export const applicationStageDefs = gql`
     applicationPhase: String 
     status: String 
     _id:String
-    createdAt:String
+    createdAt: String
+    coverLetterUrl: String
+    resumeUrl: String
+    idDocumentUrl: String
   }
   type Cycles {
       name: String
