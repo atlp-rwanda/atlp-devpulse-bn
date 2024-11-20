@@ -11,6 +11,8 @@ import { sendEmailTemplate } from "../helpers/bulkyMails";
 import { ApplicantNotificationsModel } from "../models/applicantNotifications";
 import { LoggedUserModel } from "../models/AuthUser";
 import { pusher } from "../helpers/pusher";
+import { traineEAttributes } from "../models/traineeAttribute";
+import mongoose from "mongoose";
 
 const validStages = [
   "Shortlisted",
