@@ -9,6 +9,7 @@ import InterviewAssessment from "../models/InterviewAssessmentStageSchema";
 import TechnicalAssessment from "../models/technicalAssessmentStage";
 import mongoose from "mongoose";
 import { traineEAttributes } from "../models/traineeAttribute";
+import { LoggedUserModel } from "../models/AuthUser";
 import { sendEmailTemplate } from "../helpers/bulkyMails";
 
 const validStages = [
@@ -260,6 +261,15 @@ export const applicationStageResolvers: any = {
           await stageTracking.save();
         }
 
+        let traineeRole = await RoleModel.findOne({ roleName: "trainee" });
+        if (!traineeRole) {
+          traineeRole = await RoleModel.create({
+            roleName: "trainee",
+            description: "A user who has been accepted as a trainee",
+            permissions: [],
+          });
+        }
+
         let message = "";
         switch (nextStage) {
           case "Technical Assessment":
@@ -325,11 +335,40 @@ export const applicationStageResolvers: any = {
               status: "Passed",
             });
             message = `Applicant passed the application stage✅.`;
+
             await TraineeApplicant.updateOne(
               { _id: applicantId },
-              { $set: { applicationPhase: nextStage, status: "Admitted" } }
+              {
+                $set: {
+                  applicationPhase: nextStage,
+                  status: "Admitted",
+                  role: traineeRole._id,
+                },
+              }
             );
 
+            const updatedApplicant = await TraineeApplicant.findOne({
+              _id: applicantId,
+            })
+              .populate("email")
+              .lean();
+
+            const email = updatedApplicant?.email;
+
+            if (email) {
+              await LoggedUserModel.updateOne(
+                { email },
+                {
+                  $set: {
+                    applicationPhase: nextStage,
+                    status: "Admitted",
+                    role: traineeRole._id,
+                  },
+                }
+              );
+            } else {
+              throw new Error("Email not found for the provided applicant ID");
+            }
             break;
 
           case "Rejected":
