@@ -40,6 +40,9 @@ export const typeDefsTrainee = gql`
     role: Role
     createdAt: String!
     user: User
+    coverLetterUrl: String!
+    idDocumentUrl: String!
+    resumeUrl: String!
   }
 
   type CycleApplied {
@@ -80,6 +83,9 @@ export const typeDefsTrainee = gql`
     cycle_id: ID!
     role: ID
     attributes: traineeAttributeInput
+    coverLetterUrl:String
+    idDocumentUrl:String
+    resumeUrl:String
   }
 
   input traineeApplicantEmail {

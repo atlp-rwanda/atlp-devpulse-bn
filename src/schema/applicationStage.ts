@@ -34,13 +34,16 @@ export const applicationStageDefs = gql`
   type cycleApplication {
     email: String
     cycle_id: Cycles
-    firstName: String
-    lastName: String
-    user: String
-    applicationPhase: String
-    status: String
-    _id: String
+    firstName: String 
+    lastName: String 
+    user: String 
+    applicationPhase: String 
+    status: String 
+    _id:String
     createdAt: String
+    coverLetterUrl: String
+    resumeUrl: String
+    idDocumentUrl: String
   }
   type Cycles {
     name: String
@@ -155,6 +158,6 @@ export const applicationStageDefs = gql`
       applicantStage: String!
       score: Float!
     ): response!
-    sendInvitation(applicantId:ID!,email: String! invitationLink:String!): response!
+    sendInvitation(applicantId:ID!,email: String!, platform:String!, invitationLink:String!): response!
   }
 `;

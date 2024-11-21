@@ -102,12 +102,14 @@ export const blogResolvers = {
         context.currentUser?._id
       ).populate("role");
 
-      if (
-        !userWithRole ||
-        (userWithRole.role as any)?.roleName !== "applicant"
-      ) {
-        throw new CustomGraphQLError("Only Trainness can create blogs");
+      if (!userWithRole) {
+        throw new CustomGraphQLError("User not found or not logged in");
       }
+       const roleName = (userWithRole.role as any)?.roleName;
+
+       if (!["applicant", "trainee"].includes(roleName)) {
+         throw new CustomGraphQLError("Only Trainness can create blogs");
+       }
       try {
         const existingRecord = await BlogModel.findOne({
           title: args.blogFields.title,
