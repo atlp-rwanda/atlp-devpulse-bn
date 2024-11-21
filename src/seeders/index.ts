@@ -1,4 +1,5 @@
 import { connect } from '../database/db.config'
+import seedBlogs from "./blogs";
 
 import seedDeleteTrainee from './DelTrainee';
 import seedJobs from './jobs';
@@ -16,5 +17,6 @@ connect().then(async () => {
     await seedCohorts();
     await seedJobs();
     await seedApplications();
+    await seedBlogs();
     process.exit()
 })
