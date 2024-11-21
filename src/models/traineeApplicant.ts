@@ -62,6 +62,19 @@ const TraineeApplicantSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "cohortModel",
     },
+    coverLetterUrl: {
+      type: String,
+      required: false
+    }, 
+    idDocumentUrl: {
+      type: String,
+      required: false
+    },
+    resumeUrl: {
+      type: String,
+      required: false
+    }
+
   },
   {
     timestamps: true,
