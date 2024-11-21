@@ -13,6 +13,7 @@ import { sessionModel } from '../models/session';
 import { cohortModels } from '../models/cohortModel';
 import TraineeApplicant from '../models/traineeApplicant';
 import { publishNotification } from './adminNotificationsResolver';
+import { uploadImage } from '../utils/uploadImage';
 
 const FrontendUrl = process.env.FRONTEND_URL
 
@@ -389,10 +390,23 @@ export const loggedUserResolvers: any = {
         lastname,
         email,
         telephone,
-        picture,
         code,
         bio,
       };
+
+      if(picture){
+        try {
+          const uploadResult = await uploadImage(
+            picture,
+            'profile_pictures',
+            `user_${ID}_profile`
+          );
+          updateData.picture = uploadResult.url;
+
+        } catch(err){
+          throw new Error('Failed to upload picture');
+        }
+      }
       if (!ctx.currentUser) {
         throw new AuthenticationError("You must be logged in");
       }
