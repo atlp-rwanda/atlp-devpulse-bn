@@ -7,9 +7,12 @@ import Rejected from "../models/dismissedStageSchema";
 import Admitted from "../models/admittedStageSchema";
 import InterviewAssessment from "../models/InterviewAssessmentStageSchema";
 import TechnicalAssessment from "../models/technicalAssessmentStage";
-import mongoose from "mongoose";
-import { traineEAttributes } from "../models/traineeAttribute";
+import { sendEmailTemplate } from "../helpers/bulkyMails";
+import { ApplicantNotificationsModel } from "../models/applicantNotifications";
 import { LoggedUserModel } from "../models/AuthUser";
+import { pusher } from "../helpers/pusher";
+import { traineEAttributes } from "../models/traineeAttribute";
+import mongoose from "mongoose";
 
 const validStages = [
   "Shortlisted",
@@ -31,7 +34,7 @@ async function getApplicantsByModel(model: any) {
 async function updateApplicantAfterDismissed(model: any, applicantId: string) {
   await model.updateOne({ applicantId }, { $set: { status: "Rejected" } });
 }
-async function updateApplicantAfterAdmitted(model: any, applicantId: string) {
+async function updateApplicantAfterAdmitted(model: any,applicantId:string) {
   await model.updateOne({ applicantId }, { $set: { status: "Admitted" } });
 }
 export const applicationStageResolvers: any = {
@@ -179,6 +182,9 @@ export const applicationStageResolvers: any = {
       context: any
     ) => {
       try {
+        const applicant = await TraineeApplicant.findById(applicantId);
+        const user = await LoggedUserModel.findOne({ email: applicant!.email });
+
         if (!context.currentUser) {
           throw new CustomGraphQLError(
             "You must be logged in to perform this action"
@@ -208,6 +214,8 @@ export const applicationStageResolvers: any = {
           );
         }
 
+        let scoreDetails = "";
+
         if (nextStage === "Interview Assessment") {
           const technicalScore = await TechnicalAssessment.findOne({
             applicantId,
@@ -221,6 +229,7 @@ export const applicationStageResolvers: any = {
               "Technical assessment score is required before moving to the Interview Assessment, Please add score😎."
             );
           }
+          scoreDetails = `Your Technical Assessment Score: ${technicalScore.score}`;
         }
 
         // If moving to Admitted, ensure Interview Assessment has a score
@@ -237,6 +246,7 @@ export const applicationStageResolvers: any = {
               "Interview assessment score is required before moving to Admitted, Please add score😎."
             );
           }
+          scoreDetails = `Your Interview Assessment Score: ${interviewScore.interviewScore}`;
         }
 
         if (!stageTracking) {
@@ -291,8 +301,36 @@ export const applicationStageResolvers: any = {
             await TraineeApplicant.updateOne(
               { _id: applicantId },
               { $set: { applicationPhase: nextStage, status: "No action" } }
+            );       
+            message = `You have advanced to the ${nextStage} stage.`;
+            const notification = await ApplicantNotificationsModel.create({
+              userId: user!._id,
+              message,
+              eventType: "general",
+            });
+
+            await sendEmailTemplate(
+              user!.email,
+              "Application Update",
+              `Hello ${user!.email.split("@")[0]}, `,
+              `Your application has been moved to ${nextStage} stage.
+                    <br />
+                    You will hear from us very soon.
+                    <br />
+                    Thank you for your patience.
+              `
             );
-            message = `Applicant advanced to ${nextStage} stage.`;
+
+            await pusher
+              .trigger(`notifications-${user!._id}`, "new-notification", {
+                message: notification.message,
+                id: notification._id,
+                createdAt: notification.createdAt,
+                read: notification.read,
+              })
+              .catch((error) => {
+                console.error("Error with Pusher trigger:", error);
+              });
             break;
 
           case "Interview Assessment":
@@ -311,7 +349,38 @@ export const applicationStageResolvers: any = {
               comments,
               status: "No action",
             });
-            message = `Applicant advanced to ${nextStage} stage.`;
+            message = `You have advanced to the ${nextStage} stage.`;
+            const notification1 = await ApplicantNotificationsModel.create({
+              userId: user!._id,
+              message,
+              eventType: "general",
+            });
+
+            await sendEmailTemplate(
+              user!.email,
+              "Application Update",
+              `Hello ${user!.email.split("@")[0]}, `,
+              `Your application has been moved to ${nextStage} stage.
+                  <br />
+                   ${scoreDetails}
+                   <br />
+                    <br />
+                    You will hear from us very soon.
+                    <br />
+                    Thank you for your patience.
+              `
+            );
+
+            await pusher
+              .trigger(`notifications-${user!._id}`, "new-notification", {
+                message: notification1.message,
+                id: notification1._id,
+                createdAt: notification1.createdAt,
+                read: notification1.read,
+              })
+              .catch((error) => {
+                console.error("Error with Pusher trigger:", error);
+              });
             break;
 
           case "Admitted":
@@ -333,8 +402,7 @@ export const applicationStageResolvers: any = {
               comments,
               status: "Passed",
             });
-            message = `Applicant passed the application stage✅.`;
-
+            message = `You have passed the application stage✅.`;
             await TraineeApplicant.updateOne(
               { _id: applicantId },
               {
@@ -345,29 +413,38 @@ export const applicationStageResolvers: any = {
                 },
               }
             );
+            
+            const notification2 = await ApplicantNotificationsModel.create({
+              userId: user!._id,
+              message,
+              eventType: "general",
+            });
 
-            const updatedApplicant = await TraineeApplicant.findOne({
-              _id: applicantId,
-            })
-              .populate("email")
-              .lean();
+            await sendEmailTemplate(
+              user!.email,
+              "Application Update",
+              `Hello ${user!.email.split("@")[0]}, `,
+              `Your application has successfully passed the application stage.
+                   <br />
+                   ${scoreDetails}
+                   <br /> 
+                    <br />
+                    You will hear from us very soon.
+                    <br />
+                    Thank you for your patience.
+              `
+            );
 
-            const email = updatedApplicant?.email;
-
-            if (email) {
-              await LoggedUserModel.updateOne(
-                { email },
-                {
-                  $set: {
-                    applicationPhase: nextStage,
-                    status: "Admitted",
-                    role: traineeRole._id,
-                  },
-                }
-              );
-            } else {
-              throw new Error("Email not found for the provided applicant ID");
-            }
+            await pusher
+              .trigger(`notifications-${user!._id}`, "new-notification", {
+                message: notification2.message,
+                id: notification2._id,
+                createdAt: notification2.createdAt,
+                read: notification2.read,
+              })
+              .catch((error) => {
+                console.error("Error with Pusher trigger:", error);
+              });
             break;
 
           case "Rejected":
@@ -394,7 +471,36 @@ export const applicationStageResolvers: any = {
               { _id: applicantId },
               { $set: { applicationPhase: "Rejected", status: "Rejected" } }
             );
-            message = `Applicant Rejected from the ${stageDismissedFrom?.applicationPhase} stage.`;
+            message = `You have been rejected from the ${stageDismissedFrom?.applicationPhase} stage.`;
+            
+            const notification3 = await ApplicantNotificationsModel.create({
+              userId: user!._id,
+              message,
+              eventType: "general",
+            });
+
+            await sendEmailTemplate(
+              user!.email,
+              "Application Update",
+              `Hello ${user!.email.split("@")[0]}, `,
+              `We are sorry to inform you that 
+              your application has been rejected from the ${stageDismissedFrom?.applicationPhase} stage.
+                    <br />
+                    <br />
+                    You can always apply again.
+              `
+            );
+
+            await pusher
+              .trigger(`notifications-${user!._id}`, "new-notification", {
+                message: notification3.message,
+                id: notification3._id,
+                createdAt: notification3.createdAt,
+                read: notification3.read,
+              })
+              .catch((error) => {
+                console.error("Error with Pusher trigger:", error);
+              });
             break;
 
           case "Shortlisted":
@@ -414,7 +520,35 @@ export const applicationStageResolvers: any = {
               { _id: applicantId },
               { $set: { applicationPhase: nextStage, status: "No action" } }
             );
-            message = `Applicant advanced to ${nextStage} stage.`;
+            message = `You have advanced to the ${nextStage} stage.`;
+            const notification4 = await ApplicantNotificationsModel.create({
+              userId: user!._id,
+              message,
+              eventType: "general",
+            });
+
+            await sendEmailTemplate(
+              user!.email,
+              "Application Update",
+              `Hello ${user!.email.split("@")[0]}, `,
+              `Your application has been moved to ${nextStage} stage.
+                    <br />
+                    You will hear from us very soon.
+                    <br />
+                    Thank you for your patience.
+              `
+            );
+
+            await pusher
+              .trigger(`notifications-${user!._id}`, "new-notification", {
+                message: notification4.message,
+                id: notification4._id,
+                createdAt: notification4.createdAt,
+                read: notification4.read,
+              })
+              .catch((error) => {
+                console.error("Error with Pusher trigger:", error);
+              });
             break;
         }
 

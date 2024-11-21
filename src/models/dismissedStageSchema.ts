@@ -29,5 +29,5 @@ const rejectedSchema = new Schema<IDismissed>({
   timestamps: true
 });
 
-const Rejected = mongoose.model<IDismissed>("Rejected", rejectedSchema);
+const Rejected = mongoose.model<IDismissed>("Dismissed", rejectedSchema);
 export default Rejected;
