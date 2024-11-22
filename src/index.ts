@@ -1,4 +1,4 @@
-import { ApolloServer } from "apollo-server";
+import { ApolloServer } from 'apollo-server-express';
 import { mergeResolvers, mergeTypeDefs } from "@graphql-tools/merge";
 import { connect } from "./database/db.config";
 import "./utils/cronJob";
@@ -88,6 +88,8 @@ import { jobApplicationTypeDefs } from "./schema/jobApplicationSchema";
 import { jobApplicationResolver } from "./resolvers/jobApplicationResolver";
 import { blogRelatedResolvers } from "./resolvers/blogRelatedArticlesResolver";
 import { blogRelatedArticlesSchema } from "./schema/blogRelatedArticlesSchema";
+import express from 'express';
+import path from 'path';
 
 const PORT = process.env.PORT || 3000;
 
@@ -180,6 +182,10 @@ const typeDefs = mergeTypeDefs([
   blogRelatedArticlesSchema
 ]);
 
+connect();
+const app = express();
+app.use(express.static(path.join(__dirname, '../public')));
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
@@ -206,7 +212,13 @@ const server = new ApolloServer({
   plugins: [ApolloServerPluginInlineTrace()],
 });
 
-connect().then(() => {
-  console.log("Database connected!");
-  server.listen(PORT).then(({ url }) => console.info(`App on ${url}`));
-});
+(async () => {
+  await server.start(); 
+  server.applyMiddleware({ app });
+
+  app.listen(PORT, () => {
+    console.log(`Server ready at http://localhost:${PORT}${server.graphqlPath}`);
+    console.log(`Landing page available at http://localhost:${PORT}/`);
+  });
+})();
+
