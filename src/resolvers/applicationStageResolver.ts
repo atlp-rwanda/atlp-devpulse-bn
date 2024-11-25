@@ -153,6 +153,96 @@ export const applicationStageResolvers: any = {
         );
       }
     },
+
+    // getInterviewStages: async (_: any, __: any, context: any) => {
+    //   try {
+    //     if (!context.currentUser) {
+    //       throw new CustomGraphQLError(
+    //         "You must be logged in to view your applications"
+    //       );
+    //     }
+
+    //     const applicant = await InterviewAssessment.find()
+    //       .populate("applicantId")
+    //       .exec();
+    //     return applicant
+    //       .filter((tracking: any) => tracking.applicantId !== null)
+    //       .map((tracking: any) => ({
+    //         applicant: tracking.applicantId,
+    //         status: tracking.status,
+    //         score: tracking.score,
+    //         comments: tracking.comments,
+    //         createdAt: tracking.createdAt.toLocaleString(),
+    //         updatedAt: tracking.updatedAt.toLocaleString(),
+    //       }));
+    //   } catch (err: any) {
+    //     throw new Error(`Failed to retrieve applicants ${err.message}`);
+    //   }
+    // },
+
+    getInterviewStages: async (_: any, __: any, context: any) => {
+      try {
+        if (!context.currentUser) {
+          throw new CustomGraphQLError(
+            "You must be logged in to view your applications"
+          );
+        }
+
+        const applicants = await InterviewAssessment.find()
+          .populate({
+            path: "applicantId",
+            model: "Trainees",
+            populate: [
+              {
+                path: "technicalInterviews",
+                model: "TechnicalInterview",
+                populate: {
+                  path: "coordinatorId",
+                  model: LoggedUserModel,
+                  select: "firstname lastname email role",
+                },
+              },
+            ],
+          })
+          .exec();
+
+        return applicants
+          .filter((tracking: any) => tracking.applicantId !== null)
+          .map((tracking: any) => {
+            const interviews = tracking.applicantId.technicalInterviews || [];
+            return {
+              applicant: {
+                _id: tracking.applicantId._id,
+                firstName: tracking.applicantId.firstName,
+                lastName: tracking.applicantId.lastName,
+                email: tracking.applicantId.email,
+                applicationPhase: tracking.applicantId.applicationPhase,
+                status: tracking.applicantId.status,
+              },
+              interviews: interviews.map((interview: any) => ({
+                _id: interview._id,
+                meetingLink: interview.meetingLink,
+                meetingPlatform: interview.meetingPlatform,
+                coordinator: interview.coordinatorId || null,
+                scheduledDate: interview.scheduledDate?.toISOString(),
+                status: interview.status,
+                emailSent: interview.emailSent,
+                createdAt: interview.createdAt?.toISOString(),
+                updatedAt: interview.updatedAt?.toISOString(),
+              })),
+              status: tracking.status,
+              score: tracking.interviewScore,
+              comments: tracking.comments,
+              createdAt: tracking.createdAt.toLocaleString(),
+              updatedAt: tracking.updatedAt.toLocaleString(),
+            };
+          });
+      } catch (err: any) {
+        throw new CustomGraphQLError(
+          `Failed to retrieve applicants: ${err.message}`
+        );
+      }
+    },
   },
   Mutation: {
     moveToNextStage: async (

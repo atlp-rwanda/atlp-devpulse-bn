@@ -1,8 +1,20 @@
 import { sendEmailTemplate } from "../helpers/bulkyMails";
+import { LoggedUserModel } from "../models/AuthUser";
 import { RoleModel } from "../models/roleModel";
 import TechnicalInterview from "../models/technicalInterviewSchema";
 import TraineeApplicant from "../models/traineeApplicant";
 import { CustomGraphQLError } from "../utils/customErrorHandler";
+interface PopulatedCoordinator {
+  _id: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  role: {
+    roleName: string;
+    description?: string;
+    permissions?: string[];
+  };
+}
 
 export const technicalInterviewResolvers = {
   Query: {
@@ -25,13 +37,39 @@ export const technicalInterviewResolvers = {
             model: TraineeApplicant,
             select: "firstName lastName email",
           })
-          .populate("coordinatorId")
+          .populate({
+            path: "coordinatorId",
+            model: LoggedUserModel,
+            populate: {
+              path: "role",
+              model: RoleModel,
+              select: "roleName",
+            },
+            select: "firstname lastname email role",
+          })
           .exec();
+        console.log("Populated Interviews: ", interviews);
 
-        return interviews.map((interview) => ({
+        // Optionally filter out coordinators who aren't admin
+        const filteredInterviews = interviews.map((interview) => {
+          const coordinator =
+            interview.coordinatorId as PopulatedCoordinator | null;
+          if (
+            coordinator &&
+            typeof coordinator === "object" &&
+            coordinator.role &&
+            coordinator.role.roleName === "admin"
+          ) {
+            interview.coordinatorId = null; // Remove non-admin coordinators
+          }
+
+          return interview;
+        });
+
+        return filteredInterviews.map((interview) => ({
           _id: interview._id,
           applicant: interview.applicantId,
-          coordinator: interview.coordinatorId,
+          coordinator: interview.coordinatorId || null,
           meetingLink: interview.meetingLink,
           scheduledDate: interview.scheduledDate.toISOString(),
           meetingPlatform: interview.meetingPlatform,
@@ -136,6 +174,33 @@ export const technicalInterviewResolvers = {
           );
         }
 
+        // Verify coordinator role
+        const coordinator = await LoggedUserModel.findById(
+          coordinatorId
+        ).populate<{
+          role: { roleName: string };
+        }>({
+          path: "role",
+          model: RoleModel,
+          select: "roleName",
+        });
+
+        if (!coordinator) {
+          throw new CustomGraphQLError("Coordinator not found");
+        }
+
+        console.log("COORDINATOR'S ROLE =>>>>>>>>>>", coordinator);
+
+        // Allow both admin and superAdmin roles to be coordinators
+        if (
+          coordinator.role.roleName !== "admin" &&
+          coordinator.role.roleName !== "superAdmin"
+        ) {
+          throw new CustomGraphQLError(
+            "The selected coordinator must be an admin or super admin."
+          );
+        }
+
         // Create interview
         const interview = await TechnicalInterview.create({
           applicantId,
@@ -151,22 +216,22 @@ export const technicalInterviewResolvers = {
 
         // Get applicant and coordinator details for email
         const applicantData = await TraineeApplicant.findById(applicantId);
-        const coordinatorData = await TraineeApplicant.findById(applicantId);
+        const coordinatorData = await LoggedUserModel.findById(coordinatorId);
 
         // Send email to both applicant and coordinator
         if (applicantData?.email && coordinatorData?.email) {
           const emailTemplate = `
-          <p>Date: ${interview.scheduledDate.toLocaleString()}</p>
-          Platform: ${interview.meetingPlatform}</br>
-          Meeting Link: <a href="${
-            interview.meetingLink
-          }" target="_blank">Click here to join the meeting</a></br>
-          
-          Applicant: ${applicant.firstName} ${applicant.lastName}</br>
-          Technical Coordinator: ${coordinatorData.firstName} ${
-            coordinatorData.lastName
+            <p>Date: ${interview.scheduledDate.toLocaleString()}</p>
+            Platform: ${interview.meetingPlatform}</br>
+            Meeting Link: <a href="${
+              interview.meetingLink
+            }" target="_blank">Click here to join the meeting</a></br>
+            
+            Applicant: ${applicantData.firstName} ${applicantData.lastName}</br>
+            Technical Coordinator: ${coordinatorData.firstname} ${
+            coordinatorData.lastname
           }
-        `;
+          `;
           Promise.all([
             sendEmailTemplate(
               applicantData.email,
@@ -175,7 +240,7 @@ export const technicalInterviewResolvers = {
               emailTemplate
             ),
             sendEmailTemplate(
-              "devpulsedev@gmail.com",
+              coordinatorData.email,
               "Technical Interview Scheduled",
               "Technical Interview Details",
               emailTemplate

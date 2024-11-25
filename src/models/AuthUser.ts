@@ -13,6 +13,7 @@ const userSchema = new Schema(
       type: String,
       default: process.env.DEFAULT_AVATAR,
     },
+<<<<<<< HEAD
     bio: {
       type: String,
       default: "",
@@ -20,6 +21,11 @@ const userSchema = new Schema(
     isVerified:{
       type:Boolean,
       default:false
+=======
+    isVerified: {
+      type: Boolean,
+      default: false,
+>>>>>>> 5a8806a (implement Technical Interview invitation)
     },
     role: {
       type: Schema.Types.ObjectId,
@@ -49,17 +55,15 @@ const userSchema = new Schema(
     isEmailVerified: {
       type: Boolean,
       default: false,
-
     },
     cohort: {
       type: Schema.Types.ObjectId,
       ref: "cohortModel",
     },
     resetToken: String,
-    resetTokenExpiration:Date
-
+    resetTokenExpiration: Date,
   },
   { timestamps: true }
 );
 
-export const LoggedUserModel = model("LoggedUserModel", userSchema);  
+export const LoggedUserModel = model("LoggedUserModel", userSchema);

@@ -2,12 +2,29 @@ import mongoose, { Schema, Document } from "mongoose";
 
 interface ITechnicalInterview extends Document {
   applicantId: mongoose.Schema.Types.ObjectId;
-  coordinatorId: mongoose.Schema.Types.ObjectId;
+  coordinatorId: mongoose.Schema.Types.ObjectId | null;
   meetingLink: string;
   scheduledDate: Date;
   meetingPlatform: string;
   status: string;
   emailSent: boolean;
+}
+
+interface PopulatedCoordinator {
+  _id: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  role: {
+    roleName: string;
+    description: string;
+    permissions: string[];
+  };
+}
+
+interface TechnicalInterview {
+  _id: string;
+  coordinatorId: PopulatedCoordinator;
 }
 
 const technicalInterviewSchema = new Schema<ITechnicalInterview>(
@@ -19,7 +36,7 @@ const technicalInterviewSchema = new Schema<ITechnicalInterview>(
     },
     coordinatorId: {
       type: Schema.Types.ObjectId,
-      ref: "Trainees",
+      ref: "LoggedUserModel",
       required: true,
     },
     meetingLink: {
