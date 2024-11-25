@@ -87,6 +87,10 @@ import { commentReplyResolvers } from "./resolvers/commentReplyResolvers";
 import { reactionSchema } from "./schema/reactionSchema";  
 import { reactionResolvers } from "./resolvers/reactionResolvers";
  
+import { jobApplicationTypeDefs } from "./schema/jobApplicationSchema";
+import { jobApplicationResolver } from "./resolvers/jobApplicationResolver";
+import { blogRelatedResolvers } from "./resolvers/blogRelatedArticlesResolver";
+import { blogRelatedArticlesSchema } from "./schema/blogRelatedArticlesSchema";
 
 const PORT = process.env.PORT || 3000;
 
@@ -128,12 +132,14 @@ const resolvers = mergeResolvers([
   ticketResolver,
   filterTicketResolver,
   applicationStageResolvers,
+  jobApplicationResolver,
   blogResolvers,
   likeResolvers,
   commentResolvers,
   commentLikeResolvers,
   commentReplyResolvers,
   reactionResolvers,
+  blogRelatedResolvers
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -175,6 +181,8 @@ const typeDefs = mergeTypeDefs([
   commentReplySchema,
   commentLikeSchema,
   reactionSchema,
+  jobApplicationTypeDefs,
+  blogRelatedArticlesSchema
 ]);
 
 const server = new ApolloServer({
@@ -187,7 +195,7 @@ const server = new ApolloServer({
     try {
       authToken =
         req.headers.authorization &&
-        req.headers.authorization.startsWith("Bearer ")
+          req.headers.authorization.startsWith("Bearer ")
           ? req.headers.authorization.split(" ")[1]
           : req.headers.authorization;
       if (authToken) {
