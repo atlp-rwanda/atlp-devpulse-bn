@@ -58,38 +58,36 @@ export const blogResolvers = {
         tag: { type: GraphQLString },
       },
       resolve: async (_: any, { tag }: GetAllBlogsArgs, context: any) => {
-
         try {
-          const userWithRole = await LoggedUserModel.findById(context.currentUser?._id).populate("role");
-  
-          if (!userWithRole) {
-            throw new CustomGraphQLError("User not found or not authenticated.");
-          }
-  
+          const userWithRole = context.currentUser
+            ? await LoggedUserModel.findById(context.currentUser._id).populate("role")
+            : null;
+
           const filter = tag ? { tags: tag } : {};
-  
           const blogs = await BlogModel.find(filter).populate("author likes comments");
-  
+
           return blogs.filter((blog) => {
             if (blog.isHidden) {
-              const authorId = blog.author._id;
-              const currentUserId = context.currentUser?._id;
+              if (userWithRole) {
+                const authorId = blog.author._id;
+                const currentUserId = context.currentUser._id;
 
-              const isSameUser = new mongoose.Types.ObjectId(authorId).equals(new mongoose.Types.ObjectId(currentUserId));
+                const isSameUser = new mongoose.Types.ObjectId(authorId).equals(new mongoose.Types.ObjectId(currentUserId));
+                const isAdmin = ["admin", "superAdmin"].includes((userWithRole.role as any)?.roleName);
 
-              if (isSameUser || 
-                  ["admin", "superAdmin"].includes((userWithRole.role as any)?.roleName)) {
-                return true; 
+                // Show hidden blog if the user is the author or has an admins role
+                return isSameUser || isAdmin;
               }
-              return false; 
+              return false;
             }
-            return true; 
+            return true;
           });
         } catch (error: any) {
           throw new CustomGraphQLError(`Error fetching blogs: ${error.message}`);
         }
       },
     },
+
 
     getBlogsByAuthor: {
       type: new GraphQLList(BlogType),
@@ -192,8 +190,8 @@ export const blogResolvers = {
 
       const userWithRole = await LoggedUserModel.findById(context.currentUser?._id).populate("role");
 
-      if (!userWithRole || 
-          !["admin", "superAdmin"].includes((userWithRole.role as any)?.roleName)) {
+      if (!userWithRole ||
+        !["admin", "superAdmin"].includes((userWithRole.role as any)?.roleName)) {
         throw new CustomGraphQLError("You do not have permission to hide this blog.");
       }
       const blogId = new mongoose.Types.ObjectId(id);
