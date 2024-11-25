@@ -31,12 +31,24 @@ const blogSchema = new Schema({
       ref: "Comment",
     },
   ],
+  commentLikesCount: {
+    type: Number,
+    default: 0,
+  },
   reactions: [
     {
       type: Schema.Types.ObjectId,
       ref: "Reaction", 
     },
   ],
+  reactionsCount: {
+    LIKE: { type: Number, default: 0 },
+    LOVE: { type: Number, default: 0 },
+    CELEBRATE: { type: Number, default: 0 },
+    SUPPORT: { type: Number, default: 0 },
+    FUNNY: { type: Number, default: 0 },
+  },
+  
   isHidden: {
     type: Boolean,
     default: false,

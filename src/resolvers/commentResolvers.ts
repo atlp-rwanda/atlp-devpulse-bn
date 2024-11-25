@@ -2,6 +2,8 @@ import { GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString } from "graphql";
 import { CommentModel } from "../models/commentModel";
 import { BlogModel } from "../models/blogModel";
 import { CommentType } from "../types/commentType";
+import { GraphQLInt } from "graphql";
+import { CommentLikeModel } from "../models/commentLike";
 
 interface AddCommentArgs {
   content: string;
@@ -27,13 +29,38 @@ export const commentResolvers = {
     getCommentsByBlog: {
       type: new GraphQLList(CommentType),
       args: { blog: { type: new GraphQLNonNull(GraphQLID) } },
-      resolve: async (_: any, { blog }: GetCommentsByBlogArgs) => {
-        return await CommentModel.find({ blog })
-          .populate("user")
-          .populate({
-            path: "blog",
-            populate: { path: "author" },
-          });
+      resolve: async (_: any, { blog }: { blog: string }) => {
+        try {
+          const blogData = await BlogModel.findById(blog);
+          if (!blogData) {
+            throw new Error("Blog not found");
+          }
+  
+          const comments = await CommentModel.find({ blog })
+            .populate({
+              path: "user",
+              select: "_id firstname lastname email", 
+            })
+            .lean(); 
+  
+          const commentsWithLikes = await Promise.all(
+            comments.map((comment) => ({
+              ...comment,
+              id: comment._id.toString(), 
+              user: comment.user
+                ? {
+                    ...comment.user,
+                    id: comment.user._id.toString(), 
+                  }
+                : null, 
+            }))
+          );
+  
+          return commentsWithLikes;
+        } catch (error) {
+          console.error("Error fetching comments by blog:", error);
+          throw new Error("Failed to fetch comments by blog.");
+        }
       },
     },
   },
@@ -102,4 +129,5 @@ export const commentResolvers = {
     },
   },
 };
+
 

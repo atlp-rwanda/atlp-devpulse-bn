@@ -84,8 +84,9 @@ import { commentReplySchema } from "./schema/commentReplySchema";
 import { commentLikeSchema } from "./schema/commentLikeSchema";
 import { commentLikeResolvers } from "./resolvers/commentLikeResolvers";
 import { commentReplyResolvers } from "./resolvers/commentReplyResolvers";
-import { reactionSchema } from "./schema/reactionSchema";  // Adjust the path
-import { reactionResolvers } from "./resolvers/reactionResolvers";  // Adjust the path
+import { reactionSchema } from "./schema/reactionSchema";  
+import { reactionResolvers } from "./resolvers/reactionResolvers";
+ 
 
 const PORT = process.env.PORT || 3000;
 

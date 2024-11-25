@@ -24,8 +24,8 @@ export const reactionSchema = gql`
 
   type Query {
     getReactionsByBlog(blog: ID!): [Reaction!]!
-    getAllReactionsCount(blog: ID!): String
-    getReactionsCountByBlogAndType(blog: ID!, type: String!): String
+    getAllReactionsCount(blog: ID!): Int
+    getReactionsCountByBlogAndType(blog: ID!, type: ReactionType!): Int
   }
 
   input ReactionInput {
@@ -35,7 +35,7 @@ export const reactionSchema = gql`
   }
 
   type Mutation {
-  addReaction(reactionFields: ReactionInput): Reaction!
-  removeReaction(user: ID!, blog: ID!): Boolean!
- }
+    addReaction(reactionFields: ReactionInput): Reaction!
+    removeReaction(user: ID!, blog: ID!): Boolean!
+  }
 `;
