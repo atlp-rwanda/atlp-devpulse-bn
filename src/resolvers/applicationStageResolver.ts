@@ -413,7 +413,28 @@ export const applicationStageResolvers: any = {
                 },
               }
             );
+             const updatedApplicant = await TraineeApplicant.findOne({
+               _id: applicantId,
+             })
+               .populate("email")
+               .lean();
 
+             const email = updatedApplicant?.email;
+
+             if (email) {
+               await LoggedUserModel.updateOne(
+                 { email },
+                 {
+                   $set: {
+                     applicationPhase: nextStage,
+                     status: "Admitted",
+                     role: traineeRole._id,
+                   },
+                 }
+               );
+             } else {
+               throw new Error("Email not found for the provided applicant ID");
+             }
             const notification2 = await ApplicantNotificationsModel.create({
               userId: user!._id,
               message,
