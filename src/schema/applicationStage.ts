@@ -36,9 +36,21 @@ export const applicationStageDefs = gql`
     createdAt: String
     updatedAt: String
   }
+
+  type stageWithInterviews {
+    applicant: Applicant
+    status: String!
+    score: Float
+    comments: String
+    createdAt: String
+    updatedAt: String
+    interviews: [TechnicalInterview]
+  }
+
   type Query {
     getStageHistoryByApplicant(applicantId: ID!): HistoryStage
     getApplicantsByStage(stage: String!): [stageByModel!]!
+    getInterviewStages: [stageWithInterviews!]!
   }
 
   type response {

@@ -7,6 +7,7 @@ import Rejected from "../models/dismissedStageSchema";
 import Admitted from "../models/admittedStageSchema";
 import InterviewAssessment from "../models/InterviewAssessmentStageSchema";
 import TechnicalAssessment from "../models/technicalAssessmentStage";
+import { LoggedUserModel } from "../models/AuthUser";
 
 const validStages = [
   "Shortlisted",
@@ -28,7 +29,7 @@ async function getApplicantsByModel(model: any) {
 async function updateApplicantAfterDismissed(model: any, applicantId: string) {
   await model.updateOne({ applicantId }, { $set: { status: "Rejected" } });
 }
-async function updateApplicantAfterAdmitted(model: any,applicantId:string) {
+async function updateApplicantAfterAdmitted(model: any, applicantId: string) {
   await model.updateOne({ applicantId }, { $set: { status: "Admitted" } });
 }
 export const applicationStageResolvers: any = {
@@ -85,6 +86,96 @@ export const applicationStageResolvers: any = {
       } catch (error: any) {
         throw new Error(
           `Failed to retrieve applicants for stage ${stage}: ${error.message}`
+        );
+      }
+    },
+
+    // getInterviewStages: async (_: any, __: any, context: any) => {
+    //   try {
+    //     if (!context.currentUser) {
+    //       throw new CustomGraphQLError(
+    //         "You must be logged in to view your applications"
+    //       );
+    //     }
+
+    //     const applicant = await InterviewAssessment.find()
+    //       .populate("applicantId")
+    //       .exec();
+    //     return applicant
+    //       .filter((tracking: any) => tracking.applicantId !== null)
+    //       .map((tracking: any) => ({
+    //         applicant: tracking.applicantId,
+    //         status: tracking.status,
+    //         score: tracking.score,
+    //         comments: tracking.comments,
+    //         createdAt: tracking.createdAt.toLocaleString(),
+    //         updatedAt: tracking.updatedAt.toLocaleString(),
+    //       }));
+    //   } catch (err: any) {
+    //     throw new Error(`Failed to retrieve applicants ${err.message}`);
+    //   }
+    // },
+
+    getInterviewStages: async (_: any, __: any, context: any) => {
+      try {
+        if (!context.currentUser) {
+          throw new CustomGraphQLError(
+            "You must be logged in to view your applications"
+          );
+        }
+
+        const applicants = await InterviewAssessment.find()
+          .populate({
+            path: "applicantId",
+            model: "Trainees",
+            populate: [
+              {
+                path: "technicalInterviews",
+                model: "TechnicalInterview",
+                populate: {
+                  path: "coordinatorId",
+                  model: LoggedUserModel,
+                  select: "firstname lastname email role",
+                },
+              },
+            ],
+          })
+          .exec();
+
+        return applicants
+          .filter((tracking: any) => tracking.applicantId !== null)
+          .map((tracking: any) => {
+            const interviews = tracking.applicantId.technicalInterviews || [];
+            return {
+              applicant: {
+                _id: tracking.applicantId._id,
+                firstName: tracking.applicantId.firstName,
+                lastName: tracking.applicantId.lastName,
+                email: tracking.applicantId.email,
+                applicationPhase: tracking.applicantId.applicationPhase,
+                status: tracking.applicantId.status,
+              },
+              interviews: interviews.map((interview: any) => ({
+                _id: interview._id,
+                meetingLink: interview.meetingLink,
+                meetingPlatform: interview.meetingPlatform,
+                coordinator: interview.coordinatorId || null,
+                scheduledDate: interview.scheduledDate?.toISOString(),
+                status: interview.status,
+                emailSent: interview.emailSent,
+                createdAt: interview.createdAt?.toISOString(),
+                updatedAt: interview.updatedAt?.toISOString(),
+              })),
+              status: tracking.status,
+              score: tracking.interviewScore,
+              comments: tracking.comments,
+              createdAt: tracking.createdAt.toLocaleString(),
+              updatedAt: tracking.updatedAt.toLocaleString(),
+            };
+          });
+      } catch (err: any) {
+        throw new CustomGraphQLError(
+          `Failed to retrieve applicants: ${err.message}`
         );
       }
     },
@@ -230,7 +321,11 @@ export const applicationStageResolvers: any = {
               );
             }
 
-            await Promise.all(models.map(model => updateApplicantAfterAdmitted(model, applicantId)));
+            await Promise.all(
+              models.map((model) =>
+                updateApplicantAfterAdmitted(model, applicantId)
+              )
+            );
 
             await Admitted.create({
               applicantId,
@@ -252,7 +347,11 @@ export const applicationStageResolvers: any = {
                 { $set: { status: "Rejected", exitedAt: new Date() } }
               );
             }
-            await Promise.all(models.map(model => updateApplicantAfterDismissed(model, applicantId)));
+            await Promise.all(
+              models.map((model) =>
+                updateApplicantAfterDismissed(model, applicantId)
+              )
+            );
             const stageDismissedFrom = await TraineeApplicant.findOne({
               _id: applicantId,
             });
