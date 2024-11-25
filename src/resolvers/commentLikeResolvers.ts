@@ -44,7 +44,7 @@ export const commentLikeResolvers = {
   },
   Mutation: {
     addCommentLike: {
-      type: GraphQLInt, 
+      type: GraphQLInt,
       args: {
         user: { type: new GraphQLNonNull(GraphQLID) },
         comment: { type: new GraphQLNonNull(GraphQLID) },
@@ -52,30 +52,44 @@ export const commentLikeResolvers = {
       resolve: async (_: any, { user, comment }: any) => {
         try {
           const existingLike = await CommentLikeModel.findOne({ user, comment });
+  
           if (existingLike) {
-            throw new Error("User has already liked this comment.");
+            await CommentLikeModel.findByIdAndDelete(existingLike._id);
+  
+            const updatedComment = await CommentModel.findByIdAndUpdate(
+              comment,
+              { $pull: { likes: existingLike._id } },
+              { new: true }
+            );
+  
+            if (!updatedComment) {
+              throw new Error("Failed to update comment after removing the like.");
+            }
+  
+            const updatedLikeCount = updatedComment.likes.length;
+            return updatedLikeCount;
           }
-
+  
           const like = new CommentLikeModel({ user, comment });
-
+  
           const savedLike = await like.save();
           const updatedComment = await CommentModel.findByIdAndUpdate(
             comment,
             { $push: { likes: savedLike._id } },
             { new: true }
           );
-
+  
           if (!updatedComment) {
             throw new Error("Failed to update comment with the new like.");
           }
-
+  
           const updatedLikeCount = updatedComment.likes.length;
           return updatedLikeCount;
         } catch (error) {
-          console.error("Error adding comment like:", error);
-          throw new Error("Failed to add comment like.");
+          console.error("Error updating comment like:", error);
+          throw new Error("Failed to update comment like.");
         }
       },
     },
-  },
+  },  
 };
