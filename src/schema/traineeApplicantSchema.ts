@@ -37,8 +37,12 @@ export const typeDefsTrainee = gql`
     status: String!
     applicationPhase: ApplicationPhase!
     cohort: ID
+    role: Role
     createdAt: String!
     user: User
+    coverLetterUrl: String!
+    idDocumentUrl: String!
+    resumeUrl: String!
   }
 
   type CycleApplied {
@@ -51,11 +55,11 @@ export const typeDefsTrainee = gql`
   }
 
   type applicationCycle {
-  _id: ID!
-  name: String!
-  startDate: String!
-  endDate: String!
-}
+    _id: ID!
+    name: String!
+    startDate: String!
+    endDate: String!
+  }
 
   type AcceptTraineeResponse {
     success: Boolean!
@@ -77,7 +81,11 @@ export const typeDefsTrainee = gql`
     firstName: String!
     email: String!
     cycle_id: ID!
+    role: ID
     attributes: traineeAttributeInput
+    coverLetterUrl:String
+    idDocumentUrl:String
+    resumeUrl:String
   }
 
   input traineeApplicantEmail {
@@ -88,6 +96,7 @@ export const typeDefsTrainee = gql`
     firstName: String
     lastName: String
     cycle_id: ID
+    role: ID
     status: String
   }
 

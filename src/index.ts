@@ -1,7 +1,7 @@
 import { ApolloServer } from "apollo-server";
 import { mergeResolvers, mergeTypeDefs } from "@graphql-tools/merge";
 import { connect } from "./database/db.config";
-import './utils/cronJob';
+import "./utils/cronJob";
 import { typeDefsTrainee } from "./schema/traineeApplicantSchema";
 import { typeDefsAttribute } from "./schema/traineeAttributeSchema";
 import { traineeApplicantResolver } from "./resolvers/traineeApplicantResolver";
@@ -30,7 +30,7 @@ import { LoggedUserSchema } from "./schema/loggedUser";
 import { loggedUserResolvers } from "./resolvers/loginUserResolver";
 import sendBulkyEmailResolver from "./resolvers/bulkyEmailResolver";
 import sendBulkyEmailTypeDefs from "./schema/bulkyEmailTypeDefs";
-import {roleSchema} from "./schema/roleTypedefs";
+import { roleSchema } from "./schema/roleTypedefs";
 import { roleResolvers } from "./resolvers/roleResolver";
 import { permissionResolvers } from "./resolvers/permissionResolver";
 import { permissionSchemaTypeDef } from "./schema/permissionTypeSchema";
@@ -40,43 +40,57 @@ import { formSchema } from "./schema/formSchema";
 import { formsResolver } from "./resolvers/forms.resolver";
 import { formatError } from "./utils/customErrorHandler";
 import { formJobSchema } from "./schema/formJobSchema";
-import { jobPostResolver } from  "./resolvers/jobPostResolvers"
+import { jobPostResolver } from "./resolvers/jobPostResolvers";
 import { programTypeDefs } from "./schema/programSchema";
 import { programResolvers } from "./resolvers/programResolver";
 import { cohortSchema } from "./schema/cohortScheme";
 import { cohortResolver } from "./resolvers/cohortResolver";
-import { viewOwnApplicationTypeDefs }  from "./schema/viewOwnApplication";
+import { viewOwnApplicationTypeDefs } from "./schema/viewOwnApplication";
 import candidateViewOwnApplication from "./resolvers/viewOwnApplicationResolver";
 import { gradingTypeDefs } from "./schema/gradingSchema";
 import gradingResolver from "./resolvers/grading";
-import {adminViewApplicationsResolvers }from "./resolvers/adminViewApplications";
-import { adminViewAllApplicationsTypedefs} from "./schema/adminViewApplicationsSchema";
+import { adminViewApplicationsResolvers } from "./resolvers/adminViewApplications";
+import { adminViewAllApplicationsTypedefs } from "./schema/adminViewApplicationsSchema";
 import { attendanceResolver } from "./resolvers/attendanceResolver";
 import { attendanceSchema } from "./schema/attendanceSchema";
 import { performanceResolver } from "./resolvers/performanceResolver";
 import { performanceSchema } from "./schema/performanceSchema";
-import { applicationStageDefs } from './schema/applicationStage';
-import { applicationStageResolvers } from './resolvers/applicationStageResolver';
+import { applicationStageDefs } from "./schema/applicationStage";
+import { applicationStageResolvers } from "./resolvers/applicationStageResolver";
 import filterJobResolver from "./resolvers/filterJob";
 import filterProgramResolver from "./resolvers/filterPrograms";
 import filterRoleResolver from "./resolvers/filterRole";
-import applicantNotificationResolver from "./resolvers/applicantNotifications"
-import applicantNotifcationsTypedefs from "./schema/applicantNotifications"
+import applicantNotificationResolver from "./resolvers/applicantNotifications";
+import applicantNotifcationsTypedefs from "./schema/applicantNotifications";
 // import {forgetPassword } from "./resolvers/forgetpassword";
-import { passwordResolvers } from './resolvers/forgetpassword';
+import { passwordResolvers } from "./resolvers/forgetpassword";
 import { passwordSchema } from "./schema/forgetpassword";
 import { SearchSchema } from "./schema/searchSchema";
 import { searchResolver } from "./resolvers/searchResolver";
-import {appliedJobResolver} from "./resolvers/appliedJobResolver";
+import { appliedJobResolver } from "./resolvers/appliedJobResolver";
 import { appliedJobTypeDefs } from "./schema/appliedJobTypeDefs";
 import { adminNotificationsResolver } from "./resolvers/adminNotificationsResolver";
-import { adminNotificationsSchema } from "./schema/adminNotificationsSchema";import { ticketResolver } from "./resolvers/ticketResolver";
+import { adminNotificationsSchema } from "./schema/adminNotificationsSchema";
+import { ticketResolver } from "./resolvers/ticketResolver";
 import { ticketSchema } from "./schema/ticketSchema";
 import filterTicketResolver from "./resolvers/filterTicketResolver";
-
+import { blogResolvers } from "./resolvers/blogResolvers";
+import { blogSchema } from "./schema/blogSchema";
+import { likeResolvers } from "./resolvers/likeResolvers";
+import { likeSchema } from "./schema/likeSchema";
+import { commentResolvers } from "./resolvers/commentResolvers";
+import { commentSchema } from "./schema/commentSchema";
+import { commentReplySchema } from "./schema/commentReplySchema";
+import { commentLikeSchema } from "./schema/commentLikeSchema";
+import { commentLikeResolvers } from "./resolvers/commentLikeResolvers";
+import { commentReplyResolvers } from "./resolvers/commentReplyResolvers";
+import { jobApplicationTypeDefs } from "./schema/jobApplicationSchema";
+import { jobApplicationResolver } from "./resolvers/jobApplicationResolver";
+import { blogRelatedResolvers } from "./resolvers/blogRelatedArticlesResolver";
+import { blogRelatedArticlesSchema } from "./schema/blogRelatedArticlesSchema";
+import { DocSchema } from "./schema/doc";
+import { docResolver } from "./resolvers/Doc";
 const PORT = process.env.PORT || 3000;
-
-// const PORT = process.env.PORT || 4001;
 
 const resolvers = mergeResolvers([
   applicationCycleResolver,
@@ -115,7 +129,15 @@ const resolvers = mergeResolvers([
   adminNotificationsResolver,
   ticketResolver,
   filterTicketResolver,
-  applicationStageResolvers
+  applicationStageResolvers,
+  jobApplicationResolver,
+  blogResolvers,
+  likeResolvers,
+  commentResolvers,
+  commentLikeResolvers,
+  commentReplyResolvers,
+  blogRelatedResolvers,
+  docResolver
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -151,8 +173,14 @@ const typeDefs = mergeTypeDefs([
   applicationStageDefs,
   adminNotificationsSchema,
   ticketSchema,
-  applicationStageDefs,
-  applicationStageDefs
+  blogSchema,
+  likeSchema,
+  commentSchema,
+  commentReplySchema,
+  commentLikeSchema,
+  jobApplicationTypeDefs,
+  blogRelatedArticlesSchema,
+  DocSchema
 ]);
 
 const server = new ApolloServer({
@@ -163,11 +191,12 @@ const server = new ApolloServer({
     let authToken = null;
     let currentUser = null;
     try {
-      authToken = req.headers.authorization && req.headers.authorization.startsWith("Bearer ")
-        ? req.headers.authorization.split(" ")[1]
-        : req.headers.authorization;
+      authToken =
+        req.headers.authorization &&
+          req.headers.authorization.startsWith("Bearer ")
+          ? req.headers.authorization.split(" ")[1]
+          : req.headers.authorization;
       if (authToken) {
-      
         currentUser = await findOrCreateUser(authToken);
       }
     } catch (error) {
@@ -182,5 +211,5 @@ const server = new ApolloServer({
 
 connect().then(() => {
   console.log("Database connected!");
-  server.listen(PORT).then(({ url }) =>   console.info(`App on ${url}`));
+  server.listen(PORT).then(({ url }) => console.info(`App on ${url}`));
 });
