@@ -36,7 +36,7 @@ const seedUsers = async () => {
       isActive: true,
       gender: "male",
       cohort: cohort._id,
-      applicationPhase: "Accepted",
+      applicationPhase: "Admitted",
       isVerified: true,
     },
     {

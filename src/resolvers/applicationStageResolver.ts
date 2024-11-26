@@ -31,7 +31,7 @@ const models = [
 async function getApplicantsByModel(model: any) {
   return await model.find().populate("applicantId").exec();
 }
-async function updateApplicantAfterDismissed(model: any, applicantId: string) {
+async function updateApplicantAfterRejected(model: any, applicantId: string) {
   await model.updateOne({ applicantId }, { $set: { status: "Rejected" } });
 }
 async function updateApplicantAfterAdmitted(model: any, applicantId: string) {
@@ -148,7 +148,7 @@ export const applicationStageResolvers: any = {
           technicalStage,
           interviewStage,
           admittedStage,
-          dismissedStage,
+          rejectedStage,
           AllStages,
         ] = await Promise.all([
           Shortlisted.findOne({ applicantId: trainee }),
@@ -164,7 +164,7 @@ export const applicationStageResolvers: any = {
           technical: technicalStage,
           interview: interviewStage,
           admitted: admittedStage,
-          dismissed: dismissedStage,
+          rejected: rejectedStage,
           allStages: AllStages,
         };
       } catch (error) {
@@ -477,22 +477,22 @@ export const applicationStageResolvers: any = {
             }
             await Promise.all(
               models.map((model) =>
-                updateApplicantAfterDismissed(model, applicantId)
+                updateApplicantAfterRejected(model, applicantId)
               )
             );
-            const stageDismissedFrom = await TraineeApplicant.findOne({
+            const stageRejectedFrom = await TraineeApplicant.findOne({
               _id: applicantId,
             });
             await Rejected.create({
               applicantId,
-              stageDismissedFrom: stageDismissedFrom?.applicationPhase,
+              stageRejectedFrom: stageRejectedFrom?.applicationPhase,
               comments,
             });
             await TraineeApplicant.updateOne(
               { _id: applicantId },
               { $set: { applicationPhase: "Rejected", status: "Rejected" } }
             );
-            message = `You have been rejected from the ${stageDismissedFrom?.applicationPhase} stage.`;
+            message = `You have been rejected from the ${stageRejectedFrom?.applicationPhase} stage.`;
 
             const notification3 = await ApplicantNotificationsModel.create({
               userId: user!._id,
@@ -505,7 +505,7 @@ export const applicationStageResolvers: any = {
               "Application Update",
               `Hello ${user!.email.split("@")[0]}, `,
               `We are sorry to inform you that 
-              your application has been rejected from the ${stageDismissedFrom?.applicationPhase} stage.
+              your application has been rejected from the ${stageRejectedFrom?.applicationPhase} stage.
                     <br />
                     <br />
                     You can always apply again.

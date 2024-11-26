@@ -10,6 +10,8 @@ export const cohortSchema = gql`
 		end: String
 		phase: String
 		trainees:[traineeApplicant]
+		manager: String
+
 		
 	}
 
@@ -25,6 +27,7 @@ export const cohortSchema = gql`
         start: String!
         end: String!
 		phase: String!
+		manager: String
   }
   input updateCohortInput {
     title: String
@@ -33,6 +36,7 @@ export const cohortSchema = gql`
     start: String
     end: String
     phase: String
+	manager: String
   }
 
 	type Mutation {
