@@ -13,6 +13,7 @@ import { sessionModel } from '../models/session';
 import { cohortModels } from '../models/cohortModel';
 import TraineeApplicant from '../models/traineeApplicant';
 import { publishNotification } from './adminNotificationsResolver';
+import { uploadImage } from '../utils/uploadImage';
 
 const FrontendUrl = process.env.FRONTEND_URL
 
@@ -26,15 +27,17 @@ export const loggedUserResolvers: any = {
 
       const userWithRole = await LoggedUserModel.findById(
         ctx.currentUser._id
-      ).populate("role");
+      ).populate("role")
+      .populate('cohort')
 
       const userId = userWithRole?._id.toString();
 
       if (userId !== id) {
         throw new AuthenticationError("Unauthorized to update  user.");
       }
-      const upvalue = await LoggedUserModel.findById(id).populate("role");
-      return upvalue;
+      // const upvalue = await LoggedUserModel.findById(id).populate("role");
+      // return upvalue;
+      return userWithRole
     },
     async getUsers_Logged(_: any, args: any, ctx: any, amount: any) {
       const users = await LoggedUserModel.find()
@@ -94,6 +97,7 @@ export const loggedUserResolvers: any = {
           password,
           role,
           applicationPhase,
+          bio,
         },
       }: any,
       ctx: any
@@ -135,6 +139,7 @@ export const loggedUserResolvers: any = {
             country,
             role,
             applicationPhase: applicationPhase || "Applied",
+            bio,
           });
           const res: any = await createdUser.save();
           await sendEmailTemplate(
@@ -170,6 +175,7 @@ export const loggedUserResolvers: any = {
           email,
           code,
           password,
+          bio,
         });
         if (error) {
           throw new Error(
@@ -228,6 +234,7 @@ export const loggedUserResolvers: any = {
           gender,
           country,
           role: role._id.toString(),
+          bio,
         });
 
         const res: any = await createdUser.save();
@@ -373,6 +380,7 @@ export const loggedUserResolvers: any = {
           picture,
           code,
           password,
+          bio,
         },
       }: any,
       ctx: any
@@ -382,9 +390,23 @@ export const loggedUserResolvers: any = {
         lastname,
         email,
         telephone,
-        picture,
         code,
+        bio,
       };
+
+      if(picture){
+        try {
+          const uploadResult = await uploadImage(
+            picture,
+            'profile_pictures',
+            `user_${ID}_profile`
+          );
+          updateData.picture = uploadResult.url;
+
+        } catch(err){
+          throw new Error('Failed to upload picture');
+        }
+      }
       if (!ctx.currentUser) {
         throw new AuthenticationError("You must be logged in");
       }
@@ -414,7 +436,7 @@ export const loggedUserResolvers: any = {
 
     async updateUserSelf(
       _: any,
-      { ID, editUserInput: { firstname, lastname, gender, code, country, telephone, picture } }: any, ctx: any) {
+      { ID, editUserInput: { firstname, lastname, gender, code, country, telephone, picture, bio } }: any, ctx: any) {
         
       if (!ctx.currentUser) {
         throw new AuthenticationError('You must be logged in');
@@ -431,6 +453,7 @@ export const loggedUserResolvers: any = {
       if (country) updateFields.country = country;
       if (telephone) updateFields.telephone = telephone;
       if (picture) updateFields.picture = picture;
+      if(bio) updateFields.bio = bio;
     
       const wasEdited = (
         await LoggedUserModel.updateOne(
