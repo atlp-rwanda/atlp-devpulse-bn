@@ -1,4 +1,5 @@
 import { BlogModel } from "../models/blogModel";
+import mongoose from "mongoose";
 
 import {
   GraphQLBoolean,
@@ -45,6 +46,10 @@ interface DeleteBlogArgs {
   id: string;
 }
 
+interface HideBlogArgs {
+  id: string;
+}
+
 export const blogResolvers = {
   Query: {
     getAllBlogs: {
@@ -52,11 +57,37 @@ export const blogResolvers = {
       args: {
         tag: { type: GraphQLString },
       },
-      resolve: async (_: any, { tag }: GetAllBlogsArgs) => {
-        const filter = tag ? { tags: tag } : {};
-        return BlogModel.find(filter).populate("author likes comments");
+      resolve: async (_: any, { tag }: GetAllBlogsArgs, context: any) => {
+        try {
+          const userWithRole = context.currentUser
+            ? await LoggedUserModel.findById(context.currentUser._id).populate("role")
+            : null;
+
+          const filter = tag ? { tags: tag } : {};
+          const blogs = await BlogModel.find(filter).populate("author likes comments");
+
+          return blogs.filter((blog) => {
+            if (blog.isHidden) {
+              if (userWithRole) {
+                const authorId = blog.author._id;
+                const currentUserId = context.currentUser._id;
+
+                const isSameUser = new mongoose.Types.ObjectId(authorId).equals(new mongoose.Types.ObjectId(currentUserId));
+                const isAdmin = ["admin", "superAdmin"].includes((userWithRole.role as any)?.roleName);
+
+                // Show hidden blog if the user is the author or has an admins role
+                return isSameUser || isAdmin;
+              }
+              return false;
+            }
+            return true;
+          });
+        } catch (error: any) {
+          throw new CustomGraphQLError(`Error fetching blogs: ${error.message}`);
+        }
       },
     },
+
 
     getBlogsByAuthor: {
       type: new GraphQLList(BlogType),
@@ -155,6 +186,28 @@ export const blogResolvers = {
         await BlogModel.findByIdAndDelete(id);
         return "Blog deleted successfully";
       },
+    },
+
+    hideBlog: async (_: any, { id }: HideBlogArgs, context: any) => {
+
+      const userWithRole = await LoggedUserModel.findById(context.currentUser?._id).populate("role");
+
+      if (!userWithRole ||
+        !["admin", "superAdmin"].includes((userWithRole.role as any)?.roleName)) {
+        throw new CustomGraphQLError("You do not have permission to hide this blog.");
+      }
+      const blogId = new mongoose.Types.ObjectId(id);
+
+      const blog = await BlogModel.findById(blogId);
+      if (!blog) {
+        throw new CustomGraphQLError("Blog not found.");
+      }
+
+      blog.isHidden = !blog.isHidden;
+
+      await blog.save();
+
+      return blog;
     },
   },
 };

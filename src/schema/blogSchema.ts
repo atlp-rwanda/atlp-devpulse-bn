@@ -78,8 +78,8 @@ export const blogSchema = gql`
       title: String
       content: String
       tags: [String]
-      isHidden: Boolean
     ): Blog!
     deleteBlog(id: ID!): String!
+    hideBlog(id: ID!): Blog!
   }
 `;
