@@ -1,12 +1,12 @@
-import  TraineeApplicant from '../models/traineeApplicant';
+import TraineeApplicant from '../models/traineeApplicant';
 import { applicationCycle } from '../models/applicationCycle';
 
 
 const seedDeleteTrainee = async () => {
     const cycle = await applicationCycle.findOne();
-    
+
     if (!cycle) {
-      return;
+        return;
     }
 
     const deleteTrainee = [
@@ -15,23 +15,34 @@ const seedDeleteTrainee = async () => {
             firstName: 'Ben',
             lastName: 'iraa',
             deleted_at: false,
-            cycle_id: cycle._id
-            
+            cycle_id: cycle._id,
+            coverLetterUrl: "http://example.com/coverLetter.pdf",
+            idDocumentUrl: "http://example.com/idDocument.pdf",
+            resumeUrl: "http://example.com/resume.pdf"
+
         },
         {
             email: 'testUser@gmail.com',
             firstName: 'Test',
             lastName: 'user',
             deleted_at: false,
-            cycle_id: cycle._id
-            
+            cycle_id: cycle._id,
+            coverLetterUrl: "http://example.com/coverLetter.pdf",
+            idDocumentUrl: "http://example.com/idDocument.pdf",
+            resumeUrl: "http://example.com/resume.pdf"
+
+
         },
         {
             email: 'ben@gmail.com',
             firstName: 'iradukunda',
             lastName: 'benjamin',
             deleted_at: false,
-            cycle_id: cycle._id
+            cycle_id: cycle._id,
+            coverLetterUrl: "http://example.com/coverLetter.pdf",
+            idDocumentUrl: "http://example.com/idDocument.pdf",
+            resumeUrl: "http://example.com/resume.pdf"
+
 
         },
         {
@@ -39,7 +50,11 @@ const seedDeleteTrainee = async () => {
             firstName: 'carlos',
             lastName: 'Bz',
             deleted_at: false,
-            cycle_id: cycle._id
+            cycle_id: cycle._id,
+            coverLetterUrl: "http://example.com/coverLetter.pdf",
+            idDocumentUrl: "http://example.com/idDocument.pdf",
+            resumeUrl: "http://example.com/resume.pdf"
+
 
         },
         {
@@ -47,11 +62,15 @@ const seedDeleteTrainee = async () => {
             firstName: 'blaise',
             lastName: 'k',
             deleted_at: false,
-            cycle_id: cycle._id
+            cycle_id: cycle._id,
+            coverLetterUrl: "http://example.com/coverLetter.pdf",
+            idDocumentUrl: "http://example.com/idDocument.pdf",
+            resumeUrl: "http://example.com/resume.pdf"
+
 
         },
     ];
-    await TraineeApplicant.deleteMany({deleteTrainee});
+    await TraineeApplicant.deleteMany({ deleteTrainee });
     await TraineeApplicant.insertMany(deleteTrainee);
     return null;
 }
