@@ -88,6 +88,8 @@ import { jobApplicationTypeDefs } from "./schema/jobApplicationSchema";
 import { jobApplicationResolver } from "./resolvers/jobApplicationResolver";
 import { blogRelatedResolvers } from "./resolvers/blogRelatedArticlesResolver";
 import { blogRelatedArticlesSchema } from "./schema/blogRelatedArticlesSchema";
+import { reactionSchema } from "./schema/reactionSchema";  
+import { reactionResolvers } from "./resolvers/reactionResolvers";
 import { DocSchema } from "./schema/doc";
 import { docResolver } from "./resolvers/Doc";
 const PORT = process.env.PORT || 3000;
@@ -137,7 +139,8 @@ const resolvers = mergeResolvers([
   commentLikeResolvers,
   commentReplyResolvers,
   blogRelatedResolvers,
-  docResolver
+  docResolver,
+  reactionResolvers
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -180,7 +183,8 @@ const typeDefs = mergeTypeDefs([
   commentLikeSchema,
   jobApplicationTypeDefs,
   blogRelatedArticlesSchema,
-  DocSchema
+  DocSchema,
+  reactionSchema
 ]);
 
 const server = new ApolloServer({

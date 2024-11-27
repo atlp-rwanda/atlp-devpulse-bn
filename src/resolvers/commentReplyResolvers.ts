@@ -17,7 +17,7 @@ export const commentReplyResolvers = {
   Query: {
     getRepliesByComment: {
       type: new GraphQLList(CommentReplyType),
-      args: { blog: { type: new GraphQLNonNull(GraphQLID) } },
+      args: { comment: { type: new GraphQLNonNull(GraphQLID) } },
       resolve: async (_: any, { comment }: GetRepliesByCommentArgs) => {
         return await CommentReplyModel.find({ comment })
           .populate("user")
@@ -40,7 +40,7 @@ export const commentReplyResolvers = {
         _: any,
         { content, user, comment }: AddCommentReplyArgs
       ) => {
-        const commentReply = new CommentModel({ content, user, comment });
+        const commentReply = new CommentReplyModel({ content, user, comment });
         await CommentModel.findByIdAndUpdate(comment, {
           $push: { comments: commentReply._id },
         });

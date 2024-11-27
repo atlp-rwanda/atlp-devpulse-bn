@@ -64,7 +64,7 @@ export const blogResolvers = {
             : null;
 
           const filter = tag ? { tags: tag } : {};
-          const blogs = await BlogModel.find(filter).populate("author likes comments");
+          const blogs = await BlogModel.find(filter).populate("author likes comments reactions");
 
           return blogs.filter((blog) => {
             if (blog.isHidden) {
@@ -96,7 +96,7 @@ export const blogResolvers = {
       },
       resolve: async (_: any, { authorId }: GetBlogsByAuthorArgs) => {
         return BlogModel.find({ author: authorId }).populate(
-          "author likes comments"
+          "author likes comments reactions"
         );
       },
     },
@@ -105,26 +105,26 @@ export const blogResolvers = {
       type: BlogType,
       args: { id: { type: new GraphQLNonNull(GraphQLID) } },
       resolve: async (_: any, { id }: GetBlogByIdArgs) => {
-        return BlogModel.findById(id)
-          .populate("author likes comments")
+        return await BlogModel.findById(id)
+        .populate("author likes comments reactions")
           .populate({
             path: "comments",
             populate: [
-              { path: "user", model: "LogedUserModel" },
+              { path: "user", model: "LoggedUserModel" },
               {
                 path: "likes",
                 model: "CommentLike",
                 populate: { path: "user", model: "LoggedUserModel" },
               },
-              {
-                path: "replies",
-                model: "CommentReply",
-                populate: { path: "user", model: "LoggedUserModel" },
-              },
+              // {
+              //   path: "replies",
+              //   model: "CommentReply",
+              //   populate: { path: "user", model: "LoggedUserModel" },
+              // },
             ],
           });
       },
-    },
+    },    
   },
 
   Mutation: {
