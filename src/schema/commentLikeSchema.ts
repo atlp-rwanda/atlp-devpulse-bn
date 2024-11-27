@@ -48,8 +48,13 @@ export const commentLikeSchema = gql`
   }
 
   type Query {
-    getCommentLikes(comment: ID!): [CommentLike!]!
-  }
+  getCommentLikes(comment: ID!): CommentLikeDetails!
+}
+
+type CommentLikeDetails {
+  count: Int!
+  likes: [CommentLike!]!
+}
 
   input CommentLikeInput {
     user: ID!

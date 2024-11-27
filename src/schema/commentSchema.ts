@@ -14,6 +14,8 @@ export const commentSchema = gql`
     resetToken: String
     resetTokenExpiration: String
     cohort: ID
+    commentCount: Int
+    likesCount: Int 
   }
 
   type Like {
@@ -61,10 +63,12 @@ export const commentSchema = gql`
     likes: [CommentLike]
     replies: [CommentReply]
     createdAt: String
+    commentCount: Int
   }
 
   type Query {
     getCommentsByBlog(blog: ID!): [Comment!]!
+    countCommentsByBlog(blog: ID!): Int!
   }
 
   input CommentInput {
@@ -75,5 +79,7 @@ export const commentSchema = gql`
 
   type Mutation {
     addComment(commentFields: CommentInput): Comment!
+    updateComment(id: ID!, content: String!): Comment!
+    deleteComment(id: ID!): String!
   }
 `;
