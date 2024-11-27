@@ -12,13 +12,23 @@ const addReaction = async (_: any, { reactionFields }: { reactionFields: any }) 
 
   const blog = await BlogModel.findById(reactionFields.blog);
   if (blog) {
-    await BlogModel.findByIdAndUpdate(reactionFields.blog, {
-      $inc: { [`reactionsCount.${reactionFields.type}`]: 1 },
-    });
+    await BlogModel.findByIdAndUpdate(
+      reactionFields.blog,
+      {
+        $push: { reactions: reaction._id },
+        $inc: { [`reactionsCount.${reactionFields.type}`]: 1 }, 
+      },
+      { new: true }
+    );
   }
 
-  return reaction;
+  const populatedReaction = await ReactionModel.findById(reaction._id)
+    .populate("blog user");
+
+  return populatedReaction;
 };
+
+
 
 const removeReaction = async (_: any, { user, blog }: { user: string, blog: string }) => {
   const reaction = await ReactionModel.findOneAndDelete({ user, blog });
@@ -33,7 +43,7 @@ const removeReaction = async (_: any, { user, blog }: { user: string, blog: stri
 };
 
 const getReactionsByBlog = async (_: any, { blog }: { blog: string }) => {
-  return await ReactionModel.find({ blog });
+  return await ReactionModel.find({ blog }).populate("blog user")
 };
 
 const getAllReactionsCount = async (_: any, { blog }: { blog: string }) => {

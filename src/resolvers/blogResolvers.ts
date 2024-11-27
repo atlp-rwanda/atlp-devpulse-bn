@@ -11,6 +11,7 @@ import { BlogType } from "../types/blogType";
 import { LoggedUserModel } from "../models/AuthUser";
 import { CustomGraphQLError } from "../utils/customErrorHandler";
 import { publishNotification } from "./adminNotificationsResolver";
+import { model } from "mongoose";
 
 interface CreateBlogArgs {
   title: string;
@@ -54,7 +55,12 @@ export const blogResolvers = {
       },
       resolve: async (_: any, { tag }: GetAllBlogsArgs) => {
         const filter = tag ? { tags: tag } : {};
-        return BlogModel.find(filter).populate("author likes comments");
+        const blogs = await BlogModel.find(filter)
+          .populate("author likes comments reactions");
+        
+        console.log("All Blogs with Populated Reactions:", blogs);
+    
+        return blogs;
       },
     },
 
@@ -65,7 +71,7 @@ export const blogResolvers = {
       },
       resolve: async (_: any, { authorId }: GetBlogsByAuthorArgs) => {
         return BlogModel.find({ author: authorId }).populate(
-          "author likes comments"
+          "author likes comments reactions"
         );
       },
     },
@@ -74,26 +80,14 @@ export const blogResolvers = {
       type: BlogType,
       args: { id: { type: new GraphQLNonNull(GraphQLID) } },
       resolve: async (_: any, { id }: GetBlogByIdArgs) => {
-        return BlogModel.findById(id)
-          .populate("author likes comments")
-          .populate({
-            path: "comments",
-            populate: [
-              { path: "user", model: "LogedUserModel" },
-              {
-                path: "likes",
-                model: "CommentLike",
-                populate: { path: "user", model: "LoggedUserModel" },
-              },
-              {
-                path: "replies",
-                model: "CommentReply",
-                populate: { path: "user", model: "LoggedUserModel" },
-              },
-            ],
-          });
+        const blog = await BlogModel.findById(id)
+          .populate("author likes comments reactions")
+    
+        console.log("Blog with Populated Reactions:", blog);
+    
+        return blog;
       },
-    },
+    },    
   },
 
   Mutation: {

@@ -41,6 +41,15 @@ export const blogSchema = gql`
     createdAt: String
   }
 
+  type Reaction {
+    id: ID
+    user: LoggedUserModel
+    blog: Blog
+    type: ReactionType
+    created_at: String
+  }
+
+
   type Blog {
     id: ID!
     title: String!
@@ -48,7 +57,8 @@ export const blogSchema = gql`
     coverImage: String!
     images: [String]
     likes: [Like]!
-    comments: [Comment]!
+    comments: [Comment]
+    reactions: [Reaction]
     isHidden: Boolean
     author: LoggedUserModel!
     tags: [String]
