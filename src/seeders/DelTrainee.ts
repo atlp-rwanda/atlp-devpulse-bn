@@ -1,5 +1,6 @@
 import TraineeApplicant from '../models/traineeApplicant';
 import { applicationCycle } from '../models/applicationCycle';
+import { traineEAttributes } from "../models/traineeAttribute";
 
 
 const seedDeleteTrainee = async () => {
@@ -72,6 +73,7 @@ const seedDeleteTrainee = async () => {
     ];
     await TraineeApplicant.deleteMany({ deleteTrainee });
     await TraineeApplicant.insertMany(deleteTrainee);
+    await traineEAttributes.deleteMany({});
     return null;
 }
 export default seedDeleteTrainee;
