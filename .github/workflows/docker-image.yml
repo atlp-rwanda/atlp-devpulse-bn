@@ -14,7 +14,7 @@ jobs:
       NODE_ENV: "production"
       PUSHER_CLUSTER: ${{ secrets.PUSHER_CLUSTER }}
       PUSHER_APP_ID: ${{ secrets.PUSHER_APP_ID }}
-      PUSHER_APP_KEY: ${{ secrets.PUSHER_APP_KEY }}
+      PUSHER_APP_KEY: ${{ secrets.PUSHER_KEY }}
       PUSHER_APP_SECRET: ${{ secrets.PUSHER_APP_SECRET }}
       DEVPULSE_EMAIL: ${{ secrets.DEVPULSE_EMAIL }}
 
