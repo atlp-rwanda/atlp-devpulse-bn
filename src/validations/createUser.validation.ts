@@ -9,6 +9,7 @@ interface UserLoggedInput {
   gender: String;
   country: String;
   code: String;
+  bio: String;
 }
 
 export const validateUserLogged = Joi.object<UserLoggedInput>({
@@ -37,4 +38,5 @@ export const validateUserLogged = Joi.object<UserLoggedInput>({
   telephone: Joi.string(),
   country: Joi.string(),
   code: Joi.string().min(2).max(4).message('Code must be between 2 and 4 characters long.'),
+  bio: Joi.string().optional()
 });
