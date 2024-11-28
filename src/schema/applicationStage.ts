@@ -90,6 +90,8 @@ export const applicationStageDefs = gql`
     applicantId: String
     status: String
     score: String
+    platform:String
+    invitationLink: String
     comments: String
     createdAt: String
   }
@@ -129,6 +131,8 @@ export const applicationStageDefs = gql`
     applicant: Applicant
     status: String!
     score: Float
+    platform:String
+    invitationLink: String
     comments: String
     createdAt: String
     updatedAt: String

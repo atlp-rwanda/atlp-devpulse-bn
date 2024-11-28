@@ -85,6 +85,8 @@ export const applicationStageResolvers: any = {
             status: tracking.status,
             score: tracking.score || tracking.interviewScore,
             comments: tracking.comments,
+            platform: tracking.platform,
+            invitationLink: tracking.invitationLink,
             createdAt: tracking.createdAt.toLocaleString(),
             updatedAt: tracking.updatedAt.toLocaleString(),
           }));
@@ -665,7 +667,6 @@ export const applicationStageResolvers: any = {
         }
 
         const user = await LoggedUserModel.findOne({ email });
-        console.log(user)
         const applicant = isApplicantExist.applicantId as any;
         const firstName = applicant.firstName;
         const lastName = applicant.lastName;
@@ -710,7 +711,7 @@ export const applicationStageResolvers: any = {
         );
         await TechnicalAssessment.updateOne(
           { applicantId },
-          { $set: { status: "Invited" } }
+          { $set: { status: "Invited" ,invitationLink, platform} }
         );
 
         return {
