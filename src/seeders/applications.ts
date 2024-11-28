@@ -4,6 +4,7 @@ import { jobModels } from '../models/jobModels';
 import { ProgramModel } from '../models/programModel';
 import { cohortModels } from '../models/cohortModel';
 import { applicationCycle } from '../models/applicationCycle';
+import JobApplication from "../models/JobApplication";
 
 const seedApplications = async () => {
   const program = await ProgramModel.findOne();
@@ -96,6 +97,7 @@ const seedApplications = async () => {
 
   await applicant_records.deleteMany({});
   await applicant_records.insertMany(applicants);
+  await JobApplication.deleteMany({});
 
   console.log('Database seeded successfully');
 };

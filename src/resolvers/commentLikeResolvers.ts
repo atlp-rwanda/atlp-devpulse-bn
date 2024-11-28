@@ -1,41 +1,95 @@
-import { GraphQLID, GraphQLList, GraphQLNonNull } from "graphql";
-import { CommentLikeType } from "../types/commentLikeType";
+import {
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLInt,
+  GraphQLObjectType,
+} from "graphql";
 import { CommentLikeModel } from "../models/commentLike";
 import { CommentModel } from "../models/commentModel";
+
+const CommentLikeDetailsType = new GraphQLObjectType({
+  name: "CommentLikeDetails",
+  fields: () => ({
+    count: { type: GraphQLInt }, 
+    likes: { type: new GraphQLList(GraphQLID) }, 
+  }),
+});
 
 export const commentLikeResolvers = {
   Query: {
     getCommentLikes: {
-      type: new GraphQLList(CommentLikeType),
-      args: { blog: { type: new GraphQLNonNull(GraphQLID) } },
+      type: new GraphQLObjectType({
+        name: "CommentLikes",
+        fields: {
+          count: { type: GraphQLInt },
+        },
+      }),
+      args: { comment: { type: new GraphQLNonNull(GraphQLID) } },
       resolve: async (_: any, { comment }: any) => {
-        return await CommentLikeModel.find({ comment })
-          .populate("user")
-          .populate({
-            path: "comment",
-            populate: { path: "user" },
-          });
+        try {
+          const commentData = await CommentModel.findById(comment).select("likes");
+
+          if (!commentData) {
+            throw new Error("Comment not found.");
+          }
+
+          return { count: commentData.likes.length };
+        } catch (error) {
+          console.error("Error fetching comment likes:", error);
+          throw new Error("Failed to fetch comment likes.");
+        }
       },
     },
   },
   Mutation: {
     addCommentLike: {
-      type: CommentLikeType,
+      type: GraphQLInt,
       args: {
         user: { type: new GraphQLNonNull(GraphQLID) },
         comment: { type: new GraphQLNonNull(GraphQLID) },
       },
       resolve: async (_: any, { user, comment }: any) => {
-        const like = new CommentLikeModel({ user, comment });
-        await CommentModel.findByIdAndUpdate(comment, {
-          $push: { likes: like._id },
-        });
-        const savedLike = await like.save();
-        return (await savedLike.populate("user")).populate({
-          path: "comment",
-          populate: { path: "user" },
-        });
+        try {
+          const existingLike = await CommentLikeModel.findOne({ user, comment });
+  
+          if (existingLike) {
+            await CommentLikeModel.findByIdAndDelete(existingLike._id);
+  
+            const updatedComment = await CommentModel.findByIdAndUpdate(
+              comment,
+              { $pull: { likes: existingLike._id } },
+              { new: true }
+            );
+  
+            if (!updatedComment) {
+              throw new Error("Failed to update comment after removing the like.");
+            }
+  
+            const updatedLikeCount = updatedComment.likes.length;
+            return updatedLikeCount;
+          }
+  
+          const like = new CommentLikeModel({ user, comment });
+  
+          const savedLike = await like.save();
+          const updatedComment = await CommentModel.findByIdAndUpdate(
+            comment,
+            { $push: { likes: savedLike._id } },
+            { new: true }
+          );
+  
+          if (!updatedComment) {
+            throw new Error("Failed to update comment with the new like.");
+          }
+  
+          const updatedLikeCount = updatedComment.likes.length;
+          return updatedLikeCount;
+        } catch (error) {
+          console.error("Error updating comment like:", error);
+          throw new Error("Failed to update comment like.");
+        }
       },
     },
-  },
+  },  
 };
