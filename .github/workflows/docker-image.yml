@@ -52,8 +52,14 @@ jobs:
             docker rm $(docker ps -aq --filter publish=4008) || true
 
             # Run new container
-            docker run -d \
+            dockerrun_out=$(docker run -d \
               -p 4008:3000 \
-              -e PUSHER_APP_KEY\
-              ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn:latest
+              -e PUSHER_APP_KEY \
+              ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn:latest)
+            if [ $? -eq 0 ]; then
+              echo "applications devpulse container started successfully"
+            else
+              echo "Failed to start applications devpulse container"
+              exit 1
+            fi
 
