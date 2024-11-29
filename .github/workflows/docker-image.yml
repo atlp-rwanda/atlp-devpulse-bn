@@ -12,10 +12,10 @@ jobs:
       MONGO_PROD_DB: ${{ secrets.MONGO_PROD_DB }}
       FRONTEND_LINK: "https://applications.devpulse.org"
       NODE_ENV: "production"
-      PUSHER_CLUSTER: ${{ secrets.PUSHER_CLUSTER }}
       PUSHER_APP_ID: ${{ secrets.PUSHER_APP_ID }}
-      PUSHER_APP_KEY: ${{ secrets.PUSHER_KEY }}
-      PUSHER_APP_SECRET: ${{ secrets.PUSHER_APP_SECRET }}
+      PUSHER_CLUSTER: ${{ secrets.PUSHER_CLUSTER }}
+      PUSHER_KEY: ${{ secrets.PUSHER_KEY }}
+      PUSHER_SECRET: ${{ secrets.PUSHER_SECRET }}
       DEVPULSE_EMAIL: ${{ secrets.DEVPULSE_EMAIL }}
 
 
@@ -41,9 +41,11 @@ jobs:
           username: ${{ secrets.DO_USERNAME }}
           key: ${{ secrets.DO_KEY }}
           port: ${{ secrets.DO_PORT }}
-          envs: MONGO_PROD_DB,REGISTER_FRONTEND_URL,REGISTER_ORG_FRONTEND_URL,NODE_ENV,FRONTEND_LINK,ADMIN_EMAIL,ADMIN_PASS,COORDINATOR_EMAIL,COORDINATOR_PASS,GH_TOKEN, PUSHER_CLUSTER, PUSHER_APP_ID, PUSHER_APP_KEY, PUSHER_APP_SECRET, DEVPULSE_EMAIL
+          envs: MONGO_PROD_DB,REGISTER_FRONTEND_URL,REGISTER_ORG_FRONTEND_URL,NODE_ENV,FRONTEND_LINK,ADMIN_EMAIL,ADMIN_PASS,COORDINATOR_EMAIL,COORDINATOR_PASS,GH_TOKEN, PUSHER_CLUSTER, PUSHER_APP_ID, PUSHER_KEY, PUSHER_SECRET, DEVPULSE_EMAIL
           script: |
 
+            touch env
+            echo PUSHER_CLUSTER=${{secrets.PUSHER_CLUSTER}}
             # Pull the latest image
             docker pull ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn:latest
 
@@ -52,8 +54,5 @@ jobs:
             docker rm $(docker ps -aq --filter publish=4008) || true
 
             # Run new container
-            docker run -d \
-              -p 4008:3000 \
-              -e PUSHER_APP_KEY=${PUSHER_APP_KEY} \
-              ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn:latest
+            docker run -d -p 4008:3000 -e PUSHER_KEY=${PUSHER_KEY} ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn:latest
 
