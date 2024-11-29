@@ -23,6 +23,7 @@ export const jobApplicationTypeDefs = gql`
         essay: String!
         resume: String!
         status: String!
+        comment: String
         createdAt: String!
     }
 
@@ -39,6 +40,7 @@ export const jobApplicationTypeDefs = gql`
     input StatusInput {
         applicationId: ID!
         status: String!
+        comment: String
     }
 
     type checkIfUserAppliedOutput {
