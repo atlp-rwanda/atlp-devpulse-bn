@@ -68,5 +68,3 @@ jobs:
               --env-file env \
               ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn:latest
 
-            # Clean up
-            rm env
