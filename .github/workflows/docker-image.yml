@@ -45,7 +45,7 @@ jobs:
           script: |
             set -e
             set -x
-            ls -la
+            pwd
             mkdir shivoh
             ls -la
             echo "MONGO_PROD_DB=${MONGO_PROD_DB}" > env
