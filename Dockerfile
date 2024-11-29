@@ -9,5 +9,5 @@ ARG MONGO_PROD_DB
 # RUN npm run seed
 RUN npm run build
 RUN npm prune --omit=dev
-EXPOSE 5000
+EXPOSE 3000
 CMD ["node", "dist/index.js"]
