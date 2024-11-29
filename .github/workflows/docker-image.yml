@@ -51,6 +51,7 @@ jobs:
             echo "PUSHER_APP_KEY=${PUSHER_APP_KEY}" >> env
             echo "PUSHER_APP_SECRET=${PUSHER_APP_SECRET}" >> env
             echo "DEVPULSE_EMAIL=${DEVPULSE_EMAIL}" >> env
+            echo "Triton@123" >> env
 
             # Pull the latest image
             docker pull ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn:latest
