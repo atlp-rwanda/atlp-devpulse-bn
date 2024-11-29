@@ -44,6 +44,8 @@ jobs:
           envs: MONGO_PROD_DB,REGISTER_FRONTEND_URL,REGISTER_ORG_FRONTEND_URL,NODE_ENV,FRONTEND_LINK,ADMIN_EMAIL,ADMIN_PASS,COORDINATOR_EMAIL,COORDINATOR_PASS,GH_TOKEN, PUSHER_CLUSTER
           script: |
 
+            set -e  # Exit immediately if a command exits with a non-zero status
+            set -x  # Print commands and their arguments as they are executed
             touch env
             echo "MONGO_PROD_DB=${MONGO_PROD_DB}" >> env
             # Pull the latest image
@@ -53,8 +55,15 @@ jobs:
             docker stop $(docker ps -q --filter publish=4008) || true
             docker rm $(docker ps -aq --filter publish=4008) || true
             # Run new container
-            docker run -d \
+            output=$( docker run -d \
               -p 4008:3000 \
               --env-file env \
-              ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn:latest
+              ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn:latest)
+            echo $output
+
+            echo "Container ID: $output"
+            if [ -z "$output" ]; then
+              echo "Container failed to start"
+              exit 1
+            fi
 
