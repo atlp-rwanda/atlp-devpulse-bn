@@ -45,9 +45,7 @@ jobs:
           script: |
             set -e
             set -x
-            pwd
-            mkdir shivoh
-            ls -la
+            touch env
             echo "MONGO_PROD_DB=${MONGO_PROD_DB}" > env
             echo "FRONTEND_LINK=${FRONTEND_LINK}" >> env
             echo "NODE_ENV=${NODE_ENV}" >> env
