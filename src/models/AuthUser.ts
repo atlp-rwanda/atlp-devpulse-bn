@@ -39,7 +39,7 @@ const userSchema = new Schema(
     },
     applicationPhase: {
       type: String,
-      enum: ["Applied", "Interviewed", "Accepted", "Enrolled"],
+      enum: ["Applied", 'Shortlisted', 'Technical Assessment', 'Interview Assessment', 'Admitted', 'Rejected', "Enrolled"],
       default: "Applied",
     },
     isActive: {

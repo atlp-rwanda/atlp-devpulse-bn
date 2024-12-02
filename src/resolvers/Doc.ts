@@ -27,7 +27,7 @@ export const docResolver:any={
             return doc;
         },
         async deleteDoc(_:any,args:any){
-            const doc= await docModels.findOneAndDelete({id:args.id})
+            const doc= await docModels.findOneAndDelete({_id:args.id})
             return doc;
         },
         async updateDoc(_:any,args:any){

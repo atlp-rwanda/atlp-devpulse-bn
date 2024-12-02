@@ -31,10 +31,10 @@ const models = [
 async function getApplicantsByModel(model: any) {
   return await model.find().populate("applicantId").exec();
 }
-async function updateApplicantAfterDismissed(model: any, applicantId: string) {
+async function updateApplicantAfterRejected(model: any, applicantId: string) {
   await model.updateOne({ applicantId }, { $set: { status: "Rejected" } });
 }
-async function updateApplicantAfterAdmitted(model: any,applicantId:string) {
+async function updateApplicantAfterAdmitted(model: any, applicantId: string) {
   await model.updateOne({ applicantId }, { $set: { status: "Admitted" } });
 }
 export const applicationStageResolvers: any = {
@@ -85,6 +85,8 @@ export const applicationStageResolvers: any = {
             status: tracking.status,
             score: tracking.score || tracking.interviewScore,
             comments: tracking.comments,
+            platform: tracking.platform,
+            invitationLink: tracking.invitationLink,
             createdAt: tracking.createdAt.toLocaleString(),
             updatedAt: tracking.updatedAt.toLocaleString(),
           }));
@@ -148,7 +150,7 @@ export const applicationStageResolvers: any = {
           technicalStage,
           interviewStage,
           admittedStage,
-          dismissedStage,
+          rejectedStage,
           AllStages,
         ] = await Promise.all([
           Shortlisted.findOne({ applicantId: trainee }),
@@ -164,7 +166,7 @@ export const applicationStageResolvers: any = {
           technical: technicalStage,
           interview: interviewStage,
           admitted: admittedStage,
-          dismissed: dismissedStage,
+          rejected: rejectedStage,
           allStages: AllStages,
         };
       } catch (error) {
@@ -301,7 +303,7 @@ export const applicationStageResolvers: any = {
             await TraineeApplicant.updateOne(
               { _id: applicantId },
               { $set: { applicationPhase: nextStage, status: "No action" } }
-            );       
+            );
             message = `You have advanced to the ${nextStage} stage.`;
             const notification = await ApplicantNotificationsModel.create({
               userId: user!._id,
@@ -480,23 +482,23 @@ export const applicationStageResolvers: any = {
             }
             await Promise.all(
               models.map((model) =>
-                updateApplicantAfterDismissed(model, applicantId)
+                updateApplicantAfterRejected(model, applicantId)
               )
             );
-            const stageDismissedFrom = await TraineeApplicant.findOne({
+            const stageRejectedFrom = await TraineeApplicant.findOne({
               _id: applicantId,
             });
             await Rejected.create({
               applicantId,
-              stageDismissedFrom: stageDismissedFrom?.applicationPhase,
+              stageRejectedFrom: stageRejectedFrom?.applicationPhase,
               comments,
             });
             await TraineeApplicant.updateOne(
               { _id: applicantId },
               { $set: { applicationPhase: "Rejected", status: "Rejected" } }
             );
-            message = `You have been rejected from the ${stageDismissedFrom?.applicationPhase} stage.`;
-            
+            message = `You have been rejected from the ${stageRejectedFrom?.applicationPhase} stage.`;
+
             const notification3 = await ApplicantNotificationsModel.create({
               userId: user!._id,
               message,
@@ -508,7 +510,7 @@ export const applicationStageResolvers: any = {
               "Application Update",
               `Hello ${user!.email.split("@")[0]}, `,
               `We are sorry to inform you that 
-              your application has been rejected from the ${stageDismissedFrom?.applicationPhase} stage.
+              your application has been rejected from the ${stageRejectedFrom?.applicationPhase} stage.
                     <br />
                     <br />
                     You can always apply again.
@@ -621,13 +623,13 @@ export const applicationStageResolvers: any = {
         switch (applicantStage) {
           case "Technical Assessment":
             await TechnicalAssessment.updateOne(
-              { applicantId, status: "No action" },
+              { applicantId },
               { $set: { score } }
             );
             break;
           case "Interview Assessment":
             await InterviewAssessment.updateOne(
-              { applicantId, status: "No action" },
+              { applicantId },
               { $set: { interviewScore: score } }
             );
             break;
@@ -642,6 +644,90 @@ export const applicationStageResolvers: any = {
         };
       } catch (error: any) {
         return new Error(error.message);
+      }
+    },
+    sendInvitation: async ( _: any, { applicantId, email, platform,invitationLink,}: { applicantId: string; email: string; platform: string; invitationLink: string;}, context: any) => {
+      try {
+        if (!context.currentUser) {
+          throw new CustomGraphQLError(
+            "You must be logged in to perform this action."
+          );
+        }
+
+        if (!email || !invitationLink) {
+          throw new CustomGraphQLError(
+            "Email and invitation link are required."
+          );
+        }
+
+        // Find the applicant
+        const isApplicantExist = await TechnicalAssessment.findOne({
+          applicantId,
+        })
+          .populate("applicantId")
+          .exec();
+
+        if (!isApplicantExist || !isApplicantExist.applicantId) {
+          throw new Error("Applicant not found or applicantId is missing.");
+        }
+
+        const user = await LoggedUserModel.findOne({ email });
+        const applicant = isApplicantExist.applicantId as any;
+        const firstName = applicant.firstName;
+        const lastName = applicant.lastName;
+        const notification = await ApplicantNotificationsModel.create({
+          userId: user!._id,
+          message:"Invitation link has sent to your email address. Please check your email address",
+          eventType: "general",
+        });
+        await pusher
+        .trigger(`notifications-${user!._id}`, "new-notification", {
+          message: notification.message,
+          id: notification._id,
+          createdAt: notification.createdAt,
+          read: notification.read,
+        })
+        .catch((error) => {
+          console.error("Error with Pusher trigger:", error);
+        });
+        await sendEmailTemplate(
+          email,
+          "Invitation to Complete Technical Assessment",
+          `Dear ${firstName} ${lastName},`,
+          ` <p>
+            We are excited to invite you to take the next step in your application process! <br>
+            Please complete the following technical assessment to continue:<br>
+            <a href="${invitationLink}" target="_blank">${invitationLink}</a><br>
+            The assessment will be hosted on the <strong>${platform}</strong> platform. Please ensure that you have the necessary access and requirements ready.
+            </p>
+            <p>
+            Once you've finished the assessment, we'll review your results and follow up with the next steps.
+            </p>
+          `,
+          {
+            text: "Invitation link",
+            url: invitationLink,
+          }
+        );
+
+        await TraineeApplicant.updateOne(
+          { _id: applicantId },
+          { $set: { status: "Invited" } }
+        );
+        await TechnicalAssessment.updateOne(
+          { applicantId },
+          { $set: { status: "Invited" ,invitationLink, platform} }
+        );
+
+        return {
+          success: true,
+          message: "Invitation sent successfully",
+        };
+      } catch (error: any) {
+        return {
+          success: false,
+          message: error.message,
+        };
       }
     },
   },
