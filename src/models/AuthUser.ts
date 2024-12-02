@@ -13,19 +13,13 @@ const userSchema = new Schema(
       type: String,
       default: process.env.DEFAULT_AVATAR,
     },
-<<<<<<< HEAD
     bio: {
       type: String,
       default: "",
     },
-    isVerified:{
-      type:Boolean,
-      default:false
-=======
     isVerified: {
       type: Boolean,
       default: false,
->>>>>>> 5a8806a (implement Technical Interview invitation)
     },
     role: {
       type: Schema.Types.ObjectId,
@@ -45,7 +39,15 @@ const userSchema = new Schema(
     },
     applicationPhase: {
       type: String,
-      enum: ["Applied", 'Shortlisted', 'Technical Assessment', 'Interview Assessment', 'Admitted', 'Rejected', "Enrolled"],
+      enum: [
+        "Applied",
+        "Shortlisted",
+        "Technical Assessment",
+        "Interview Assessment",
+        "Admitted",
+        "Rejected",
+        "Enrolled",
+      ],
       default: "Applied",
     },
     isActive: {

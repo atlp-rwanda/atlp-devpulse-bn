@@ -8,6 +8,8 @@ interface ITechnicalInterview extends Document {
   meetingPlatform: string;
   status: string;
   emailSent: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 interface PopulatedCoordinator {

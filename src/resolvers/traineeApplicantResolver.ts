@@ -3,14 +3,10 @@ import { traineEAttributes } from "../models/traineeAttribute";
 import { applicationCycle } from "../models/applicationCycle";
 import mongoose, { ObjectId } from "mongoose";
 import { sendEmailTemplate } from "../helpers/bulkyMails";
-<<<<<<< HEAD
-import { Types } from 'mongoose';
-import { AuthenticationError } from 'apollo-server';
+import { Types } from "mongoose";
+import { AuthenticationError } from "apollo-server";
 import { LoggedUserModel } from "../models/AuthUser";
 import { RoleModel } from "../models/roleModel";
-=======
-import { Types } from "mongoose";
->>>>>>> 859bde2 (implement Technical Interview invitation)
 
 const FrontendUrl = process.env.FRONTEND_URL || "";
 
@@ -18,7 +14,6 @@ import { CustomGraphQLError } from "../utils/customErrorHandler";
 import { cohortModels } from "../models/cohortModel";
 import { publishNotification } from "./adminNotificationsResolver";
 import { any } from "joi";
-
 
 interface Context {
   currentUser: { _id: string };
@@ -50,24 +45,22 @@ export const traineeApplicantResolver: any = {
       const itemsToSkip = (pages - 1) * items;
       const allTrainee = await TraineeApplicant.find({ delete_at: false })
         .populate("cycle_id")
-<<<<<<< HEAD
-=======
         .populate({
           path: "technicalInterviews",
           model: "TechnicalInterview",
+          populate: {
+            path: "coordinatorId",
+            model: "LoggedUserModel",
+            select: "firstname lastname email",
+          },
         })
->>>>>>> 859bde2 (implement Technical Interview invitation)
 
         .skip(itemsToSkip)
         .limit(items);
 
       const formattedTrainees = allTrainee.map((trainee) => ({
         ...trainee.toObject(),
-<<<<<<< HEAD
         createdAt: trainee.createdAt.toLocaleString(),
-=======
-        createdAt: trainee.createdAt.toLocaleString(), // Format createdAt as ISO string
->>>>>>> 859bde2 (implement Technical Interview invitation)
       }));
       return {
         data: formattedTrainees,
@@ -147,19 +140,21 @@ export const traineeApplicantResolver: any = {
         return false;
       }
     },
-<<<<<<< HEAD
     async createNewTraineeApplicant(_: any, { input }: any, context: any) {
-      const { lastName, firstName, email, cycle_id, attributes, coverLetterUrl, idDocumentUrl, resumeUrl } = input;
+      const {
+        lastName,
+        firstName,
+        email,
+        cycle_id,
+        attributes,
+        coverLetterUrl,
+        idDocumentUrl,
+        resumeUrl,
+      } = input;
       const userWithRole = await LoggedUserModel.findById(
         context.currentUser?._id
       ).populate("role");
 
-=======
-    async createNewTraineeApplicant(_: any, { input }: any) {
-      const { lastName, firstName, email, cycle_id, attributes } = input;
-
-      // Validate email
->>>>>>> 859bde2 (implement Technical Interview invitation)
       const validateEmail = (email: string) => {
         return String(email)
           .toLowerCase()
@@ -218,12 +213,9 @@ export const traineeApplicantResolver: any = {
               cycle: cycle_id,
             },
           ],
-<<<<<<< HEAD
           idDocumentUrl,
           coverLetterUrl,
-          resumeUrl
-=======
->>>>>>> 859bde2 (implement Technical Interview invitation)
+          resumeUrl,
         });
         // Create the corresponding traineEAttributes
         if (
@@ -259,7 +251,6 @@ export const traineeApplicantResolver: any = {
       }
     },
 
-<<<<<<< HEAD
     async acceptTrainee(_: any, { traineeId, cohortId }: any, ctx: Context) {
       try {
         if (!ctx.currentUser) {
@@ -274,13 +265,6 @@ export const traineeApplicantResolver: any = {
             (userWithRole.role as any)?.roleName !== "superAdmin")
         ) {
           throw new AuthenticationError("Not allowed to access.");
-=======
-    async acceptTrainee(_: any, { traineeId, cohortId }: any) {
-      try {
-        const trainee = await TraineeApplicant.findById(traineeId);
-        if (!trainee) {
-          throw new CustomGraphQLError("Trainee not found");
->>>>>>> 859bde2 (implement Technical Interview invitation)
         }
 
         const trainee = await TraineeApplicant.findById(traineeId);
@@ -292,7 +276,9 @@ export const traineeApplicantResolver: any = {
           throw new CustomGraphQLError("Trainee already belongs to a cohort");
         }
 
-        const cohort = await cohortModels.findById(cohortId).populate('trainees');
+        const cohort = await cohortModels
+          .findById(cohortId)
+          .populate("trainees");
         if (!cohort) {
           throw new CustomGraphQLError("Cohort not found");
         }

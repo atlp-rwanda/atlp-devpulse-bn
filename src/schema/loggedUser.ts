@@ -19,7 +19,7 @@ export const LoggedUserSchema = gql`
     isActive: Boolean
     applicationPhase: String
     cohort: Cohort
-    bio: String,
+    bio: String
 
     isVerified: Boolean
   }
@@ -47,22 +47,13 @@ export const LoggedUserSchema = gql`
   type Cohort {
     id: ID!
     title: String
-<<<<<<< HEAD
-		program: String
-		cycle: String
-		start: String
-		end: String
-		phase: Int
-		trainees:[User_Logged!]
-    manager: String
-=======
     program: String
     cycle: String
     start: String
     end: String
     phase: Int
     trainees: [User_Logged!]
->>>>>>> 5a8806a (implement Technical Interview invitation)
+    manager: String
   }
 
   type CurrentUser {

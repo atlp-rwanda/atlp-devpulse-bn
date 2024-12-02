@@ -152,12 +152,9 @@ export const applicationStageDefs = gql`
   type Query {
     getStageHistoryByApplicant(applicantId: ID!): HistoryStage
     getApplicantsByStage(stage: String!): [stageByModel!]!
-<<<<<<< HEAD
     getTraineeCyclesApplications: cycleApplication
     getApplicationsAttributes(trainee_id: String!): Attributes
     getApplicationStages(trainee_id: String!): Stages
-=======
->>>>>>> 5a8806a (implement Technical Interview invitation)
     getInterviewStages: [stageWithInterviews!]!
   }
 

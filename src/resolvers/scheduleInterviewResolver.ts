@@ -75,6 +75,8 @@ export const technicalInterviewResolvers = {
           meetingPlatform: interview.meetingPlatform,
           status: interview.status,
           emailSent: interview.emailSent,
+          createdAt: interview.createdAt,
+          updatedAt: interview.updatedAt,
         }));
       } catch (error: any) {
         throw new Error(
@@ -218,32 +220,262 @@ export const technicalInterviewResolvers = {
         const applicantData = await TraineeApplicant.findById(applicantId);
         const coordinatorData = await LoggedUserModel.findById(coordinatorId);
 
-        // Send email to both applicant and coordinator
         if (applicantData?.email && coordinatorData?.email) {
-          const emailTemplate = `
-            <p>Date: ${interview.scheduledDate.toLocaleString()}</p>
-            Platform: ${interview.meetingPlatform}</br>
-            Meeting Link: <a href="${
-              interview.meetingLink
-            }" target="_blank">Click here to join the meeting</a></br>
-            
-            Applicant: ${applicantData.firstName} ${applicantData.lastName}</br>
-            Technical Coordinator: ${coordinatorData.firstname} ${
-            coordinatorData.lastname
-          }
-          `;
-          Promise.all([
+          const applicantEmailTemplate = `
+          <!DOCTYPE html>
+  <html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .header {
+      background-color: #f8f9fa;
+      padding: 15px;
+      text-align: center;
+      border-bottom: 1px solid #e9ecef;
+    }
+    .content {
+      padding: 20px;
+    }
+    .button {
+      display: inline-block;
+      background-color: #28a745;
+      color: white;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .button-container {
+      text-align: center;
+      width: 100%;
+    }
+    p {
+      margin-bottom: 15px;
+    }
+    ul, ol {
+      margin-bottom: 15px;
+      padding-left: 20px;
+    }
+    .footer {
+      text-align: center;
+      padding: 10px;
+      background-color: #f8f9fa;
+      font-size: 12px;
+      color: #6c757d;
+      border-top: 1px solid #e9ecef;
+    }
+    .congratulations {
+      background-color: #c9ead0;
+      border-left: 4px solid #28a745;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Technical Interview Invitation</h1>
+    </div>
+    
+    <div class="content">
+      <div class="congratulations">
+        <p><strong>Congratulations, ${applicantData.firstName}!</strong></p>
+        <p>We are pleased to inform you that you have successfully passed the technical assessment. Your performance demonstrated exceptional problem-solving skills and technical proficiency.</p>
+      </div>
+
+      <p>Dear ${applicantData.firstName} ${applicantData.lastName},</p>
+      
+      <p>You have been invited for a technical interview. Here are the details:</p>
+      
+      <p>
+        <strong>Date:</strong> ${interview.scheduledDate.toLocaleString(
+          "en-US",
+          { dateStyle: "full", timeStyle: "long" }
+        )}
+        <br>
+        <strong>Platform:</strong> ${interview.meetingPlatform}
+      </p>
+      
+      <p>Preparation Guidelines:</p>
+      <ul>
+        <li>Ensure a stable internet connection</li>
+        <li>Find a quiet, professional space</li>
+        <li>Test your audio and video equipment</li>
+        <li>Prepare your resume and portfolio</li>
+      </ul>
+      
+      <div class="button-container">
+        <a href="${interview.meetingLink}" class="button">
+          Join Interview Meeting
+        </a>
+      </div>
+    </div>
+    
+    <div class="footer">
+      © 2024 Recruitment Team | Good Luck with Your Interview!
+    </div>
+  </div>
+</body>
+</html>`;
+
+          const coordinatorEmailTemplate = `
+          <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .header {
+      background-color: #f8f9fa;
+      padding: 15px;
+      text-align: center;
+      border-bottom: 1px solid #e9ecef;
+    }
+    .content {
+      padding: 20px;
+    }
+    .button {
+      display: inline-block;
+      background-color: #28a745;
+      color: #fff;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .button-container {
+      text-align: center;
+      width: 100%;
+    }
+    p {
+      margin-bottom: 15px;
+    }
+    ul, ol {
+      margin-bottom: 15px;
+      padding-left: 20px;
+    }
+    .footer {
+      text-align: center;
+      padding: 10px;
+      background-color: #f8f9fa;
+      font-size: 12px;
+      color: #6c757d;
+      border-top: 1px solid #e9ecef;
+    }
+    .congratulations {
+      background-color: #e7f3fe;
+      border-left: 4px solid #28a745;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Technical Interview Assignment</h1>
+    </div>
+    
+    <div class="content">
+      <div class="congratulations">
+        <p><strong>Notice!</strong></p>
+        <p>We are pleased to inform you that the candidate has successfully passed the technical assessment. Their performance demonstrated exceptional problem-solving skills and technical proficiency.
+        You have been selected as the interview coordinator.</p>
+      </div>
+
+      <p>Dear ${coordinatorData.firstname} ${coordinatorData.lastname},</p>
+      
+      <p>A technical interview has been scheduled. Here are the details:</p>
+      
+      <p>
+        <strong>Date:</strong> ${interview.scheduledDate.toLocaleString(
+          "en-US",
+          { dateStyle: "full", timeStyle: "long" }
+        )}
+        <br>
+        <strong>Platform:</strong> ${interview.meetingPlatform}
+      </p>
+      
+      <p>Applicant Information:</p>
+      <ul>
+        <li><strong>Name:</strong> ${applicantData.firstName} ${
+            applicantData.lastName
+          }</li>
+        <li><strong>Email:</strong> ${applicantData.email}</li>
+        <li><strong>Application Phase:</strong> Interview Assessment</li>
+      </ul>
+      
+      <p>Interview Preparation Checklist:</p>
+      <ol>
+        <li>Review applicant's profile</li>
+        <li>Prepare technical assessment criteria</li>
+        <li>Have a structured interview plan</li>
+        <li>Evaluate problem-solving skills</li>
+        <li>Document interview observations</li>
+      </ol>
+      
+      <div class="button-container">
+        <a href="${interview.meetingLink}" class="button">
+          Enter Interview Room
+        </a>
+      </div>
+    </div>
+    
+    <div class="footer">
+      © 2024 Recruitment Team | Professional Interview Management
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+          // Send emails
+          await Promise.all([
             sendEmailTemplate(
               applicantData.email,
-              "Technical Interview Scheduled",
-              "Technical Interview Details",
-              emailTemplate
+              "Technical Interview Invitation",
+              "",
+              applicantEmailTemplate
             ),
             sendEmailTemplate(
               coordinatorData.email,
-              "Technical Interview Scheduled",
-              "Technical Interview Details",
-              emailTemplate
+              "Technical Interview Assignment",
+              "",
+              coordinatorEmailTemplate
             ),
           ]);
 
