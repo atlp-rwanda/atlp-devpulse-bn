@@ -618,13 +618,13 @@ export const applicationStageResolvers: any = {
         switch (applicantStage) {
           case "Technical Assessment":
             await TechnicalAssessment.updateOne(
-              { applicantId, status: "No action" },
+              { applicantId },
               { $set: { score } }
             );
             break;
           case "Interview Assessment":
             await InterviewAssessment.updateOne(
-              { applicantId, status: "No action" },
+              { applicantId },
               { $set: { interviewScore: score } }
             );
             break;
