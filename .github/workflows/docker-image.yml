@@ -19,6 +19,7 @@ jobs:
       DEVPULSE_EMAIL: ${{ secrets.DEVPULSE_EMAIL }}
       API_KEY: ${{ secrets.API_KEY }}
       SENDER_NAME: ${{ secrets.SENDER_NAME }}
+      PORT: ${{ secrets.PORT }} 
 
 
     steps:
@@ -43,7 +44,7 @@ jobs:
           username: ${{ secrets.DO_USERNAME }}
           key: ${{ secrets.DO_KEY }}
           port: ${{ secrets.DO_PORT }}
-          envs: MONGO_PROD_DB,REGISTER_FRONTEND_URL,REGISTER_ORG_FRONTEND_URL,NODE_ENV,FRONTEND_LINK,ADMIN_EMAIL,ADMIN_PASS,COORDINATOR_EMAIL,COORDINATOR_PASS,GH_TOKEN, PUSHER_CLUSTER, PUSHER_APP_ID, PUSHER_KEY, PUSHER_SECRET, API_KEY, SENDER_NAME, DEVPULSE_EMAIL
+          envs: MONGO_PROD_DB,REGISTER_FRONTEND_URL,REGISTER_ORG_FRONTEND_URL,NODE_ENV,FRONTEND_LINK,ADMIN_EMAIL,ADMIN_PASS,COORDINATOR_EMAIL,COORDINATOR_PASS,GH_TOKEN, PUSHER_CLUSTER, PUSHER_APP_ID, PUSHER_KEY, PUSHER_SECRET, API_KEY, SENDER_NAME, DEVPULSE_EMAIL, PORT
           script: |
 
             touch env
@@ -58,6 +59,7 @@ jobs:
             echo "DEVPULSE_EMAIL=${DEVPULSE_EMAIL}" >> env
             echo "API_KEY=${API_KEY}" >> env
             echo "SENDER_NAME=${SENDER_NAME}" >> env
+            echo "PORT=${PORT}" >> env
             # Pull the latest image
             docker pull ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn:latest
 
