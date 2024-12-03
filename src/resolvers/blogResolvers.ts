@@ -138,11 +138,6 @@ export const blogResolvers = {
       if (!userWithRole) {
         throw new CustomGraphQLError("User not found or not logged in");
       }
-       const roleName = (userWithRole.role as any)?.roleName;
-
-       if (!["applicant", "trainee"].includes(roleName)) {
-         throw new CustomGraphQLError("Only Trainness can create blogs");
-       }
       try {
         const existingRecord = await BlogModel.findOne({
           title: args.blogFields.title,
@@ -188,13 +183,6 @@ export const blogResolvers = {
           throw new CustomGraphQLError("User not found or not logged in");
         }
     
-        const roleName = (userWithRole.role as any)?.roleName;
-    
-        // Check if user has permission to update blogs
-        if (!["applicant", "trainee", "admin"].includes(roleName)) {
-          throw new CustomGraphQLError("You do not have permission to update blogs");
-        }
-    
         try {
           // Check if blog exists
           const existingBlog = await BlogModel.findById(id);
@@ -203,7 +191,7 @@ export const blogResolvers = {
           }
     
           // Optional: Check if user is the original author
-          if (roleName !== "admin" && existingBlog.author.toString() !== context.currentUser?._id.toString()) {
+          if (existingBlog.author.toString() !== context.currentUser?._id.toString()) {
             throw new CustomGraphQLError("You can only update your own blogs");
           }
     
@@ -266,7 +254,7 @@ export const blogResolvers = {
 
       const blog = await BlogModel.findById(blogId);
       if (!blog) {
-        throw new CustomGraphQLError("Blog not found.");
+        throw new CustomGraphQLError('Blog not found.');
       }
 
       blog.isHidden = !blog.isHidden;
