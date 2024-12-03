@@ -1,7 +1,7 @@
 name: Docker Build and Deploy
 
 on:
-  push:
+  pull_request:
     branches:
       - develop
 
@@ -44,8 +44,6 @@ jobs:
           envs: MONGO_PROD_DB,REGISTER_FRONTEND_URL,REGISTER_ORG_FRONTEND_URL,NODE_ENV,FRONTEND_LINK,ADMIN_EMAIL,ADMIN_PASS,COORDINATOR_EMAIL,COORDINATOR_PASS,GH_TOKEN, PUSHER_CLUSTER
           script: |
 
-            set -e  # Exit immediately if a command exits with a non-zero status
-            set -x  # Print commands and their arguments as they are executed
             touch env
             echo "MONGO_PROD_DB=${MONGO_PROD_DB}" >> env
             # Pull the latest image
