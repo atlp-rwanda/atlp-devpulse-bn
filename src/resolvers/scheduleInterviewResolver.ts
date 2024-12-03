@@ -1,4 +1,6 @@
 import { sendEmailTemplate } from "../helpers/bulkyMails";
+import { pusher } from "../helpers/pusher";
+import { ApplicantNotificationsModel } from "../models/applicantNotifications";
 import { LoggedUserModel } from "../models/AuthUser";
 import { RoleModel } from "../models/roleModel";
 import TechnicalInterview from "../models/technicalInterviewSchema";
@@ -219,6 +221,41 @@ export const technicalInterviewResolvers = {
         // Get applicant and coordinator details for email
         const applicantData = await TraineeApplicant.findById(applicantId);
         const coordinatorData = await LoggedUserModel.findById(coordinatorId);
+
+        // Create notification for applicant
+        const applicantNotification = await ApplicantNotificationsModel.create({
+          userId: applicantId,
+          message: `Technical Interview Scheduled for ${interview.scheduledDate.toLocaleString()}`,
+          eventType: "applicationUpdate",
+          relatedObjectId: interview._id,
+        });
+
+        // Create notification for coordinator
+        const coordinatorNotification =
+          await ApplicantNotificationsModel.create({
+            userId: coordinatorId,
+            message: `Technical Interview Assigned: Candidate ${applicantData?.firstName} ${applicantData?.lastName}`,
+            eventType: "applicationUpdate",
+            relatedObjectId: interview._id,
+          });
+
+        // Send Pusher notifications
+        await Promise.all([
+          pusher.trigger(`notifications-${applicantId}`, "new-notification", {
+            message: applicantNotification.message,
+            id: applicantNotification._id,
+            createdAt: applicantNotification.createdAt,
+            read: applicantNotification.read,
+          }),
+          pusher.trigger(`notifications-${coordinatorId}`, "new-notification", {
+            message: coordinatorNotification.message,
+            id: coordinatorNotification._id,
+            createdAt: coordinatorNotification.createdAt,
+            read: coordinatorNotification.read,
+          }),
+        ]).catch((error) => {
+          console.error("Error with Pusher triggers:", error);
+        });
 
         if (applicantData?.email && coordinatorData?.email) {
           const applicantEmailTemplate = `
