@@ -68,6 +68,7 @@ jobs:
             output=$( docker run -d \
               -p 4008:3000 \
               --env-file env \
+              --name devpulse-bn \
               ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn:latest)
             echo $output
 
