@@ -70,7 +70,6 @@ jobs:
             output=$( docker run -d \
               -p 4008:5000 \
               --env-file env \
-              --name applications-bn \
               ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn:latest)
             echo $output
 
