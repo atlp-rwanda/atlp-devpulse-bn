@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.DO_USERNAME }}
           key: ${{ secrets.DO_KEY }}
           port: ${{ secrets.DO_PORT }}
-          envs: MONGO_PROD_DB,REGISTER_FRONTEND_URL,REGISTER_ORG_FRONTEND_URL,NODE_ENV,FRONTEND_LINK,ADMIN_EMAIL,ADMIN_PASS,COORDINATOR_EMAIL,COORDINATOR_PASS,GH_TOKEN, PUSHER_CLUSTER, PUSHER_APP_ID, PUSHER_KEY, PUSHER_SECRET API_KEY,SENDER_NAME
+          envs: MONGO_PROD_DB,REGISTER_FRONTEND_URL,REGISTER_ORG_FRONTEND_URL,NODE_ENV,FRONTEND_LINK,ADMIN_EMAIL,ADMIN_PASS,COORDINATOR_EMAIL,COORDINATOR_PASS,GH_TOKEN, PUSHER_CLUSTER, PUSHER_APP_ID, PUSHER_KEY, PUSHER_SECRET, API_KEY, SENDER_NAME, DEVPULSE_EMAIL
           script: |
 
             touch env
@@ -66,9 +66,9 @@ jobs:
             docker rm $(docker ps -aq --filter publish=4008) || true
             # Run new container
             output=$( docker run -d \
-              -p 4008:5000 \
+              -p 4008:3006 \
               --env-file env \
-              --name devpulse-bn \
+              --name applications-bn \
               ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn:latest)
             echo $output
 
