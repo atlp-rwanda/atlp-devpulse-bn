@@ -38,6 +38,8 @@ interface UpdateBlogArgs {
   id: string;
   title?: string;
   content?: string;
+  coverImage?: string;
+  images?: string[];
   tags?: string[];
   isHidden?: boolean;
 }
@@ -136,11 +138,6 @@ export const blogResolvers = {
       if (!userWithRole) {
         throw new CustomGraphQLError("User not found or not logged in");
       }
-       const roleName = (userWithRole.role as any)?.roleName;
-
-       if (!["applicant", "trainee"].includes(roleName)) {
-         throw new CustomGraphQLError("Only Trainness can create blogs");
-       }
       try {
         const existingRecord = await BlogModel.findOne({
           title: args.blogFields.title,
@@ -167,15 +164,72 @@ export const blogResolvers = {
         id: { type: new GraphQLNonNull(GraphQLID) },
         title: { type: GraphQLString },
         content: { type: GraphQLString },
+        images: { type: new GraphQLList(GraphQLString) },
+        coverImage: { type: GraphQLString },
         tags: { type: new GraphQLList(GraphQLString) },
         isHidden: { type: GraphQLBoolean },
       },
       resolve: async (
-        _: any,
-        { id, title, content, tags, isHidden }: UpdateBlogArgs
+        _: any, 
+        { id, title, content, images, coverImage, tags, isHidden }: UpdateBlogArgs, 
+        context: any
       ) => {
-        const updates = { title, content, tags, isHidden };
-        return BlogModel.findByIdAndUpdate(id, updates, { new: true });
+        // Check if user is logged in and has appropriate role
+        const userWithRole = await LoggedUserModel.findById(
+          context.currentUser?._id
+        ).populate("role");
+    
+        if (!userWithRole) {
+          throw new CustomGraphQLError("User not found or not logged in");
+        }
+    
+        try {
+          // Check if blog exists
+          const existingBlog = await BlogModel.findById(id);
+          if (!existingBlog) {
+            throw new CustomGraphQLError("Blog not found");
+          }
+    
+          // Optional: Check if user is the original author
+          if (existingBlog.author.toString() !== context.currentUser?._id.toString()) {
+            throw new CustomGraphQLError("You can only update your own blogs");
+          }
+    
+          // Optional: Check for duplicate title (if title is being updated)
+          if (title) {
+            const duplicateTitleBlog = await BlogModel.findOne({ 
+              title, 
+              _id: { $ne: id } 
+            });
+    
+            if (duplicateTitleBlog) {
+              throw new CustomGraphQLError("A blog with this title already exists");
+            }
+          }
+    
+          // Prepare updates (only include non-null values)
+          const updates = Object.fromEntries(
+            Object.entries({
+              title, 
+              content, 
+              images, 
+              coverImage, 
+              tags, 
+              isHidden
+            }).filter(([_, v]) => v != null)
+          );
+    
+          // Update blog and return new document
+          const updatedBlog = await BlogModel.findByIdAndUpdate(
+            id, 
+            updates, 
+            { new: true }
+          );
+             
+          return updatedBlog;
+        } catch (error : any) {
+          throw new CustomGraphQLError(`Failed to update blog: ${error.message}`);
+        }
       },
     },
 
@@ -200,7 +254,7 @@ export const blogResolvers = {
 
       const blog = await BlogModel.findById(blogId);
       if (!blog) {
-        throw new CustomGraphQLError("Blog not found.");
+        throw new CustomGraphQLError('Blog not found.');
       }
 
       blog.isHidden = !blog.isHidden;

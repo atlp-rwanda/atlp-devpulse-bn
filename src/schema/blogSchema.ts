@@ -87,6 +87,8 @@ export const blogSchema = gql`
       id: ID!
       title: String
       content: String
+      images: [String]
+      coverImage: String
       tags: [String]
     ): Blog!
     deleteBlog(id: ID!): String!
