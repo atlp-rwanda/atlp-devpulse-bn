@@ -51,7 +51,7 @@ const blogSchema = new Schema({
   
   isHidden: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   author: {
     type: Schema.Types.ObjectId,
