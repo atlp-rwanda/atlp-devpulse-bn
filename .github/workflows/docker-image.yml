@@ -49,7 +49,6 @@ jobs:
 
             touch env
             echo "MONGO_PROD_DB=${MONGO_PROD_DB}" > env
-            echo "node_env=${NODE_ENV}" >> env
             echo "FRONTEND_LINK=${FRONTEND_LINK}" >> env
             echo "NODE_ENV=${NODE_ENV}" >> env
             echo "PUSHER_CLUSTER=${PUSHER_CLUSTER}" >> env
