@@ -14,9 +14,13 @@ jobs:
       NODE_ENV: "production"
       PUSHER_CLUSTER: ${{ secrets.PUSHER_CLUSTER }}
       PUSHER_APP_ID: ${{ secrets.PUSHER_APP_ID }}
-      PUSHER_APP_KEY: ${{ secrets.PUSHER_KEY }}
-      PUSHER_APP_SECRET: ${{ secrets.PUSHER_APP_SECRET }}
+      PUSHER_KEY: ${{ secrets.PUSHER_KEY }}
+      PUSHER_SECRET: ${{ secrets.PUSHER_SECRET }}
       DEVPULSE_EMAIL: ${{ secrets.DEVPULSE_EMAIL }}
+      API_KEY: ${{ secrets.API_KEY }}
+      SENDER_NAME: ${{ secrets.SENDER_NAME }}
+      PORT: ${{ secrets.PORT }} 
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
 
     steps:
@@ -41,13 +45,22 @@ jobs:
           username: ${{ secrets.DO_USERNAME }}
           key: ${{ secrets.DO_KEY }}
           port: ${{ secrets.DO_PORT }}
-          envs: MONGO_PROD_DB,REGISTER_FRONTEND_URL,REGISTER_ORG_FRONTEND_URL,NODE_ENV,FRONTEND_LINK,ADMIN_EMAIL,ADMIN_PASS,COORDINATOR_EMAIL,COORDINATOR_PASS,GH_TOKEN, PUSHER_CLUSTER
+          envs: MONGO_PROD_DB,REGISTER_FRONTEND_URL,REGISTER_ORG_FRONTEND_URL,NODE_ENV,FRONTEND_LINK,ADMIN_EMAIL,ADMIN_PASS,COORDINATOR_EMAIL,COORDINATOR_PASS,GH_TOKEN, PUSHER_CLUSTER, PUSHER_APP_ID, PUSHER_KEY, PUSHER_SECRET, API_KEY, SENDER_NAME, DEVPULSE_EMAIL, PORT, JWT_SECRET
           script: |
 
-            set -e  # Exit immediately if a command exits with a non-zero status
-            set -x  # Print commands and their arguments as they are executed
             touch env
-            echo "MONGO_PROD_DB=${MONGO_PROD_DB}" >> env
+            echo "MONGO_PROD_DB=${MONGO_PROD_DB}" > env
+            echo "FRONTEND_LINK=${FRONTEND_LINK}" >> env
+            echo "NODE_ENV=${NODE_ENV}" >> env
+            echo "PUSHER_CLUSTER=${PUSHER_CLUSTER}" >> env
+            echo "PUSHER_APP_ID=${PUSHER_APP_ID}" >> env
+            echo "PUSHER_KEY=${PUSHER_KEY}" >> env
+            echo "PUSHER_SECRET=${PUSHER_SECRET}" >> env
+            echo "DEVPULSE_EMAIL=${DEVPULSE_EMAIL}" >> env
+            echo "API_KEY=${API_KEY}" >> env
+            echo "SENDER_NAME=${SENDER_NAME}" >> env
+            echo "PORT=${PORT}" >> env
+            echo "JWT_SECRET=${JWT_SECRET}" >> env
             # Pull the latest image
             docker pull ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn:latest
 
@@ -56,7 +69,7 @@ jobs:
             docker rm $(docker ps -aq --filter publish=4008) || true
             # Run new container
             output=$( docker run -d \
-              -p 4008:3000 \
+              -p 4008:5000 \
               --env-file env \
               ${{ secrets.DOCKER_HUB_USERNAME2 }}/atlp-devpulse-bn:latest)
             echo $output
