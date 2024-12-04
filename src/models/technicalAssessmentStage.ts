@@ -17,7 +17,7 @@ const technicalAssessmentSchema = new Schema<ITechnicalAssessment>({
   },
   status: {
     type: String,
-    enum: ["No action", "Invited", "Moved", "Rejected", "Admitted"],
+    enum: ["No action", "Invited", "Moved","Passed", "Rejected", "Admitted"],
     default: "No action",
   },
   score: {

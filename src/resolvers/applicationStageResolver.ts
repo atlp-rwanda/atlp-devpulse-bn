@@ -287,11 +287,11 @@ export const applicationStageResolvers: any = {
             if (stageTracking) {
               await Shortlisted.updateOne(
                 { applicantId, status: "No action" },
-                { $set: { status: "Moved" } }
+                { $set: { status: "Passed" } }
               );
               await TraineeApplicant.updateOne(
                 { _id: applicantId },
-                { $set: { applicationPhase: nextStage, status: "Moved" } }
+                { $set: { applicationPhase: nextStage, status: "Passed" } }
               );
             }
 
@@ -339,11 +339,11 @@ export const applicationStageResolvers: any = {
             if (stageTracking) {
               await TechnicalAssessment.updateOne(
                 { applicantId, status: "No action" },
-                { $set: { status: "Moved" } }
+                { $set: { status: "Passed" } }
               );
               await TraineeApplicant.updateOne(
                 { _id: applicantId },
-                { $set: { applicationPhase: nextStage, status: "Moved" } }
+                { $set: { applicationPhase: nextStage, status: "Passed" } }
               );
             }
             await InterviewAssessment.create({
@@ -389,7 +389,7 @@ export const applicationStageResolvers: any = {
             if (stageTracking) {
               await InterviewAssessment.updateOne(
                 { applicantId, status: "No action" },
-                { $set: { status: "Moved" } }
+                { $set: { status: "Passed" } }
               );
             }
 
