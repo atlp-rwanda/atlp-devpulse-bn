@@ -10,69 +10,7 @@ const seedDeleteTrainee = async () => {
         return;
     }
 
-    const deleteTrainee = [
-        {
-            email: 'beniraa@gmail.com',
-            firstName: 'Ben',
-            lastName: 'iraa',
-            deleted_at: false,
-            cycle_id: cycle._id,
-            coverLetterUrl: "http://example.com/coverLetter.pdf",
-            idDocumentUrl: "http://example.com/idDocument.pdf",
-            resumeUrl: "http://example.com/resume.pdf"
-
-        },
-        {
-            email: 'testUser@gmail.com',
-            firstName: 'Test',
-            lastName: 'user',
-            deleted_at: false,
-            cycle_id: cycle._id,
-            coverLetterUrl: "http://example.com/coverLetter.pdf",
-            idDocumentUrl: "http://example.com/idDocument.pdf",
-            resumeUrl: "http://example.com/resume.pdf"
-
-
-        },
-        {
-            email: 'ben@gmail.com',
-            firstName: 'iradukunda',
-            lastName: 'benjamin',
-            deleted_at: false,
-            cycle_id: cycle._id,
-            coverLetterUrl: "http://example.com/coverLetter.pdf",
-            idDocumentUrl: "http://example.com/idDocument.pdf",
-            resumeUrl: "http://example.com/resume.pdf"
-
-
-        },
-        {
-            email: 'carlos@gmail.com',
-            firstName: 'carlos',
-            lastName: 'Bz',
-            deleted_at: false,
-            cycle_id: cycle._id,
-            coverLetterUrl: "http://example.com/coverLetter.pdf",
-            idDocumentUrl: "http://example.com/idDocument.pdf",
-            resumeUrl: "http://example.com/resume.pdf"
-
-
-        },
-        {
-            email: 'nshuti@gmail.com',
-            firstName: 'blaise',
-            lastName: 'k',
-            deleted_at: false,
-            cycle_id: cycle._id,
-            coverLetterUrl: "http://example.com/coverLetter.pdf",
-            idDocumentUrl: "http://example.com/idDocument.pdf",
-            resumeUrl: "http://example.com/resume.pdf"
-
-
-        },
-    ];
-    await TraineeApplicant.deleteMany({ deleteTrainee });
-    await TraineeApplicant.insertMany(deleteTrainee);
+    await TraineeApplicant.deleteMany({});
     await traineEAttributes.deleteMany({});
     return null;
 }

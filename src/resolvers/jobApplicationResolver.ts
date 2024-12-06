@@ -18,7 +18,8 @@ interface getOneFormData {
 
 interface statusData {
     applicationId: string,
-    status: string
+    status: string,
+    comment: string
 }
 
 const formatDate = (date:Date) => {
@@ -114,6 +115,7 @@ export const jobApplicationResolver = {
                 essay: application.essay,
                 resume: application.resume,
                 status: application.status,
+                comment: application.comment,
                 jobId: application.jobId,
                 createdAt: formatDate(application.createdAt)
             }
@@ -175,10 +177,28 @@ export const jobApplicationResolver = {
 				);
 			}
 
-            const { status, applicationId } = input
-            await JobApplication.findByIdAndUpdate(applicationId, {status})
+            const { status, applicationId, comment } = input
+            if(comment){
+                await JobApplication.findByIdAndUpdate(applicationId, {status, comment})
+            }else{
+                await JobApplication.findByIdAndUpdate(applicationId, {status})
+            }
+           
             const application = await JobApplication.findOne({_id:applicationId}).populate('userId').populate('jobId')
-            return application
+            if(!application){
+                throw new Error('Application not found');
+            }
+            
+            return {
+                _id: application._id,
+                userId: application.userId,
+                essay: application.essay,
+                resume: application.resume,
+                status: application.status,
+                comment: application.comment,
+                jobId: application.jobId,
+                createdAt: formatDate(application.createdAt)
+            }
         } 
     },
 };

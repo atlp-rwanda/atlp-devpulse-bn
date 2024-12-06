@@ -21,8 +21,12 @@ const jobApplicationSchema = new mongoose.Schema({
     },
     status:{
         type:String,
-        enum:['submitted','under-review','accepted','rejected'],
-        default:'submitted'
+        enum:['under-review','accepted','rejected'],
+        default:'under-review'
+    },
+    comment: {
+        type:String,
+        required: false
     }
 },{timestamps:true})
 
