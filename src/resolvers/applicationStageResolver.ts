@@ -619,7 +619,7 @@ export const applicationStageResolvers: any = {
             const notification4 = await ApplicantNotificationsModel.create({
               userId: user!._id,
               message,
-              eventType: "applicationUpdate",
+              eventType: "applicationUpdate", 
             });
 
             await sendEmailTemplate(
