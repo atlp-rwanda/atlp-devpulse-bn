@@ -9,13 +9,14 @@ const notificationResolver: any = {
   Mutation: {
     async createNotification(
       _parent: any,
-      args: { userId: string; message: string; eventType: string }
+      args: { userId: string; message: string; eventType: string; eventId: string }
     ) {
       try {
         const newNotification = new ApplicantNotificationsModel({
           userId: args.userId,
           message: args.message,
           eventType: args.eventType,
+          eventId: args.eventId
         });
         const savedNotification = await newNotification.save();
 

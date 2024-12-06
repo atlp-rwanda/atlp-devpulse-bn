@@ -12,8 +12,11 @@ const applicantNotificationsSchema = new Schema({
   },
   eventType: {
     type: String,
-    enum: ["jobPost", "applicationUpdate", "general"],
+    enum: ["ticket", "applicationUpdate", "general"],
     required: true,
+  },
+  eventId: {
+    type: String,
   },
   read: {
     type: Boolean,
