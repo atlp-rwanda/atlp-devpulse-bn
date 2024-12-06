@@ -308,7 +308,7 @@ export const applicationStageResolvers: any = {
             const notification = await ApplicantNotificationsModel.create({
               userId: user!._id,
               message,
-              eventType: "general",
+              eventType: "applicationUpdate",
             });
 
             await sendEmailTemplate(
@@ -329,6 +329,7 @@ export const applicationStageResolvers: any = {
                 id: notification._id,
                 createdAt: notification.createdAt,
                 read: notification.read,
+                eventType: "applicationUpdate",
               })
               .catch((error) => {
                 console.error("Error with Pusher trigger:", error);
@@ -355,7 +356,7 @@ export const applicationStageResolvers: any = {
             const notification1 = await ApplicantNotificationsModel.create({
               userId: user!._id,
               message,
-              eventType: "general",
+              eventType: "applicationUpdate",
             });
 
             await sendEmailTemplate(
@@ -379,6 +380,7 @@ export const applicationStageResolvers: any = {
                 id: notification1._id,
                 createdAt: notification1.createdAt,
                 read: notification1.read,
+                eventType: "applicationUpdate",
               })
               .catch((error) => {
                 console.error("Error with Pusher trigger:", error);
@@ -440,7 +442,7 @@ export const applicationStageResolvers: any = {
             const notification2 = await ApplicantNotificationsModel.create({
               userId: user!._id,
               message,
-              eventType: "general",
+              eventType: "applicationUpdate",
             });
 
             await sendEmailTemplate(
@@ -464,6 +466,7 @@ export const applicationStageResolvers: any = {
                 id: notification2._id,
                 createdAt: notification2.createdAt,
                 read: notification2.read,
+                eventType: "applicationUpdate",
               })
               .catch((error) => {
                 console.error("Error with Pusher trigger:", error);
@@ -499,7 +502,7 @@ export const applicationStageResolvers: any = {
             const notification3 = await ApplicantNotificationsModel.create({
               userId: user!._id,
               message,
-              eventType: "general",
+              eventType: "applicationUpdate",
             });
 
             await sendEmailTemplate(
@@ -520,6 +523,7 @@ export const applicationStageResolvers: any = {
                 id: notification3._id,
                 createdAt: notification3.createdAt,
                 read: notification3.read,
+                eventType: "applicationUpdate",
               })
               .catch((error) => {
                 console.error("Error with Pusher trigger:", error);
@@ -547,7 +551,7 @@ export const applicationStageResolvers: any = {
             const notification4 = await ApplicantNotificationsModel.create({
               userId: user!._id,
               message,
-              eventType: "general",
+              eventType: "applicationUpdate", 
             });
 
             await sendEmailTemplate(
@@ -568,6 +572,7 @@ export const applicationStageResolvers: any = {
                 id: notification4._id,
                 createdAt: notification4.createdAt,
                 read: notification4.read,
+                eventType: "applicationUpdate",
               })
               .catch((error) => {
                 console.error("Error with Pusher trigger:", error);

@@ -7,6 +7,8 @@ const Schema = gql`
     message: String!
     read: Boolean!
     createdAt: String!
+    eventType: String!
+    eventId: String
   }
 
   type Query {

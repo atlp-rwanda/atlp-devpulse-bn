@@ -88,13 +88,6 @@ export const ticketResolver = {
                     adminReplies: [],
                     applicantReplies: []
                 });
-                
-                const message = `Your ticket "${args.title}" has been submitted successfully.`;
-                const notification = await ApplicantNotificationsModel.create({
-                    userId: user._id,
-                    message,
-                    eventType: "general",
-                });
 
                 await sendEmailTemplate(
                     user.email,
@@ -113,17 +106,6 @@ export const ticketResolver = {
                     `${user!.firstname} ${user.lastname} has sent a new ticket.`,
                     "new_Ticket"
                 );
-
-                await pusher
-                    .trigger(`notifications-${user._id}`, "new-notification", {
-                        message: notification.message,
-                        id: notification._id,
-                        createdAt: notification.createdAt,
-                        read: notification.read,
-                    })
-                    .catch((error) => {
-                        console.error("Error with Pusher trigger:", error);
-                    });
 
                 return newTicket.populate('author');
             } catch(error: any) {
@@ -173,29 +155,11 @@ export const ticketResolver = {
                     <br/><br/>Thank you for your patience.<br/>`
                 );
 
-                const message = `Your ticket "${updatedTicket.title}" has been updated.`;
-                const notification = await ApplicantNotificationsModel.create({
-                    userId: updatedTicket.author._id,
-                    message,
-                    eventType: "general",
-                });
-
                 await publishNotification(
-                    `${user!.firstname} ${user.lastname} has sent a new ticket.`,
+                    `${user!.firstname} ${user.lastname} has sent a new reply to ticket ${updatedTicket.title}.`,
                     "new_Ticket"
                 );
-
-                await pusher
-                    .trigger(`notifications-${updatedTicket.author._id}`, "new-notification", {
-                        message: notification.message,
-                        id: notification._id,
-                        createdAt: notification.createdAt,
-                        read: notification.read,
-                    })
-                    .catch((error) => {
-                        console.error("Error with Pusher trigger:", error);
-                    });
-                
+       
                 return updatedTicket;
             } catch(err: any){
                 throw new CustomGraphQLError(err.message);
@@ -248,13 +212,17 @@ export const ticketResolver = {
                 const notification = await ApplicantNotificationsModel.create({
                     userId: resolvedTicket.author._id,
                     message,
-                    eventType: "general",
+                    eventType: "ticket",
+                    eventId: resolvedTicket.id
+
                 });
 
                 await pusher
                     .trigger(`notifications-${resolvedTicket.author._id}`, "new-notification", {
                         message: notification.message,
                         id: notification._id,
+                        eventType: notification.eventType,
+                        eventId: notification.eventId,
                         createdAt: notification.createdAt,
                         read: notification.read,
                     })
