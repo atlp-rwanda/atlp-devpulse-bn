@@ -55,10 +55,7 @@ import { attendanceResolver } from "./resolvers/attendanceResolver";
 import { attendanceSchema } from "./schema/attendanceSchema";
 import { performanceResolver } from "./resolvers/performanceResolver";
 import { performanceSchema } from "./schema/performanceSchema";
-import {
-  applicationStageDefs,
-  technicalInterviewDefs,
-} from "./schema/applicationStage";
+import { applicationStageDefs } from "./schema/applicationStage";
 import { applicationStageResolvers } from "./resolvers/applicationStageResolver";
 import filterJobResolver from "./resolvers/filterJob";
 import filterProgramResolver from "./resolvers/filterPrograms";
@@ -91,12 +88,10 @@ import { jobApplicationTypeDefs } from "./schema/jobApplicationSchema";
 import { jobApplicationResolver } from "./resolvers/jobApplicationResolver";
 import { blogRelatedResolvers } from "./resolvers/blogRelatedArticlesResolver";
 import { blogRelatedArticlesSchema } from "./schema/blogRelatedArticlesSchema";
-import { reactionSchema } from "./schema/reactionSchema";
+import { reactionSchema } from "./schema/reactionSchema";  
 import { reactionResolvers } from "./resolvers/reactionResolvers";
 import { DocSchema } from "./schema/doc";
 import { docResolver } from "./resolvers/Doc";
-import { technicalInterviewResolvers } from "./resolvers/scheduleInterviewResolver";
-
 const PORT = process.env.PORT || 3000;
 
 const resolvers = mergeResolvers([
@@ -145,8 +140,7 @@ const resolvers = mergeResolvers([
   commentReplyResolvers,
   blogRelatedResolvers,
   docResolver,
-  reactionResolvers,
-  technicalInterviewResolvers,
+  reactionResolvers
 ]);
 const typeDefs = mergeTypeDefs([
   applicationCycleTypeDefs,
@@ -190,9 +184,7 @@ const typeDefs = mergeTypeDefs([
   jobApplicationTypeDefs,
   blogRelatedArticlesSchema,
   DocSchema,
-  reactionSchema,
-  applicationStageDefs,
-  technicalInterviewDefs,
+  reactionSchema
 ]);
 
 const server = new ApolloServer({
@@ -205,7 +197,7 @@ const server = new ApolloServer({
     try {
       authToken =
         req.headers.authorization &&
-        req.headers.authorization.startsWith("Bearer ")
+          req.headers.authorization.startsWith("Bearer ")
           ? req.headers.authorization.split(" ")[1]
           : req.headers.authorization;
       if (authToken) {

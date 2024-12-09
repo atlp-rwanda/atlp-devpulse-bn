@@ -17,9 +17,9 @@ const userSchema = new Schema(
       type: String,
       default: "",
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
+    isVerified:{
+      type:Boolean,
+      default:false
     },
     role: {
       type: Schema.Types.ObjectId,
@@ -39,15 +39,7 @@ const userSchema = new Schema(
     },
     applicationPhase: {
       type: String,
-      enum: [
-        "Applied",
-        "Shortlisted",
-        "Technical Assessment",
-        "Interview Assessment",
-        "Admitted",
-        "Rejected",
-        "Enrolled",
-      ],
+      enum: ["Applied", 'Shortlisted', 'Technical Assessment', 'Interview Assessment', 'Admitted', 'Rejected', "Enrolled"],
       default: "Applied",
     },
     isActive: {
@@ -57,15 +49,17 @@ const userSchema = new Schema(
     isEmailVerified: {
       type: Boolean,
       default: false,
+
     },
     cohort: {
       type: Schema.Types.ObjectId,
       ref: "cohortModel",
     },
     resetToken: String,
-    resetTokenExpiration: Date,
+    resetTokenExpiration:Date
+
   },
   { timestamps: true }
 );
 
-export const LoggedUserModel = model("LoggedUserModel", userSchema);
+export const LoggedUserModel = model("LoggedUserModel", userSchema);  
