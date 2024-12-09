@@ -111,12 +111,13 @@ export const sendUserCredentials = async (email: String, password: String) => {
   }
 };
 
+
 export const sendEmailTemplate = async (
   email: string,
   subject: string,
   title: string,
   body: string,
-  button?: { url: string; text: string }
+  button?: { url: string, text: string }
 ) => {
   try {
     const logoText = "DevPulse";
@@ -170,7 +171,7 @@ export const sendEmailTemplate = async (
         <div style="margin-top: 80px;">
           <p style="color: #555; font-size: 14px;">
             If you received this email by mistake, simply ignore it. <br />
-            For any questions, contact us at <a href="mailto: devpulsedev@gmail.com" style="color: ${secondaryColor};">samuel.nishimwe@andela.com</a>.
+            For any questions, contact us at <a href="mailto: samuel.nishimwe@andela.com" style="color: ${secondaryColor};">samuel.nishimwe@andela.com</a>.
           </p>
           <a href="" style="margin: 0 10px; display: inline-flex; align-items: center; text-decoration: none;">
             <img 
@@ -251,7 +252,7 @@ export const sendEmailTemplate = async (
           ${generateLogo(logoText, mainColor)}
           ${generateTitle(title)}
           ${generateBody(body)}
-          ${button ? generateButton(button.url, button.text) : ""}
+          ${button ? generateButton(button.url, button.text) : ''}
           ${generateFooterLogo()}
           ${generateSocialIcons()}
           ${generateFooter()}
