@@ -3,8 +3,8 @@ import { traineEAttributes } from "../models/traineeAttribute";
 import { applicationCycle } from "../models/applicationCycle";
 import mongoose, { ObjectId } from "mongoose";
 import { sendEmailTemplate } from "../helpers/bulkyMails";
-import { Types } from 'mongoose';
-import { AuthenticationError } from 'apollo-server';
+import { Types } from "mongoose";
+import { AuthenticationError } from "apollo-server";
 import { LoggedUserModel } from "../models/AuthUser";
 import { RoleModel } from "../models/roleModel";
 
@@ -14,7 +14,6 @@ import { CustomGraphQLError } from "../utils/customErrorHandler";
 import { cohortModels } from "../models/cohortModel";
 import { publishNotification } from "./adminNotificationsResolver";
 import { any } from "joi";
-
 
 interface Context {
   currentUser: { _id: string };
@@ -46,6 +45,15 @@ export const traineeApplicantResolver: any = {
       const itemsToSkip = (pages - 1) * items;
       const allTrainee = await TraineeApplicant.find({ delete_at: false })
         .populate("cycle_id")
+        .populate({
+          path: "technicalInterviews",
+          model: "TechnicalInterview",
+          populate: {
+            path: "coordinatorId",
+            model: "LoggedUserModel",
+            select: "firstname lastname email",
+          },
+        })
 
         .skip(itemsToSkip)
         .limit(items);
@@ -63,7 +71,12 @@ export const traineeApplicantResolver: any = {
     },
 
     async getOneTrainee(_: any, { ID }: any) {
-      const trainee = await TraineeApplicant.findById(ID).populate("cycle_id");
+      const trainee = await TraineeApplicant.findById(ID)
+        .populate("cycle_id")
+        .populate({
+          path: "technicalInterviews",
+          model: "TechnicalInterview",
+        });
       if (!trainee)
         throw new Error("No trainee is found, pleade provide the correct ID");
       return trainee;
@@ -128,7 +141,16 @@ export const traineeApplicantResolver: any = {
       }
     },
     async createNewTraineeApplicant(_: any, { input }: any, context: any) {
-      const { lastName, firstName, email, cycle_id, attributes, coverLetterUrl, idDocumentUrl, resumeUrl } = input;
+      const {
+        lastName,
+        firstName,
+        email,
+        cycle_id,
+        attributes,
+        coverLetterUrl,
+        idDocumentUrl,
+        resumeUrl,
+      } = input;
       const userWithRole = await LoggedUserModel.findById(
         context.currentUser?._id
       ).populate("role");
@@ -193,7 +215,7 @@ export const traineeApplicantResolver: any = {
           ],
           idDocumentUrl,
           coverLetterUrl,
-          resumeUrl
+          resumeUrl,
         });
         // Create the corresponding traineEAttributes
         if (
@@ -254,7 +276,9 @@ export const traineeApplicantResolver: any = {
           throw new CustomGraphQLError("Trainee already belongs to a cohort");
         }
 
-        const cohort = await cohortModels.findById(cohortId).populate('trainees');
+        const cohort = await cohortModels
+          .findById(cohortId)
+          .populate("trainees");
         if (!cohort) {
           throw new CustomGraphQLError("Cohort not found");
         }

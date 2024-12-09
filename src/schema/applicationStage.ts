@@ -34,12 +34,12 @@ export const applicationStageDefs = gql`
   type cycleApplication {
     email: String
     cycle_id: Cycles
-    firstName: String 
-    lastName: String 
-    user: String 
-    applicationPhase: String 
-    status: String 
-    _id:String
+    firstName: String
+    lastName: String
+    user: String
+    applicationPhase: String
+    status: String
+    _id: String
     createdAt: String
     coverLetterUrl: String
     resumeUrl: String
@@ -90,7 +90,7 @@ export const applicationStageDefs = gql`
     applicantId: String
     status: String
     score: String
-    platform:String
+    platform: String
     invitationLink: String
     comments: String
     createdAt: String
@@ -131,18 +131,31 @@ export const applicationStageDefs = gql`
     applicant: Applicant
     status: String!
     score: Float
-    platform:String
+    platform: String
     invitationLink: String
     comments: String
+    technicalInterviews: [TechnicalInterview]
     createdAt: String
     updatedAt: String
   }
+
+  type stageWithInterviews {
+    applicant: Applicant
+    status: String!
+    score: Float
+    comments: String
+    createdAt: String
+    updatedAt: String
+    interviews: [TechnicalInterview]
+  }
+
   type Query {
     getStageHistoryByApplicant(applicantId: ID!): HistoryStage
     getApplicantsByStage(stage: String!): [stageByModel!]!
     getTraineeCyclesApplications: cycleApplication
     getApplicationsAttributes(trainee_id: String!): Attributes
     getApplicationStages(trainee_id: String!): Stages
+    getInterviewStages: [stageWithInterviews!]!
   }
 
   type response {
@@ -162,6 +175,49 @@ export const applicationStageDefs = gql`
       applicantStage: String!
       score: Float!
     ): response!
-    sendInvitation(applicantId:ID!,email: String!, platform:String!, invitationLink:String!): response!
+    sendInvitation(
+      applicantId: ID!
+      email: String!
+      platform: String!
+      invitationLink: String!
+    ): response!
+  }
+`;
+
+export const technicalInterviewDefs = gql`
+  type TechnicalInterview {
+    _id: ID!
+    applicant: Applicant!
+    coordinator: User
+    meetingLink: String!
+    scheduledDate: String!
+    meetingPlatform: String!
+    status: String!
+    emailSent: Boolean!
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  input ScheduleInterviewInput {
+    applicantId: ID!
+    coordinatorId: ID!
+    meetingLink: String!
+    scheduledDate: String!
+    meetingPlatform: String!
+  }
+
+  extend type Query {
+    getTechnicalInterviews(status: String): [TechnicalInterview!]!
+    getTechnicalInterviewById(interviewId: ID!): TechnicalInterview
+  }
+
+  input UpdateInterviewStatusInput {
+    interviewId: ID!
+    status: String!
+  }
+
+  extend type Mutation {
+    scheduleTechnicalInterview(input: ScheduleInterviewInput!): response!
+    updateInterviewStatus(interviewId: ID!, status: String!): response!
   }
 `;
